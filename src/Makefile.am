@@ -17,7 +17,7 @@
 # with this program;  if not, write to the  Free Software Foundation,  Inc.,
 # 675 Mass Ave, Cambridge, MA 02139, USA.
 #
-# $Id: Makefile.am,v 1.2 2000/04/18 13:19:17 jeh Exp $
+# $Id: Makefile.am,v 1.3 2000/05/27 17:57:50 jeh Exp $
 #/
 
 INCLUDES= @GLIB_CFLAGS@
@@ -31,7 +31,8 @@ include_HEADERS = \
   lib3ds.h
 
 lib3ds_la_LDFLAGS= \
-  -version-info @LIB3DS_MAJOR_VERSION@:@LIB3DS_MINOR_VERSION@:@LIB3DS_MICRO_VERSION@
+ -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
+ -release $(LT_RELEASE)
 
 lib3ds_la_LIBADD = \
   @MATH3D_LIBS@

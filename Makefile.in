@@ -71,16 +71,24 @@ GTKGL_LIBS = @GTKGL_LIBS@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_CONFIG = @GTK_CONFIG@
 GTK_LIBS = @GTK_LIBS@
+LD = @LD@
+LIB3DS_BINARY_AGE = @LIB3DS_BINARY_AGE@
+LIB3DS_INTERFACE_AGE = @LIB3DS_INTERFACE_AGE@
 LIB3DS_MAJOR_VERSION = @LIB3DS_MAJOR_VERSION@
 LIB3DS_MICRO_VERSION = @LIB3DS_MICRO_VERSION@
 LIB3DS_MINOR_VERSION = @LIB3DS_MINOR_VERSION@
 LIB3DS_VERSION = @LIB3DS_VERSION@
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
+LT_AGE = @LT_AGE@
+LT_CURRENT = @LT_CURRENT@
+LT_RELEASE = @LT_RELEASE@
+LT_REVISION = @LT_REVISION@
 MAKEINFO = @MAKEINFO@
 MATH3D_CFLAGS = @MATH3D_CFLAGS@
 MATH3D_CONFIG = @MATH3D_CONFIG@
 MATH3D_LIBS = @MATH3D_LIBS@
+NM = @NM@
 OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
@@ -92,7 +100,8 @@ bin_SCRIPTS = lib3ds-config
 
 AUTOMAKE_OPTIONS = 1.4
 
-EXTRA_DIST = 
+EXTRA_DIST =  	lib3ds.m4 	AUTHORS 	COPYING 	ChangeLog 	INSTALL 	README 	TODO 
+
 
 m4datadir = $(datadir)/aclocal
 m4data_DATA = lib3ds.m4
@@ -423,13 +432,6 @@ install uninstall-am uninstall all-redirect all-am all installdirs-am \
 installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
-	lib3ds.m4 \
-	AUTHORS \
-	COPYING \
-	ChangeLog \
-	INSTALL \
-	README \
-	TODO 
 
 .PHONY: release snapshot
 

@@ -208,7 +208,6 @@ const dword HOT_TRACK_TAG         =0xB027;
 const dword FALL_TRACK_TAG        =0xB028;
 const dword HIDE_TRACK_TAG        =0xB029;
 
-#define __BIG_ENDIAN__
 
 /*--WORD & DWORD swapping routines for little/big endian conversations--*/
 #ifdef WORDS_BIGENDIAN 

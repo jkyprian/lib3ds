@@ -5,7 +5,7 @@ bin_SCRIPTS = lib3ds-config
 
 AUTOMAKE_OPTIONS = 1.4
 
-EXTRA_DIST = 
+EXTRA_DIST = \
 	lib3ds.m4 \
 	AUTHORS \
 	COPYING \
