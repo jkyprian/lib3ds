@@ -1,0 +1,21 @@
+2000-10-17  J E Hoffmann  <je-h@gmx.net>
+
+	* Release: 0.9.0
+
+2000-10-09  J E Hoffmann  <je-h@gmx.net>
+
+	* Using now doxygen for documentation and webpage
+
+2000-10-05  J E Hoffmann  <je-h@gmx.net>
+
+	* Turned all double linked lists into single linked lists 
+	* Added dmalloc support for memory leak tracking 
+	* Added support to deallocate allocated memory
+
+2000-10-04  J E Hoffmann  <je-h@gmx.net>
+
+	* ANSI C fixes. Using now -ansi & -pedantic-errors for debug mode 
+	* Improved little/endian checks & debug mode handling
+	* lib3ds/file.h: Added material lookup functions
+	* Starting ChangeLog
+

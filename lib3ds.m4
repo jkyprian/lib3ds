@@ -6,19 +6,19 @@ AC_DEFUN(AM_PATH_LIB3DS,
 
 AC_ARG_WITH(lib3ds-prefix,[  --with-lib3ds-prefix=PFX   Prefix where lib3ds is installed (optional)],
             lib3ds_config_prefix="$withval", lib3ds_config_prefix="")
-AC_ARG_WITH(gtk-exec-prefix,[  --with-lib3ds-exec-prefix=PFX  Exec prefix where lib3ds is installed (optional)],
+AC_ARG_WITH(lib3ds-exec-prefix,[  --with-lib3ds-exec-prefix=PFX  Exec prefix where lib3ds is installed (optional)],
             lib3ds_config_exec_prefix="$withval", lib3ds_config_exec_prefix="")
 
   if test x$lib3ds_config_exec_prefix != x ; then
      lib3ds_config_args="$lib3ds_config_args --exec-prefix=$lib3ds_config_exec_prefix"
      if test x${LIB3DS_CONFIG+set} != xset ; then
-        LIB3DS_CONFIG=$lib3ds_config_exec_prefix/bin/gtk-config
+        LIB3DS_CONFIG=$lib3ds_config_exec_prefix/bin/lib3ds-config
      fi
   fi
   if test x$lib3ds_config_prefix != x ; then
      lib3ds_config_args="$lib3ds_config_args --prefix=$lib3ds_config_prefix"
      if test x${LIB3DS_CONFIG+set} != xset ; then
-        LIB3DS_CONFIG=$lib3ds_config_prefix/bin/gtk-config
+        LIB3DS_CONFIG=$lib3ds_config_prefix/bin/lib3ds-config
      fi
   fi
 

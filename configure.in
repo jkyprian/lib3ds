@@ -11,10 +11,10 @@ AC_INIT(Makefile.am)
 # set LIB3DS_BINARY_AGE and LIB3DS_INTERFACE_AGE to 0.
 #
 LIB3DS_MAJOR_VERSION=0
-LIB3DS_MINOR_VERSION=1
-LIB3DS_MICRO_VERSION=1
-LIB3DS_INTERFACE_AGE=1
-LIB3DS_BINARY_AGE=1
+LIB3DS_MINOR_VERSION=9
+LIB3DS_MICRO_VERSION=0
+LIB3DS_INTERFACE_AGE=0
+LIB3DS_BINARY_AGE=0
 LIB3DS_VERSION=$LIB3DS_MAJOR_VERSION.$LIB3DS_MINOR_VERSION.$LIB3DS_MICRO_VERSION
 AC_SUBST(LIB3DS_MAJOR_VERSION)
 AC_SUBST(LIB3DS_MINOR_VERSION)
@@ -38,31 +38,93 @@ AM_INIT_AUTOMAKE(lib3ds, $LIB3DS_VERSION)
 
 dnl Checks for programs.
 AC_PROG_CC
-AC_PROG_CXX
-AC_C_BIGENDIAN
+
+dnl Byte order check.
+AC_MSG_CHECKING([for byte order])
+bigendian=""
+AC_ARG_ENABLE(little-endian,   
+  [  --enable-little-endian  enable little endian byte order],
+  [
+    bigendian=no
+  ]) 
+AC_ARG_ENABLE(big-endian,   
+  [  --enable-big-endian     enable big endian byte order],
+  [
+    bigendian=yes
+  ]) 
+if test -z "$bigendian"; then
+  AC_TRY_RUN([
+    main () 
+    {
+      /* Are we little or big endian?  From Harbison&Steele.  */
+      union
+      {
+        long l;
+        char c[sizeof (long)];
+      } u;
+      u.l = 1;
+      exit (u.c[sizeof (long) - 1] == 1);
+    }
+    ],[
+      bigendian=no
+    ],[
+      bigendian=yes
+    ],
+    AC_MSG_ERROR([Byte order not configured])
+  )
+fi
+if test $bigendian = yes; then
+  AC_MSG_RESULT([big endian])
+  AC_DEFINE(WORDS_BIGENDIAN)
+else
+  AC_MSG_RESULT([little endian])
+fi
+
+dnl Byte order check.
+AC_MSG_CHECKING([for debugging mode])
+AC_ARG_ENABLE(debug-mode,   
+  [  --enable-debug-mode     enable debugging mode],
+  [
+    LIB3DS_DEBUG_MODE=yes
+  ]
+)
+if test "$LIB3DS_DEBUG_MODE" = yes; then
+  AC_MSG_RESULT(yes)
+  CFLAGS="-ansi -D_DEBUG -g3 -Wall -pedantic-errors"
+else
+  AC_MSG_RESULT(no)
+  CFLAGS="-O2 "
+fi
+
+dnl Byte order check.
+AC_MSG_CHECKING([for dmalloc debugging])
+DMALLOC_CFLAGS=""
+DMALLOC_LIBS=""
+AC_ARG_ENABLE(dmalloc,   
+  [  --enable-dmalloc        enable dmalloc (www.dmalloc.com)],
+  [
+    LIB3DS_DMALLOC=yes
+  ]
+)
+if test "$LIB3DS_DMALLOC" = yes; then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE(WITH_DMALLOC,1,[Define if using the dmalloc debugging malloc package])
+  DMALLOC_CFLAGS=""
+  DMALLOC_LIBS="-ldmalloc"
+else
+  AC_MSG_RESULT(no)
+fi
+AC_SUBST(DMALLOC_CFLAGS)
+AC_SUBST(DMALLOC_LIBS)
+
 AM_DISABLE_STATIC
 AM_PROG_LIBTOOL
-
-AM_PATH_MATH3D(0.1.0,,AC_MSG_ERROR([Cannot find proper Math3d version]))
-AM_PATH_GLIB(1.2.0,,AC_MSG_ERROR([Cannot find proper glib version]))
-AM_PATH_GTK(1.2.0,,AC_MSG_ERROR([Cannot find proper gtk version]))
-AM_PATH_GTKGL(,AC_MSG_ERROR([Cannot find proper GtkGlArea]))
-
-AC_ARG_ENABLE(debug-mode,   
-[  --enable-debug-mode     enable debugging mode],
-  [
-    CFLAGS="-D_DEBUG -g3 -Wall"
-    CXXFLAGS="-D_DEBUG -g3 -Wall"
-  ],[
-    CFLAGS="-O2 "
-    CXXFLAGS="-O2"
-  ]) 
 
 AC_OUTPUT([ \
   lib3ds-config \
   Makefile \
-  src/Makefile \
-  example/Makefile
+  lib3ds/Makefile \
+  examples/Makefile \
 ],[chmod a+x lib3ds-config])
 
 

@@ -1,0 +1,146 @@
+/*
+ * The 3D Studio File Format Library
+ * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * All rights reserved.
+ *
+ * This program is  free  software;  you can redistribute it and/or modify it
+ * under the terms of the  GNU Lesser General Public License  as published by 
+ * the  Free Software Foundation;  either version 2.1 of the License,  or (at 
+ * your option) any later version.
+ *
+ * This  program  is  distributed in  the  hope that it will  be useful,  but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or  FITNESS FOR A  PARTICULAR PURPOSE.  See the  GNU Lesser General Public  
+ * License for more details.
+ *
+ * You should  have received  a copy of the GNU Lesser General Public License
+ * along with  this program;  if not, write to the  Free Software Foundation,
+ * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * $Id: camera.c,v 1.3 2000/10/09 12:33:50 jeh Exp $
+ */
+#include <lib3ds/camera.h>
+#include <lib3ds/chunk.h>
+#include <lib3ds/readwrite.h>
+#include <stdlib.h>
+#include <math.h>
+#include <config.h>
+#ifdef WITH_DMALLOC
+#include <dmalloc.h>
+#endif
+
+
+/*!
+ * \defgroup camera Cameras
+ *
+ * \author J.E. Hoffmann <je-h@gmx.net>
+ */
+
+
+/*!
+ * \ingroup cameras 
+ */
+Lib3dsCamera*
+lib3ds_camera_new(const char *name)
+{
+  Lib3dsCamera *camera;
+
+  ASSERT(name);
+  ASSERT(strlen(name)<64);
+  
+  camera=(Lib3dsCamera*)calloc(sizeof(Lib3dsCamera), 1);
+  if (!camera) {
+    return(0);
+  }
+  strcpy(camera->name, name);
+  return(camera);
+}
+
+
+/*!
+ * \ingroup cameras 
+ */
+void
+lib3ds_camera_free(Lib3dsCamera *camera)
+{
+  memset(camera, 0, sizeof(Lib3dsCamera));
+  free(camera);
+}
+
+
+/*!
+ * \ingroup cameras 
+ */
+Lib3dsBool
+lib3ds_camera_read(Lib3dsCamera *camera, FILE *f)
+{
+  Lib3dsChunk c;
+  Lib3dsDword chunk;
+
+  if (!lib3ds_chunk_start(&c, LIB3DS_N_CAMERA, f)) {
+    return(LIB3DS_FALSE);
+  }
+  {
+    int i;
+    for (i=0; i<3; ++i) {
+      camera->position[i]=lib3ds_float_read(f);
+    }
+    for (i=0; i<3; ++i) {
+      camera->target[i]=lib3ds_float_read(f);
+    }
+  }
+  camera->roll=lib3ds_float_read(f);
+  {
+    float s;
+    s=lib3ds_float_read(f);
+    if (fabs(s)<LIB3DS_EPSILON) {
+      camera->fov=45.0;
+    }
+    else {
+      camera->fov=2400.0f/s;
+    }
+  }
+  lib3ds_chunk_tell(&c, f);
+  
+  while ((chunk=lib3ds_chunk_next(&c, f))!=0) {
+    switch (chunk) {
+      case LIB3DS_CAM_SEE_CONE:
+        {
+          camera->see_cone=LIB3DS_TRUE;
+        }
+        break;
+      case LIB3DS_CAM_RANGES:
+        {
+          camera->near_range=lib3ds_float_read(f);
+          camera->far_range=lib3ds_float_read(f);
+        }
+        break;
+      default:
+        lib3ds_chunk_unknown(chunk);
+    }
+  }
+  
+  lib3ds_chunk_end(&c, f);
+  return(LIB3DS_TRUE);
+}
+
+
+/*!
+ * \ingroup cameras 
+ */
+Lib3dsBool
+lib3ds_camera_write(Lib3dsCamera *camera, FILE *f)
+{
+  /* FIXME: */
+  ASSERT(0);
+  return(LIB3DS_FALSE);
+}
+
+
+/*!
+
+\typedef Lib3dsCamera
+  \ingroup camera
+  \sa _Lib3dsCamera
+
+*/

@@ -10,28 +10,6 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-#
-# Free Animation and Modeling Project - 3ds file library
-# Copyright (C) 1996-2000 by J.E. Hoffmann
-# All rights reserved.
-#
-# This program is  free  software;  you can redistribute it and/or modify it
-# under the terms of the GNU  General  Public  License  as  published by the
-# Free  Software  Foundation;  either version 2 of the License,  or (at your
-# option) any later version.
-#
-# This  program  is  distributed in  the  hope that it will  be useful,  but
-# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU  General  Public  License
-# for more details.
-#
-# You should have received a copy of the GNU  General  Public  License along
-# with this program;  if not, write to the  Free Software Foundation,  Inc.,
-# 675 Mass Ave, Cambridge, MA 02139, USA.
-#
-# $Id: Makefile.am,v 1.1.1.1 2000/03/28 20:04:31 jeh Exp $
-#/
-
 
 SHELL = @SHELL@
 
@@ -83,17 +61,9 @@ host_alias = @host_alias@
 host_triplet = @host@
 AS = @AS@
 CC = @CC@
-CXX = @CXX@
 DLLTOOL = @DLLTOOL@
-GLIB_CFLAGS = @GLIB_CFLAGS@
-GLIB_CONFIG = @GLIB_CONFIG@
-GLIB_LIBS = @GLIB_LIBS@
-GTKGL_CFLAGS = @GTKGL_CFLAGS@
-GTKGL_LIBS = @GTKGL_LIBS@
-GTK_CFLAGS = @GTK_CFLAGS@
-GTK_CONFIG = @GTK_CONFIG@
-GTK_LIBS = @GTK_LIBS@
-LD = @LD@
+DMALLOC_CFLAGS = @DMALLOC_CFLAGS@
+DMALLOC_LIBS = @DMALLOC_LIBS@
 LIB3DS_BINARY_AGE = @LIB3DS_BINARY_AGE@
 LIB3DS_INTERFACE_AGE = @LIB3DS_INTERFACE_AGE@
 LIB3DS_MAJOR_VERSION = @LIB3DS_MAJOR_VERSION@
@@ -107,22 +77,23 @@ LT_CURRENT = @LT_CURRENT@
 LT_RELEASE = @LT_RELEASE@
 LT_REVISION = @LT_REVISION@
 MAKEINFO = @MAKEINFO@
-MATH3D_CFLAGS = @MATH3D_CFLAGS@
-MATH3D_CONFIG = @MATH3D_CONFIG@
-MATH3D_LIBS = @MATH3D_LIBS@
-NM = @NM@
 OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 
-noinst_PROGRAMS = example
+INCLUDES =    -I$(top_srcdir)   @DMALLOC_CFLAGS@
 
-INCLUDES = -I../src @GTKGL_CFLAGS@ @GTK_CFLAGS@ 
 
-example_SOURCES = example.cpp
+noinst_PROGRAMS =    lib3dsdump   lib3ds2m   lib3ds2rib   lib3ds2pov 
 
-example_LDADD =    ../src/lib3ds.la   @GTK_LIBS@   @GTKGL_LIBS@
+
+lib3dsdump_SOURCES = lib3dsdump.c
+lib3ds2m_SOURCES = lib3ds2m.c
+lib3ds2rib_SOURCES = lib3ds2rib.c
+lib3ds2pov_SOURCES = lib3ds2pov.c
+
+LDADD =    $(top_builddir)/lib3ds/lib3ds.la   @DMALLOC_LIBS@
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
@@ -134,14 +105,27 @@ DEFS = @DEFS@ -I. -I$(srcdir) -I..
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-example_OBJECTS =  example.o
-example_DEPENDENCIES =  ../src/lib3ds.la
-example_LDFLAGS = 
-CXXFLAGS = @CXXFLAGS@
-CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-CXXLD = $(CXX)
-CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@
+lib3dsdump_OBJECTS =  lib3dsdump.o
+lib3dsdump_LDADD = $(LDADD)
+lib3dsdump_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
+lib3dsdump_LDFLAGS = 
+lib3ds2m_OBJECTS =  lib3ds2m.o
+lib3ds2m_LDADD = $(LDADD)
+lib3ds2m_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
+lib3ds2m_LDFLAGS = 
+lib3ds2rib_OBJECTS =  lib3ds2rib.o
+lib3ds2rib_LDADD = $(LDADD)
+lib3ds2rib_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
+lib3ds2rib_LDFLAGS = 
+lib3ds2pov_OBJECTS =  lib3ds2pov.o
+lib3ds2pov_LDADD = $(LDADD)
+lib3ds2pov_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
+lib3ds2pov_LDFLAGS = 
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 DIST_COMMON =  Makefile.am Makefile.in
 
 
@@ -149,14 +133,14 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-SOURCES = $(example_SOURCES)
-OBJECTS = $(example_OBJECTS)
+SOURCES = $(lib3dsdump_SOURCES) $(lib3ds2m_SOURCES) $(lib3ds2rib_SOURCES) $(lib3ds2pov_SOURCES)
+OBJECTS = $(lib3dsdump_OBJECTS) $(lib3ds2m_OBJECTS) $(lib3ds2rib_OBJECTS) $(lib3ds2pov_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .S .c .cpp .lo .o .s
+.SUFFIXES: .S .c .lo .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps example/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps examples/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) \
@@ -210,13 +194,21 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 
-example: $(example_OBJECTS) $(example_DEPENDENCIES)
-	@rm -f example
-	$(CXXLINK) $(example_LDFLAGS) $(example_OBJECTS) $(example_LDADD) $(LIBS)
-.cpp.o:
-	$(CXXCOMPILE) -c $<
-.cpp.lo:
-	$(LTCXXCOMPILE) -c $<
+lib3dsdump: $(lib3dsdump_OBJECTS) $(lib3dsdump_DEPENDENCIES)
+	@rm -f lib3dsdump
+	$(LINK) $(lib3dsdump_LDFLAGS) $(lib3dsdump_OBJECTS) $(lib3dsdump_LDADD) $(LIBS)
+
+lib3ds2m: $(lib3ds2m_OBJECTS) $(lib3ds2m_DEPENDENCIES)
+	@rm -f lib3ds2m
+	$(LINK) $(lib3ds2m_LDFLAGS) $(lib3ds2m_OBJECTS) $(lib3ds2m_LDADD) $(LIBS)
+
+lib3ds2rib: $(lib3ds2rib_OBJECTS) $(lib3ds2rib_DEPENDENCIES)
+	@rm -f lib3ds2rib
+	$(LINK) $(lib3ds2rib_LDFLAGS) $(lib3ds2rib_OBJECTS) $(lib3ds2rib_LDADD) $(LIBS)
+
+lib3ds2pov: $(lib3ds2pov_OBJECTS) $(lib3ds2pov_DEPENDENCIES)
+	@rm -f lib3ds2pov
+	$(LINK) $(lib3ds2pov_LDFLAGS) $(lib3ds2pov_OBJECTS) $(lib3ds2pov_LDADD) $(LIBS)
 
 tags: TAGS
 
@@ -249,13 +241,13 @@ maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = example
+subdir = examples
 
 distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
@@ -337,6 +329,28 @@ uninstall-am uninstall all-redirect all-am all installdirs \
 mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
+
+ #
+ # The 3D Studio File Format Library
+ # Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ # All rights reserved.
+ #
+ # This program is  free  software;  you can redistribute it and/or modify it
+ # under the terms of the  GNU Lesser General Public License  as published by 
+ # the  Free Software Foundation;  either version 2.1 of the License,  or (at 
+ # your option) any later version.
+ #
+ # This  program  is  distributed in  the  hope that it will  be useful,  but
+ # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ # or  FITNESS FOR A  PARTICULAR PURPOSE.  See the  GNU Lesser General Public  
+ # License for more details.
+ #
+ # You should  have received  a copy of the GNU Lesser General Public License
+ # along with  this program;  if not, write to the  Free Software Foundation,
+ # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ #
+ # $Id: Makefile.am,v 1.1 2000/10/09 12:53:04 jeh Exp $
+ #
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

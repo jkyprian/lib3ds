@@ -17,33 +17,28 @@
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.9 2000/10/17 16:07:24 jeh Exp $
+ # $Id: Makefile.am,v 1.1 2000/10/09 12:53:04 jeh Exp $
  #
 
-SUBDIRS = lib3ds examples
+INCLUDES = \
+  -I$(top_srcdir) \
+  @DMALLOC_CFLAGS@
 
-bin_SCRIPTS = lib3ds-config
+noinst_PROGRAMS = \
+  lib3dsdump \
+  lib3ds2m \
+  lib3ds2rib \
+  lib3ds2pov 
 
-AUTOMAKE_OPTIONS = 1.4
+lib3dsdump_SOURCES = lib3dsdump.c
+lib3ds2m_SOURCES = lib3ds2m.c
+lib3ds2rib_SOURCES = lib3ds2rib.c
+lib3ds2pov_SOURCES = lib3ds2pov.c
 
-EXTRA_DIST = \
-  lib3ds.m4 \
-  AUTHORS \
-  COPYING \
-  ChangeLog \
-  INSTALL \
-  README \
-  TODO 
+LDADD = \
+  $(top_builddir)/lib3ds/lib3ds.la \
+  @DMALLOC_LIBS@
 
-m4datadir = $(datadir)/aclocal
-m4data_DATA = lib3ds.m4
 
-.PHONY: release snapshot
 
-release:
-	rm -rf .deps */.deps
-	$(MAKE) distcheck
-
-snapshot:
-	$(MAKE) dist distdir=$(PACKAGE)`date +"%y%m%d"`
 
