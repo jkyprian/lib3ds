@@ -1,6 +1,6 @@
  #
  # The 3D Studio File Format Library
- # Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ # Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  # All rights reserved.
  #
  # This program is  free  software;  you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.6 2000/10/09 13:05:16 jeh Exp $
+ # $Id: Makefile.am,v 1.8 2001/01/12 10:29:16 jeh Exp $
  #
 
 lib3dsdir=$(includedir)/lib3ds
@@ -40,6 +40,7 @@ lib3ds_la_SOURCES = \
   background.c \
   atmosphere.c \
   shadow.c \
+  viewport.c \
   material.c \
   mesh.c \
   camera.c \
@@ -61,6 +62,7 @@ lib3ds_HEADERS = \
   background.h \
   atmosphere.h \
   shadow.h \
+  viewport.h \
   material.h \
   mesh.h \
   camera.h \

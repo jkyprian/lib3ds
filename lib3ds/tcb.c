@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: tcb.c,v 1.4 2000/10/19 17:35:35 jeh Exp $
+ * $Id: tcb.c,v 1.8 2001/01/14 20:55:23 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/tcb.h>
@@ -51,9 +51,9 @@ lib3ds_tcb(Lib3dsTcb *p, Lib3dsTcb *pc, Lib3dsTcb *c, Lib3dsTcb *nc, Lib3dsTcb *
   
   fp=fn=1.0f;
   if (p&&n) {
-    dt=0.5f*(pc->frame-p->frame+n->frame-nc->frame);
-    fp=((pc->frame-p->frame))/dt;
-    fn=((n->frame-nc->frame))/dt;
+    dt=0.5f*(Lib3dsFloat)(pc->frame-p->frame+n->frame-nc->frame);
+    fp=((Lib3dsFloat)(pc->frame-p->frame))/dt;
+    fn=((Lib3dsFloat)(n->frame-nc->frame))/dt;
     cc=(Lib3dsFloat)fabs(c->cont);
     fp=fp+cc-cc*fp;
     fn=fn+cc-cc*fn;
@@ -76,10 +76,10 @@ lib3ds_tcb(Lib3dsTcb *p, Lib3dsTcb *pc, Lib3dsTcb *c, Lib3dsTcb *nc, Lib3dsTcb *
 /*!
  * \ingroup tcb 
  */
-void
+Lib3dsBool
 lib3ds_tcb_read(Lib3dsTcb *tcb, FILE *f)
 {
-  Lib3dsDword flags;
+  Lib3dsWord flags;
   
   tcb->frame=lib3ds_intd_read(f);
   tcb->flags=flags=lib3ds_word_read(f);
@@ -98,17 +98,40 @@ lib3ds_tcb_read(Lib3dsTcb *tcb, FILE *f)
   if (flags&LIB3DS_USE_EASE_FROM) {
     tcb->ease_from=lib3ds_float_read(f);
   }
+  if (ferror(f)) {
+    return(LIB3DS_FALSE);
+  }
+  return(LIB3DS_TRUE);
 }
 
 
 /*!
  * \ingroup tcb 
  */
-void
+Lib3dsBool
 lib3ds_tcb_write(Lib3dsTcb *tcb, FILE *f)
 {
-  /* FIXME: */
-  ASSERT(0);
+  lib3ds_intd_write(tcb->frame,f);
+  lib3ds_word_write(tcb->flags,f);
+  if (tcb->flags&LIB3DS_USE_TENSION) {
+    lib3ds_float_write(tcb->tens,f);
+  }
+  if (tcb->flags&LIB3DS_USE_CONTINUITY) {
+    lib3ds_float_write(tcb->cont,f);
+  }
+  if (tcb->flags&LIB3DS_USE_BIAS) {
+    lib3ds_float_write(tcb->bias,f);
+  }
+  if (tcb->flags&LIB3DS_USE_EASE_TO) {
+    lib3ds_float_write(tcb->ease_to,f);
+  }
+  if (tcb->flags&LIB3DS_USE_EASE_FROM) {
+    lib3ds_float_write(tcb->ease_from,f);
+  }
+  if (ferror(f)) {
+    return(LIB3DS_FALSE);
+  }
+  return(LIB3DS_TRUE);
 }
 
 

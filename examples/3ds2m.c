@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: lib3ds2m.c,v 1.3 2000/10/19 20:35:29 jeh Exp $
+ * $Id: 3ds2m.c,v 1.1 2001/01/12 12:23:46 jeh Exp $
  */
 #include <lib3ds/file.h>
 #include <lib3ds/mesh.h>
@@ -31,12 +31,12 @@
 
 
 /*!
-\example lib3ds2m.c
+\example 3ds2m.c
 
 Converts meshes of a <i>3DS</i> file into a m-file.
 
 \code
-Syntax: lib3ds2m [options] filename [options]
+Syntax: 3ds2m [options] filename [options]
 
 Options:
   -h/--help              This help
@@ -64,11 +64,11 @@ static void
 help()
 {
   fprintf(stderr,
-"The 3D Studio File Format Library - lib3ds2m Version " VERSION "\n"
-"Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>\n"
+"The 3D Studio File Format Library - 3ds2m Version " VERSION "\n"
+"Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>\n"
 "All rights reserved.\n"
 ""
-"Syntax: lib3ds2m [options] filename [options]\n"
+"Syntax: 3ds2m [options] filename [options]\n"
 "\n"
 "Options:\n"
 "  -h/--help              This help\n"

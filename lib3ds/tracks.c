@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: tracks.c,v 1.6 2000/10/19 17:35:35 jeh Exp $
+ * $Id: tracks.c,v 1.10 2001/01/14 20:55:23 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/tracks.h>
@@ -168,7 +168,7 @@ lib3ds_bool_track_eval(Lib3dsBoolTrack *track, Lib3dsBool *p, Lib3dsFloat t)
 
   result=LIB3DS_FALSE;
   k=track->keyL;
-  while ((t<k->tcb.frame) && (t>=k->next->tcb.frame)) {
+  while ((t<(Lib3dsFloat)k->tcb.frame) && (t>=(Lib3dsFloat)k->next->tcb.frame)) {
     if (result) {
       result=LIB3DS_FALSE;
     }
@@ -177,7 +177,7 @@ lib3ds_bool_track_eval(Lib3dsBoolTrack *track, Lib3dsBool *p, Lib3dsFloat t)
     }
     if (!k->next) {
       if (track->flags&LIB3DS_REPEAT) {
-        t-=k->tcb.frame;
+        t-=(Lib3dsFloat)k->tcb.frame;
         k=track->keyL;
       }
       else {
@@ -209,7 +209,9 @@ lib3ds_bool_track_read(Lib3dsBoolTrack *track, FILE *f)
 
   for (i=0; i<keys; ++i) {
     k=lib3ds_bool_key_new();
-    lib3ds_tcb_read(&k->tcb, f);
+    if (!lib3ds_tcb_read(&k->tcb, f)) {
+      return(LIB3DS_FALSE);
+    }
     lib3ds_bool_track_insert(track, k);
   }
   
@@ -223,9 +225,22 @@ lib3ds_bool_track_read(Lib3dsBoolTrack *track, FILE *f)
 Lib3dsBool
 lib3ds_bool_track_write(Lib3dsBoolTrack *track, FILE *f)
 {
-  /* FIXME: */
-  ASSERT(0);
-  return(LIB3DS_FALSE);
+  Lib3dsBoolKey *k;
+  Lib3dsDword num=0;
+  for (k=track->keyL; k; k=k->next) {
+    ++num;
+  }
+  lib3ds_word_write((Lib3dsWord)track->flags,f);
+  lib3ds_dword_write(0,f);
+  lib3ds_dword_write(0,f);
+  lib3ds_dword_write(num,f);
+
+  for (k=track->keyL; k; k=k->next) {
+    if (!lib3ds_tcb_write(&k->tcb,f)) {
+      return(LIB3DS_FALSE);
+    }
+  }
+  return(LIB3DS_TRUE);
 }
 
 
@@ -446,7 +461,7 @@ lib3ds_lin1_track_eval(Lib3dsLin1Track *track, Lib3dsFloat *p, Lib3dsFloat t)
   }
 
   for (k=track->keyL; k->next!=0; k=k->next) {
-    if ((t>=k->tcb.frame) && (t<k->next->tcb.frame)) {
+    if ((t>=(Lib3dsFloat)k->tcb.frame) && (t<(Lib3dsFloat)k->next->tcb.frame)) {
       break;
     }
   }
@@ -454,7 +469,7 @@ lib3ds_lin1_track_eval(Lib3dsLin1Track *track, Lib3dsFloat *p, Lib3dsFloat t)
     if (track->flags&LIB3DS_REPEAT) {
       nt=(Lib3dsFloat)fmod(t, k->tcb.frame);
       for (k=track->keyL; k->next!=0; k=k->next) {
-        if ((nt>=k->tcb.frame) && (nt<k->next->tcb.frame)) {
+        if ((nt>=(Lib3dsFloat)k->tcb.frame) && (nt<(Lib3dsFloat)k->next->tcb.frame)) {
           break;
         }
       }
@@ -468,8 +483,8 @@ lib3ds_lin1_track_eval(Lib3dsLin1Track *track, Lib3dsFloat *p, Lib3dsFloat t)
   else {
     nt=t;
   }
-  u=nt - k->tcb.frame;
-  u/=(k->next->tcb.frame - k->tcb.frame);
+  u=nt - (Lib3dsFloat)k->tcb.frame;
+  u/=(Lib3dsFloat)(k->next->tcb.frame - k->tcb.frame);
 
   *p = lib3ds_float_cubic(
     k->value,
@@ -498,7 +513,9 @@ lib3ds_lin1_track_read(Lib3dsLin1Track *track, FILE *f)
 
   for (i=0; i<keys; ++i) {
     k=lib3ds_lin1_key_new();
-    lib3ds_tcb_read(&k->tcb, f);
+    if (!lib3ds_tcb_read(&k->tcb, f)) {
+      return(LIB3DS_FALSE);
+    }
     k->value=lib3ds_float_read(f);
     lib3ds_lin1_track_insert(track, k);
   }
@@ -513,9 +530,23 @@ lib3ds_lin1_track_read(Lib3dsLin1Track *track, FILE *f)
 Lib3dsBool
 lib3ds_lin1_track_write(Lib3dsLin1Track *track, FILE *f)
 {
-  /* FIXME: */
-  ASSERT(0);
-  return(LIB3DS_FALSE);
+  Lib3dsLin1Key *k;
+  Lib3dsDword num=0;
+  for (k=track->keyL; k; k=k->next) {
+    ++num;
+  }
+  lib3ds_word_write((Lib3dsWord)track->flags,f);
+  lib3ds_dword_write(0,f);
+  lib3ds_dword_write(0,f);
+  lib3ds_dword_write(num,f);
+
+  for (k=track->keyL; k; k=k->next) {
+    if (!lib3ds_tcb_write(&k->tcb,f)) {
+      return(LIB3DS_FALSE);
+    }
+    lib3ds_float_write(k->value,f);
+  }
+  return(LIB3DS_TRUE);
 }
 
 
@@ -738,7 +769,7 @@ lib3ds_lin3_track_eval(Lib3dsLin3Track *track, Lib3dsVector p, Lib3dsFloat t)
   }
 
   for (k=track->keyL; k->next!=0; k=k->next) {
-    if ((t>=k->tcb.frame) && (t<k->next->tcb.frame)) {
+    if ((t>=(Lib3dsFloat)k->tcb.frame) && (t<(Lib3dsFloat)k->next->tcb.frame)) {
       break;
     }
   }
@@ -746,7 +777,7 @@ lib3ds_lin3_track_eval(Lib3dsLin3Track *track, Lib3dsVector p, Lib3dsFloat t)
     if (track->flags&LIB3DS_REPEAT) {
       nt=(Lib3dsFloat)fmod(t, k->tcb.frame);
       for (k=track->keyL; k->next!=0; k=k->next) {
-        if ((nt>=k->tcb.frame) && (nt<k->next->tcb.frame)) {
+        if ((nt>=(Lib3dsFloat)k->tcb.frame) && (nt<(Lib3dsFloat)k->next->tcb.frame)) {
           break;
         }
       }
@@ -760,8 +791,8 @@ lib3ds_lin3_track_eval(Lib3dsLin3Track *track, Lib3dsVector p, Lib3dsFloat t)
   else {
     nt=t;
   }
-  u=nt - k->tcb.frame;
-  u/=(k->next->tcb.frame - k->tcb.frame);
+  u=nt - (Lib3dsFloat)k->tcb.frame;
+  u/=(Lib3dsFloat)(k->next->tcb.frame - k->tcb.frame);
   
   lib3ds_vector_cubic(
     p,
@@ -791,7 +822,9 @@ lib3ds_lin3_track_read(Lib3dsLin3Track *track, FILE *f)
 
   for (i=0; i<keys; ++i) {
     k=lib3ds_lin3_key_new();
-    lib3ds_tcb_read(&k->tcb, f);
+    if (!lib3ds_tcb_read(&k->tcb, f)) {
+      return(LIB3DS_FALSE);
+    }
     for (j=0; j<3; ++j) {
       k->value[j]=lib3ds_float_read(f);
     }
@@ -808,9 +841,23 @@ lib3ds_lin3_track_read(Lib3dsLin3Track *track, FILE *f)
 Lib3dsBool
 lib3ds_lin3_track_write(Lib3dsLin3Track *track, FILE *f)
 {
-  /* FIXME: */
-  ASSERT(0);
-  return(LIB3DS_FALSE);
+  Lib3dsLin3Key *k;
+  Lib3dsDword num=0;
+  for (k=track->keyL; k; k=k->next) {
+    ++num;
+  }
+  lib3ds_word_write((Lib3dsWord)track->flags,f);
+  lib3ds_dword_write(0,f);
+  lib3ds_dword_write(0,f);
+  lib3ds_dword_write(num,f);
+
+  for (k=track->keyL; k; k=k->next) {
+    if (!lib3ds_tcb_write(&k->tcb,f)) {
+      return(LIB3DS_FALSE);
+    }
+    lib3ds_vector_write(k->value,f);
+  }
+  return(LIB3DS_TRUE);
 }
 
 
@@ -1122,7 +1169,9 @@ lib3ds_quat_track_read(Lib3dsQuatTrack *track, FILE *f)
 
   for (p=0,i=0; i<keys; p=k,++i) {
     k=lib3ds_quat_key_new();
-    lib3ds_tcb_read(&k->tcb, f);
+    if (!lib3ds_tcb_read(&k->tcb, f)) {
+      return(LIB3DS_FALSE);
+    }
     k->angle=lib3ds_float_read(f);
     for (j=0; j<3; ++j) {
       k->axis[j]=lib3ds_float_read(f);
@@ -1130,6 +1179,33 @@ lib3ds_quat_track_read(Lib3dsQuatTrack *track, FILE *f)
     lib3ds_quat_track_insert(track, k);
   }
   lib3ds_quat_track_setup(track);
+  return(LIB3DS_TRUE);
+}
+
+
+/*!
+ * \ingroup tracks 
+ */
+Lib3dsBool
+lib3ds_quat_track_write(Lib3dsQuatTrack *track, FILE *f)
+{
+  Lib3dsQuatKey *k;
+  Lib3dsDword num=0;
+  for (k=track->keyL; k; k=k->next) {
+    ++num;
+  }
+  lib3ds_word_write((Lib3dsWord)track->flags,f);
+  lib3ds_dword_write(0,f);
+  lib3ds_dword_write(0,f);
+  lib3ds_dword_write(num,f);
+
+  for (k=track->keyL; k; k=k->next) {
+    if (!lib3ds_tcb_write(&k->tcb,f)) {
+      return(LIB3DS_FALSE);
+    }
+    lib3ds_float_write(k->angle,f);
+    lib3ds_vector_write(k->axis,f);
+  }
   return(LIB3DS_TRUE);
 }
 

@@ -1,15 +1,16 @@
-.TH lib3ds2m 1 "25 Oct 2000" Version 0.9.1
+.TH 3ds2rib 1 "12 Jan 2001" Version 1.0
 .SH NAME
-lib3ds2m - Converts meshes of a 3DS file into a m-file.
+3ds2rib - Simple 3DS to RIB (RenderMan Interface Bytestream) converter.
 .SH SYNOPSIS
-.B lib3ds2m
+.B 3ds2rib
 [options] filename [options]
 .SH DESCRIPTION
 .PP
-\fIlib3ds2m\fP is a tool to convert meshes of a 3DS file into a m-file. 
+\fI3ds2rib\fP is a tool to convert 3DS files into RIB 
+(RenderMan Interface Bytestream) files.
 .SH OPTIONS
 .l
-\fIlib3ds2rib\fP accepts the following options:
+\fI3ds2rib\fP accepts the following options:
 .TP 8
 .B -h/--help
 This help
@@ -17,10 +18,19 @@ This help
 .B -o/--output <filename>
 Write output to <filename> instead of stdout
 .TP 8
-.B -m/--mesh name
-Write only specific mesh.B -c/--camera <name>
+.B -c/--camera <name>
+Use camera <name> for rendering
+.TP 8
+.B -a/--all
+Render all frames
+.TP 8
+.B -f/--frame #
+Render frame #
+.TP 8
+.B -d/--downcuts #
+Render # frames of animation
 .SH COPYRIGHT
-lib3dsdump Copyright \(co 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+3ds2rib Copyright \(co 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,4 +45,11 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+
+
+
+
+
 

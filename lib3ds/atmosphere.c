@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: atmosphere.c,v 1.3 2000/10/19 17:35:35 jeh Exp $
+ * $Id: atmosphere.c,v 1.6 2001/01/12 10:29:16 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/atmosphere.h>
@@ -38,16 +38,16 @@ fog_read(Lib3dsFog *fog, FILE *f)
   Lib3dsChunk c;
   Lib3dsWord chunk;
 
-  if (!lib3ds_chunk_start(&c, LIB3DS_FOG, f)) {
+  if (!lib3ds_chunk_read_start(&c, LIB3DS_FOG, f)) {
     return(LIB3DS_FALSE);
   }
   fog->near_plane=lib3ds_float_read(f);
   fog->near_density=lib3ds_float_read(f);
   fog->far_plane=lib3ds_float_read(f);
   fog->far_density=lib3ds_float_read(f);
-  lib3ds_chunk_tell(&c, f);
+  lib3ds_chunk_read_tell(&c, f);
   
-  while ((chunk=lib3ds_chunk_next(&c, f))!=0) {
+  while ((chunk=lib3ds_chunk_read_next(&c, f))!=0) {
     switch (chunk) {
       case LIB3DS_LIN_COLOR_F:
         {
@@ -69,7 +69,7 @@ fog_read(Lib3dsFog *fog, FILE *f)
     }
   }
   
-  lib3ds_chunk_end(&c, f);
+  lib3ds_chunk_read_end(&c, f);
   return(LIB3DS_TRUE);
 }
 
@@ -79,34 +79,32 @@ layer_fog_read(Lib3dsLayerFog *fog, FILE *f)
 {
   Lib3dsChunk c;
   Lib3dsWord chunk;
+  Lib3dsBool have_lin=LIB3DS_FALSE;
 
-  if (!lib3ds_chunk_start(&c, LIB3DS_LAYER_FOG, f)) {
+  if (!lib3ds_chunk_read_start(&c, LIB3DS_LAYER_FOG, f)) {
     return(LIB3DS_FALSE);
   }
   fog->near_y=lib3ds_float_read(f);
   fog->far_y=lib3ds_float_read(f);
   fog->density=lib3ds_float_read(f);
   fog->flags=lib3ds_dword_read(f);
-  lib3ds_chunk_tell(&c, f);
+  lib3ds_chunk_read_tell(&c, f);
   
-  while ((chunk=lib3ds_chunk_next(&c, f))!=0) {
+  while ((chunk=lib3ds_chunk_read_next(&c, f))!=0) {
     switch (chunk) {
       case LIB3DS_LIN_COLOR_F:
-        {
-          int i;
-          for (i=0; i<3; ++i) {
-            fog->col[i]=lib3ds_float_read(f);
-          }
-        }
+        lib3ds_rgb_read(fog->col,f);
+        have_lin=LIB3DS_TRUE;
         break;
       case LIB3DS_COLOR_F:
+        lib3ds_rgb_read(fog->col,f);
         break;
       default:
         lib3ds_chunk_unknown(chunk);
     }
   }
   
-  lib3ds_chunk_end(&c, f);
+  lib3ds_chunk_read_end(&c, f);
   return(LIB3DS_TRUE);
 }
 
@@ -117,16 +115,16 @@ distance_cue_read(Lib3dsDistanceCue *cue, FILE *f)
   Lib3dsChunk c;
   Lib3dsWord chunk;
 
-  if (!lib3ds_chunk_start(&c, LIB3DS_DISTANCE_CUE, f)) {
+  if (!lib3ds_chunk_read_start(&c, LIB3DS_DISTANCE_CUE, f)) {
     return(LIB3DS_FALSE);
   }
   cue->near_plane=lib3ds_float_read(f);
   cue->near_dimming=lib3ds_float_read(f);
   cue->far_plane=lib3ds_float_read(f);
   cue->far_dimming=lib3ds_float_read(f);
-  lib3ds_chunk_tell(&c, f);
+  lib3ds_chunk_read_tell(&c, f);
   
-  while ((chunk=lib3ds_chunk_next(&c, f))!=0) {
+  while ((chunk=lib3ds_chunk_read_next(&c, f))!=0) {
     switch (chunk) {
       case LIB3DS_DCUE_BGND:
         {
@@ -138,7 +136,7 @@ distance_cue_read(Lib3dsDistanceCue *cue, FILE *f)
     }
   }
   
-  lib3ds_chunk_end(&c, f);
+  lib3ds_chunk_read_end(&c, f);
   return(LIB3DS_TRUE);
 }
 
@@ -158,7 +156,7 @@ lib3ds_atmosphere_read(Lib3dsAtmosphere *atmosphere, FILE *f)
   switch (c.chunk) {
       case LIB3DS_FOG:
         {
-          lib3ds_chunk_reset(&c, f);
+          lib3ds_chunk_read_reset(&c, f);
           if (!fog_read(&atmosphere->fog, f)) {
             return(LIB3DS_FALSE);
           }
@@ -166,7 +164,7 @@ lib3ds_atmosphere_read(Lib3dsAtmosphere *atmosphere, FILE *f)
         break;
       case LIB3DS_LAYER_FOG:
         {
-          lib3ds_chunk_reset(&c, f);
+          lib3ds_chunk_read_reset(&c, f);
           if (!layer_fog_read(&atmosphere->layer_fog, f)) {
             return(LIB3DS_FALSE);
           }
@@ -174,7 +172,7 @@ lib3ds_atmosphere_read(Lib3dsAtmosphere *atmosphere, FILE *f)
         break;
       case LIB3DS_DISTANCE_CUE:
         {
-          lib3ds_chunk_reset(&c, f);
+          lib3ds_chunk_read_reset(&c, f);
           if (!distance_cue_read(&atmosphere->dist_cue, f)) {
             return(LIB3DS_FALSE);
           }
@@ -207,9 +205,90 @@ lib3ds_atmosphere_read(Lib3dsAtmosphere *atmosphere, FILE *f)
 Lib3dsBool
 lib3ds_atmosphere_write(Lib3dsAtmosphere *atmosphere, FILE *f)
 {
-  /* FIXME: */
-  ASSERT(0);
-  return(LIB3DS_FALSE);
+  { /*---- LIB3DS_FOG ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_FOG;
+    if (!lib3ds_chunk_write_start(&c,f)) {
+      return(LIB3DS_FALSE);
+    }
+    lib3ds_float_write(atmosphere->fog.near_plane,f);
+    lib3ds_float_write(atmosphere->fog.near_density,f);
+    lib3ds_float_write(atmosphere->fog.far_plane,f);
+    lib3ds_float_write(atmosphere->fog.far_density,f);
+    {
+      Lib3dsChunk c;
+      c.chunk=LIB3DS_FOG_BGND;
+      c.size=18;
+      lib3ds_chunk_write(&c,f);
+      lib3ds_rgb_write(atmosphere->fog.col,f);
+    }
+    if (atmosphere->fog.fog_background) {
+      Lib3dsChunk c;
+      c.chunk=LIB3DS_COLOR_F;
+      c.size=6;
+      lib3ds_chunk_write(&c,f);
+    }
+    if (!lib3ds_chunk_write_end(&c,f)) {
+      return(LIB3DS_FALSE);
+    }
+  }
+  { /*---- LIB3DS_LAYER_FOG ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_LAYER_FOG;
+    c.size=40;
+    lib3ds_chunk_write(&c,f);
+    lib3ds_float_write(atmosphere->layer_fog.near_y,f);
+    lib3ds_float_write(atmosphere->layer_fog.far_y,f);
+    lib3ds_float_write(atmosphere->layer_fog.near_y,f);
+    lib3ds_dword_write(atmosphere->layer_fog.flags,f);
+    {
+      Lib3dsChunk c;
+      c.chunk=LIB3DS_COLOR_F;
+      c.size=18;
+      lib3ds_chunk_write(&c,f);
+      lib3ds_rgb_write(atmosphere->fog.col,f);
+    }
+  }
+  { /*---- LIB3DS_DISTANCE_CUE ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_DISTANCE_CUE;
+    if (!lib3ds_chunk_write_start(&c,f)) {
+      return(LIB3DS_FALSE);
+    }
+    lib3ds_float_write(atmosphere->dist_cue.near_plane,f);
+    lib3ds_float_write(atmosphere->dist_cue.near_dimming,f);
+    lib3ds_float_write(atmosphere->dist_cue.far_plane,f);
+    lib3ds_float_write(atmosphere->dist_cue.far_dimming,f);
+    if (atmosphere->dist_cue.cue_background) {
+      Lib3dsChunk c;
+      c.chunk=LIB3DS_DCUE_BGND;
+      c.size=6;
+      lib3ds_chunk_write(&c,f);
+    }
+    if (!lib3ds_chunk_write_end(&c,f)) {
+      return(LIB3DS_FALSE);
+    }
+  }
+  if (atmosphere->fog.use) { /*---- LIB3DS_USE_FOG ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_USE_FOG;
+    c.size=6;
+    lib3ds_chunk_write(&c,f);
+  }
+  if (atmosphere->layer_fog.use) { /*---- LIB3DS_USE_LAYER_FOG ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_USE_LAYER_FOG;
+    c.size=6;
+    lib3ds_chunk_write(&c,f);
+  }
+  if (atmosphere->dist_cue.use) { /*---- LIB3DS_USE_DISTANCE_CUE ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_USE_V_GRADIENT;
+    c.size=6;
+    lib3ds_chunk_write(&c,f);
+  }
+  
+  return(LIB3DS_TRUE);
 }
 
 
@@ -220,3 +299,4 @@ lib3ds_atmosphere_write(Lib3dsAtmosphere *atmosphere, FILE *f)
   \sa _Lib3dsAtmosphere
 
 */
+

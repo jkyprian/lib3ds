@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_TCB_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: tcb.h,v 1.4 2000/10/09 12:33:50 jeh Exp $
+ * $Id: tcb.h,v 1.7 2001/01/14 20:55:23 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -41,7 +41,7 @@ typedef enum _Lib3dsTcbFlags{
 
 typedef struct _Lib3dsTcb {
     Lib3dsIntd frame;
-    Lib3dsDword flags;
+    Lib3dsWord flags;
     Lib3dsFloat tens;
     Lib3dsFloat cont;
     Lib3dsFloat bias;
@@ -52,8 +52,8 @@ typedef struct _Lib3dsTcb {
 extern LIB3DSAPI void lib3ds_tcb(Lib3dsTcb *p, Lib3dsTcb *pc, Lib3dsTcb *c,
   Lib3dsTcb *nc, Lib3dsTcb *n, Lib3dsFloat *ksm, Lib3dsFloat *ksp,
   Lib3dsFloat *kdm, Lib3dsFloat *kdp);
-extern LIB3DSAPI void lib3ds_tcb_read(Lib3dsTcb *tcb, FILE *f);
-extern LIB3DSAPI void lib3ds_tcb_write(Lib3dsTcb *tcb, FILE *f);
+extern LIB3DSAPI Lib3dsBool lib3ds_tcb_read(Lib3dsTcb *tcb, FILE *f);
+extern LIB3DSAPI Lib3dsBool lib3ds_tcb_write(Lib3dsTcb *tcb, FILE *f);
 
 #ifdef __cplusplus
 };

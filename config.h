@@ -9,7 +9,7 @@
 #define PACKAGE "lib3ds"
 
 /* Version number of package */
-#define VERSION "0.9.1"
+#define VERSION "1.0.0"
 
 /* Define if using the dmalloc debugging malloc package */
 /* #undef WITH_DMALLOC */

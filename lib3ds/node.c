@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,10 +17,11 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: node.c,v 1.6 2000/10/19 17:35:35 jeh Exp $
+ * $Id: node.c,v 1.9 2001/01/12 10:29:17 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/node.h>
+#include <lib3ds/file.h>
 #include <lib3ds/readwrite.h>
 #include <lib3ds/chunk.h>
 #include <lib3ds/matrix.h>
@@ -405,13 +406,13 @@ lib3ds_node_dump(Lib3dsNode *node, Lib3dsIntd level)
  * \ingroup node
  */
 Lib3dsBool
-lib3ds_node_read(Lib3dsNode *node, FILE *f)
+lib3ds_node_read(Lib3dsNode *node, Lib3dsFile *file, FILE *f)
 {
   Lib3dsChunk c;
   Lib3dsWord chunk;
 
   ASSERT(node);
-  if (!lib3ds_chunk_start(&c, 0, f)) {
+  if (!lib3ds_chunk_read_start(&c, 0, f)) {
     return(LIB3DS_FALSE);
   }
   switch (c.chunk) {
@@ -427,7 +428,7 @@ lib3ds_node_read(Lib3dsNode *node, FILE *f)
       return(LIB3DS_FALSE);
   }
 
-  while ((chunk=lib3ds_chunk_next(&c, f))!=0) {
+  while ((chunk=lib3ds_chunk_read_next(&c, f))!=0) {
     switch (chunk) {
       case LIB3DS_NODE_ID:
         {
@@ -650,7 +651,7 @@ lib3ds_node_read(Lib3dsNode *node, FILE *f)
     }
   }
 
-  lib3ds_chunk_end(&c, f);
+  lib3ds_chunk_read_end(&c, f);
   return(LIB3DS_TRUE);
 }
 
@@ -659,11 +660,340 @@ lib3ds_node_read(Lib3dsNode *node, FILE *f)
  * \ingroup node
  */
 Lib3dsBool
-lib3ds_node_write(Lib3dsNode *node, FILE *f)
+lib3ds_node_write(Lib3dsNode *node, Lib3dsFile *file, FILE *f)
 {
-  /* FIXME: */
-  ASSERT(0);
-  return(LIB3DS_FALSE);
+  Lib3dsChunk c;
+
+  switch (node->type) {
+    case LIB3DS_AMBIENT_NODE:
+      c.chunk=LIB3DS_AMBIENT_NODE_TAG;
+      break;
+    case LIB3DS_OBJECT_NODE:
+      c.chunk=LIB3DS_OBJECT_NODE_TAG;
+      break;
+    case LIB3DS_CAMERA_NODE:
+      c.chunk=LIB3DS_CAMERA_NODE_TAG;
+      break;
+    case LIB3DS_TARGET_NODE:
+      c.chunk=LIB3DS_TARGET_NODE_TAG;
+      break;
+    case LIB3DS_LIGHT_NODE:
+      if (lib3ds_file_node_by_name(file, node->name, LIB3DS_SPOT_NODE)) {
+        c.chunk=LIB3DS_SPOTLIGHT_NODE_TAG;
+      }
+      else {
+        c.chunk=LIB3DS_LIGHT_NODE_TAG;
+      }
+      break;
+    case LIB3DS_SPOT_NODE:
+      c.chunk=LIB3DS_L_TARGET_NODE_TAG;
+      break;
+    default:
+      return(LIB3DS_FALSE);
+  }
+  if (!lib3ds_chunk_write_start(&c,f)) {
+    return(LIB3DS_FALSE);
+  }
+
+  { /*---- LIB3DS_NODE_ID ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_NODE_ID;
+    c.size=8;
+    lib3ds_chunk_write(&c,f);
+    lib3ds_intw_write(node->id,f);
+  }
+
+  { /*---- LIB3DS_NODE_HDR ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_NODE_HDR;
+    c.size=6+ 1+strlen(node->name) +2+2+2;
+    lib3ds_chunk_write(&c,f);
+    lib3ds_string_write(node->name,f);
+    lib3ds_word_write(node->flags1,f);
+    lib3ds_word_write(node->flags2,f);
+    lib3ds_word_write(node->parent_id,f);
+  }
+
+  switch (c.chunk) {
+    case LIB3DS_AMBIENT_NODE_TAG:
+      { /*---- LIB3DS_COL_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_COL_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin3_track_write(&node->data.ambient.col_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      break;
+    case LIB3DS_OBJECT_NODE_TAG:
+      { /*---- LIB3DS_PIVOT ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_PIVOT;
+        c.size=18;
+        lib3ds_chunk_write(&c,f);
+        lib3ds_vector_write(node->data.object.pivot,f);
+      }
+      { /*---- LIB3DS_INSTANCE_NAME ----*/
+        Lib3dsChunk c;
+        const char *name;
+        if (strlen(node->data.object.instance)) {
+          name=node->data.object.instance;
+        }
+        else {
+          name=node->name;
+        }
+        c.chunk=LIB3DS_INSTANCE_NAME;
+        c.size=6+1+strlen(name);
+        lib3ds_chunk_write(&c,f);
+        lib3ds_string_write(name,f);
+      }
+      { /*---- LIB3DS_BOUNDBOX ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_BOUNDBOX;
+        c.size=30;
+        lib3ds_chunk_write(&c,f);
+        lib3ds_vector_write(node->data.object.bbox_min, f);
+        lib3ds_vector_write(node->data.object.bbox_max, f);
+      }
+      { /*---- LIB3DS_POS_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_POS_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin3_track_write(&node->data.object.pos_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      { /*---- LIB3DS_ROT_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_ROT_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_quat_track_write(&node->data.object.rot_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      { /*---- LIB3DS_SCL_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_SCL_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin3_track_write(&node->data.object.scl_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      { /*---- LIB3DS_HIDE_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_HIDE_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_bool_track_write(&node->data.object.hide_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      { /*---- LIB3DS_MORPH_SMOOTH ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_MORPH_SMOOTH;
+        c.size=10;
+        lib3ds_chunk_write(&c,f);
+        lib3ds_float_write(node->data.object.morph_smooth,f);
+      }
+      break;
+    case LIB3DS_CAMERA_NODE_TAG:
+      { /*---- LIB3DS_POS_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_POS_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin3_track_write(&node->data.camera.pos_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      { /*---- LIB3DS_FOV_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_FOV_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin1_track_write(&node->data.camera.fov_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      { /*---- LIB3DS_ROLL_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_ROLL_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin1_track_write(&node->data.camera.roll_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      break;
+    case LIB3DS_TARGET_NODE_TAG:
+      { /*---- LIB3DS_POS_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_POS_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin3_track_write(&node->data.target.pos_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      break;
+    case LIB3DS_LIGHT_NODE_TAG:
+      { /*---- LIB3DS_POS_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_POS_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin3_track_write(&node->data.light.pos_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      { /*---- LIB3DS_COL_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_COL_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin3_track_write(&node->data.light.col_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      break;
+    case LIB3DS_SPOTLIGHT_NODE_TAG:
+      { /*---- LIB3DS_POS_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_POS_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin3_track_write(&node->data.light.pos_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      { /*---- LIB3DS_COL_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_COL_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin3_track_write(&node->data.light.col_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      { /*---- LIB3DS_HOT_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_HOT_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin1_track_write(&node->data.light.hotspot_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      { /*---- LIB3DS_FALL_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_FALL_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin1_track_write(&node->data.light.falloff_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      { /*---- LIB3DS_ROLL_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_ROLL_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin1_track_write(&node->data.light.roll_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      break;
+    case LIB3DS_L_TARGET_NODE_TAG:
+      { /*---- LIB3DS_POS_TRACK_TAG ----*/
+        Lib3dsChunk c;
+        c.chunk=LIB3DS_POS_TRACK_TAG;
+        if (!lib3ds_chunk_write_start(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_lin3_track_write(&node->data.spot.pos_track,f)) {
+          return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_chunk_write_end(&c,f)) {
+          return(LIB3DS_FALSE);
+        }
+      }
+      break;
+    default:
+      return(LIB3DS_FALSE);
+  }
+
+  if (!lib3ds_chunk_write_end(&c,f)) {
+    return(LIB3DS_FALSE);
+  }
+  return(LIB3DS_TRUE);
 }
 
 

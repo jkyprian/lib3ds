@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: matrix.c,v 1.5 2000/10/19 17:35:35 jeh Exp $
+ * $Id: matrix.c,v 1.7 2001/01/12 10:29:17 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/matrix.h>
@@ -587,19 +587,37 @@ lib3ds_matrix_rotate_axis(Lib3dsMatrix m, Lib3dsVector axis, Lib3dsFloat angle)
 void
 lib3ds_matrix_camera(Lib3dsMatrix matrix, Lib3dsVector pos,
   Lib3dsVector tgt, Lib3dsFloat roll)
-{    
-  Lib3dsVector dir;
-  Lib3dsFloat az,ax;
+{
+  Lib3dsMatrix M,R;
+  Lib3dsVector x, y, z;
 
-  lib3ds_vector_sub(dir, tgt, pos);
-  lib3ds_vector_normalize(dir);
-  az=(Lib3dsFloat)atan2(dir[0],dir[1]);
-  ax=-(Lib3dsFloat)asin(dir[2]);
-  lib3ds_matrix_identity(matrix);
-  lib3ds_matrix_rotate_y(matrix, roll);
-  lib3ds_matrix_rotate_x(matrix, ax);
-  lib3ds_matrix_rotate_z(matrix, az);
-  lib3ds_matrix_translate_xyz(matrix, -pos[0], -pos[1], -pos[2]);
+  lib3ds_vector_sub(y, tgt, pos);
+  lib3ds_vector_normalize(y);
+  
+  z[0] = 0;
+  z[1] = 0;
+  z[2] = 1.0;
+  
+  lib3ds_vector_cross(x, y, z);
+  lib3ds_vector_cross(z, x, y);
+  lib3ds_vector_normalize(x);
+  lib3ds_vector_normalize(y);
+
+  lib3ds_matrix_identity(M);
+  M[0][0] = x[0];
+  M[1][0] = x[1];
+  M[2][0] = x[2];
+  M[0][1] = y[0];
+  M[1][1] = y[1];
+  M[2][1] = y[2];
+  M[0][2] = z[0];
+  M[1][2] = z[1];
+  M[2][2] = z[2];
+
+  lib3ds_matrix_identity(R);
+  lib3ds_matrix_rotate_y(R, roll);
+  lib3ds_matrix_mul(matrix, R,M);
+  lib3ds_matrix_translate_xyz(matrix, -pos[0],-pos[1],-pos[2]);
 }
 
 

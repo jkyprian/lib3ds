@@ -1,3 +1,66 @@
+2001-01-15  J E Hoffmann  <je-h@gmx.net>
+
+	* lib3ds/material.c (lib3ds_material_dump): 
+	  Added dumping of ambient, diffuse, specular, shininess, 
+	  shin_strength, shading and texture1/texture2 properties
+	* examples/3dsdump.c (main): 
+	  Added suport for dumping the 3ds chunk structure
+	* lib3ds.spec: Updated
+
+2001-01-14  J E Hoffmann  <je-h@gmx.net>
+
+	* Removed Warnings (gcc & msvc++6.0)
+	* Cleaning up
+	* lib3ds.spec: Recreated
+
+2001-01-10  J E Hoffmann  <je-h@gmx.net>
+
+	* Wrote writing code for keyframer, background, atmosphere and 
+	  shadow settings.
+
+2001-01-09  J E Hoffmann  <je-h@gmx.net>
+
+	* lib3ds/mesh.c (lib3ds_mesh_write): 
+	  the point list is no loner retransformed to avoid numerical problems.
+	  to use meshes with the keyframer all points must be transformed
+	  by the inverse mesh-matrix manually.
+	* lib3ds/camera.c (lib3ds_camera_write):
+	  bugfix LIB3DS_N_CAMERA (fov)
+	* lib3ds/light.c (lib3ds_light_write):
+	  bugfix LIB3DS_DL_SPOTLIGHT
+	* lib3ds/material.c (texture_map_write):
+	  write only chunks for maps with name != ""
+	  (int_percentage_read), (int_percentage_write):
+	  bugfix rounding error
+
+2001-01-04  J E Hoffmann  <je-h@gmx.net>
+
+	* lib3ds/readwrite.c: cpu independent endiness handling 
+	  as suggested by Daniel Richard G. <straker@mit.edu>
+
+2001-01-03  J E Hoffmann  <je-h@gmx.net>
+
+	* lib3ds/mesh.c: Added missing texture mapping handling
+	  LIB3DS_TEX_VERTS 
+	  LIB3DS_MESH_TEXTURE_INFO
+	* lib3ds/matrix.c 
+	  (lib3ds_matrix_camera): Bug #124414 fixed
+	* lib3ds/material.c 
+	  (color_read): Bug #124399 fixed
+	  (texture_map_read): texture percentage fixed 
+
+2000-10-30  J E Hoffmann  <je-h@gmx.net>
+
+	* Renamed tools (examples) from lib3ds* -> 3ds*
+	* configure.in: Removed all non GCC compiler options,
+	    leaving cflags untouched 
+
+2000-10-27  J E Hoffmann  <je-h@gmx.net>
+
+	* doc/mainpage.doc: Added view3ds OpenGL realtime previewer example.
+	  Avaiable as separate distributon.
+	  No Changes to the library.
+
 2000-10-25  J E Hoffmann  <je-h@gmx.net>
 
 	* Release 0.9.1
@@ -35,3 +98,13 @@
 	* lib3ds/file.h: Added material lookup functions
 	* Starting ChangeLog
 
+
+
+
+
+
+
+
+
+
+	

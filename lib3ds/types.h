@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_TYPES_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: types.h,v 1.9 2000/10/19 19:07:58 jeh Exp $
+ * $Id: types.h,v 1.12 2001/01/12 10:29:17 jeh Exp $
  */
 #ifdef __cplusplus
 extern "C" {
@@ -50,6 +50,7 @@ typedef float Lib3dsFloat;
 typedef double Lib3dsDouble;
 
 typedef float Lib3dsVector[3];
+typedef float Lib3dsTexel[2];
 typedef float Lib3dsQuat[4];
 typedef float Lib3dsMatrix[4][4];
 typedef float Lib3dsRgb[3];
@@ -85,6 +86,7 @@ typedef struct _Lib3dsFile Lib3dsFile;
 typedef struct _Lib3dsBackground Lib3dsBackground;
 typedef struct _Lib3dsAtmosphere Lib3dsAtmosphere;
 typedef struct _Lib3dsShadow Lib3dsShadow;
+typedef struct _Lib3dsViewport Lib3dsViewport;
 typedef struct _Lib3dsMaterial Lib3dsMaterial;
 typedef struct _Lib3dsFace Lib3dsFace; 
 typedef struct _Lib3dsBoxMap Lib3dsBoxMap; 

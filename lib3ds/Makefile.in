@@ -88,10 +88,10 @@ INCLUDES = -I$(top_srcdir)
 
 lib_LTLIBRARIES = lib3ds.la
 
-lib3ds_la_SOURCES =    readwrite.c   float.c   vector.c   matrix.c   quat.c   tcb.c   ease.c   chunktable.h   chunk.c   file.c   background.c   atmosphere.c   shadow.c   material.c   mesh.c   camera.c   light.c   tracks.c   node.c
+lib3ds_la_SOURCES =    readwrite.c   float.c   vector.c   matrix.c   quat.c   tcb.c   ease.c   chunktable.h   chunk.c   file.c   background.c   atmosphere.c   shadow.c   viewport.c   material.c   mesh.c   camera.c   light.c   tracks.c   node.c
 
 
-lib3ds_HEADERS =    types.h   readwrite.h   float.h   vector.h   matrix.h   quat.h   tcb.h   ease.h   chunk.h   file.h   background.h   atmosphere.h   shadow.h   material.h   mesh.h   camera.h   light.h   tracks.h   node.h
+lib3ds_HEADERS =    types.h   readwrite.h   float.h   vector.h   matrix.h   quat.h   tcb.h   ease.h   chunk.h   file.h   background.h   atmosphere.h   shadow.h   viewport.h   material.h   mesh.h   camera.h   light.h   tracks.h   node.h
 
 
 EXTRA_DIST =    types.doc   chunktable.sed
@@ -115,7 +115,7 @@ LIBS = @LIBS@
 lib3ds_la_DEPENDENCIES = 
 lib3ds_la_OBJECTS =  readwrite.lo float.lo vector.lo matrix.lo quat.lo \
 tcb.lo ease.lo chunk.lo file.lo background.lo atmosphere.lo shadow.lo \
-material.lo mesh.lo camera.lo light.lo tracks.lo node.lo
+viewport.lo material.lo mesh.lo camera.lo light.lo tracks.lo node.lo
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -349,7 +349,7 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
  #
  # The 3D Studio File Format Library
- # Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ # Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  # All rights reserved.
  #
  # This program is  free  software;  you can redistribute it and/or modify it
@@ -366,7 +366,7 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.6 2000/10/09 13:05:16 jeh Exp $
+ # $Id: Makefile.am,v 1.8 2001/01/12 10:29:16 jeh Exp $
  #
 
 chunktable.h: chunk.h chunktable.sed

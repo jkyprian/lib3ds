@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_FILE_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: file.h,v 1.6 2000/10/09 12:33:50 jeh Exp $
+ * $Id: file.h,v 1.8 2001/01/12 10:29:17 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_BACKGROUND_H
@@ -32,6 +32,9 @@
 #ifndef INCLUDED_LIB3DS_SHADOW_H
 #include <lib3ds/shadow.h>
 #endif
+#ifndef INCLUDED_LIB3DS_VIEWPORT_H
+#include <lib3ds/viewport.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,7 +45,6 @@ extern "C" {
  * \ingroup file
  */
 struct _Lib3dsFile {
-    Lib3dsWord magic;
     Lib3dsDword mesh_version;
     Lib3dsWord keyf_revision;
     Lib3dsFloat master_scale;
@@ -51,6 +53,8 @@ struct _Lib3dsFile {
     Lib3dsShadow shadow;
     Lib3dsBackground background;
     Lib3dsAtmosphere atmosphere;
+    Lib3dsViewport viewport;
+    Lib3dsViewport viewport_keyf;
     Lib3dsIntd frames;
     Lib3dsIntd segment_from;
     Lib3dsIntd segment_to;

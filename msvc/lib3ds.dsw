@@ -3,7 +3,7 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "Lib3ds"=.\Lib3ds.dsp - Package Owner=<4>
+Project: "lib3ds"=.\lib3ds.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -15,7 +15,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "lib3ds2m"=.\lib3ds2m.dsp - Package Owner=<4>
+Project: "3ds2m"=.\3ds2m.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -24,13 +24,13 @@ Package=<5>
 Package=<4>
 {{{
     Begin Project Dependency
-    Project_Dep_Name Lib3ds
+    Project_Dep_Name lib3ds
     End Project Dependency
 }}}
 
 ###############################################################################
 
-Project: "lib3ds2rib"=.\lib3ds2rib.dsp - Package Owner=<4>
+Project: "3ds2rib"=.\3ds2rib.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -39,13 +39,13 @@ Package=<5>
 Package=<4>
 {{{
     Begin Project Dependency
-    Project_Dep_Name Lib3ds
+    Project_Dep_Name lib3ds
     End Project Dependency
 }}}
 
 ###############################################################################
 
-Project: "lib3dsdump"=.\lib3dsdump.dsp - Package Owner=<4>
+Project: "3dsdump"=.\3dsdump.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -54,7 +54,7 @@ Package=<5>
 Package=<4>
 {{{
     Begin Project Dependency
-    Project_Dep_Name Lib3ds
+    Project_Dep_Name lib3ds
     End Project Dependency
 }}}
 

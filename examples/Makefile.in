@@ -85,17 +85,13 @@ VERSION = @VERSION@
 INCLUDES =    -I$(top_srcdir)   @DMALLOC_CFLAGS@
 
 
-bin_PROGRAMS =    lib3dsdump   lib3ds2m   lib3ds2rib
+bin_PROGRAMS =    3dsdump   3ds2m   3ds2rib
 
-
-lib3dsdump_SOURCES = lib3dsdump.c
-lib3ds2m_SOURCES = lib3ds2m.c
-lib3ds2rib_SOURCES = lib3ds2rib.c
 
 LDADD =    $(top_builddir)/lib3ds/lib3ds.la   @DMALLOC_LIBS@
 
 
-MANPAGES =    lib3dsdump.1   lib3ds2m.1   lib3ds2rib.1
+MANPAGES =    3dsdump.1   3ds2m.1   3ds2rib.1
 
 
 man_MANS = $(MANPAGES)
@@ -110,18 +106,21 @@ DEFS = @DEFS@ -I. -I$(srcdir) -I..
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-lib3dsdump_OBJECTS =  lib3dsdump.o
-lib3dsdump_LDADD = $(LDADD)
-lib3dsdump_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
-lib3dsdump_LDFLAGS = 
-lib3ds2m_OBJECTS =  lib3ds2m.o
-lib3ds2m_LDADD = $(LDADD)
-lib3ds2m_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
-lib3ds2m_LDFLAGS = 
-lib3ds2rib_OBJECTS =  lib3ds2rib.o
-lib3ds2rib_LDADD = $(LDADD)
-lib3ds2rib_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
-lib3ds2rib_LDFLAGS = 
+3dsdump_SOURCES = 3dsdump.c
+3dsdump_OBJECTS =  3dsdump.o
+3dsdump_LDADD = $(LDADD)
+3dsdump_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
+3dsdump_LDFLAGS = 
+3ds2m_SOURCES = 3ds2m.c
+3ds2m_OBJECTS =  3ds2m.o
+3ds2m_LDADD = $(LDADD)
+3ds2m_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
+3ds2m_LDFLAGS = 
+3ds2rib_SOURCES = 3ds2rib.c
+3ds2rib_OBJECTS =  3ds2rib.o
+3ds2rib_LDADD = $(LDADD)
+3ds2rib_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
+3ds2rib_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -138,8 +137,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-SOURCES = $(lib3dsdump_SOURCES) $(lib3ds2m_SOURCES) $(lib3ds2rib_SOURCES)
-OBJECTS = $(lib3dsdump_OBJECTS) $(lib3ds2m_OBJECTS) $(lib3ds2rib_OBJECTS)
+SOURCES = 3dsdump.c 3ds2m.c 3ds2rib.c
+OBJECTS = 3dsdump.o 3ds2m.o 3ds2rib.o
 
 all: all-redirect
 .SUFFIXES:
@@ -215,17 +214,17 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 
-lib3dsdump: $(lib3dsdump_OBJECTS) $(lib3dsdump_DEPENDENCIES)
-	@rm -f lib3dsdump
-	$(LINK) $(lib3dsdump_LDFLAGS) $(lib3dsdump_OBJECTS) $(lib3dsdump_LDADD) $(LIBS)
+3dsdump: $(3dsdump_OBJECTS) $(3dsdump_DEPENDENCIES)
+	@rm -f 3dsdump
+	$(LINK) $(3dsdump_LDFLAGS) $(3dsdump_OBJECTS) $(3dsdump_LDADD) $(LIBS)
 
-lib3ds2m: $(lib3ds2m_OBJECTS) $(lib3ds2m_DEPENDENCIES)
-	@rm -f lib3ds2m
-	$(LINK) $(lib3ds2m_LDFLAGS) $(lib3ds2m_OBJECTS) $(lib3ds2m_LDADD) $(LIBS)
+3ds2m: $(3ds2m_OBJECTS) $(3ds2m_DEPENDENCIES)
+	@rm -f 3ds2m
+	$(LINK) $(3ds2m_LDFLAGS) $(3ds2m_OBJECTS) $(3ds2m_LDADD) $(LIBS)
 
-lib3ds2rib: $(lib3ds2rib_OBJECTS) $(lib3ds2rib_DEPENDENCIES)
-	@rm -f lib3ds2rib
-	$(LINK) $(lib3ds2rib_LDFLAGS) $(lib3ds2rib_OBJECTS) $(lib3ds2rib_LDADD) $(LIBS)
+3ds2rib: $(3ds2rib_OBJECTS) $(3ds2rib_DEPENDENCIES)
+	@rm -f 3ds2rib
+	$(LINK) $(3ds2rib_LDFLAGS) $(3ds2rib_OBJECTS) $(3ds2rib_LDADD) $(LIBS)
 
 install-man1:
 	$(mkinstalldirs) $(DESTDIR)$(man1dir)
@@ -406,7 +405,7 @@ mostlyclean distclean maintainer-clean
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.4 2000/10/25 17:22:01 jeh Exp $
+ # $Id: Makefile.am,v 1.9 2001/01/14 20:55:23 jeh Exp $
  #
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

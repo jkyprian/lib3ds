@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: shadow.c,v 1.2 2000/10/09 12:33:50 jeh Exp $
+ * $Id: shadow.c,v 1.5 2001/01/14 20:55:23 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/shadow.h>
@@ -47,7 +47,7 @@ lib3ds_shadow_read(Lib3dsShadow *shadow, FILE *f)
   switch (c.chunk) {
     case LIB3DS_SHADOW_MAP_SIZE:
       {
-        shadow->map_size=lib3ds_word_read(f);
+        shadow->map_size=lib3ds_intw_read(f);
       }
       break;
     case LIB3DS_LO_SHADOW_BIAS:
@@ -62,13 +62,13 @@ lib3ds_shadow_read(Lib3dsShadow *shadow, FILE *f)
       break;
     case LIB3DS_SHADOW_SAMPLES:
       {
-        lib3ds_chunk_unknown(c.chunk);
+        shadow->samples=lib3ds_intw_read(f);
       }
       break;
     case LIB3DS_SHADOW_RANGE:
       {
-        lib3ds_chunk_unknown(c.chunk);
-        }
+        shadow->range=lib3ds_intw_read(f);
+      }
       break;
     case LIB3DS_SHADOW_FILTER:
       {
@@ -92,9 +92,56 @@ lib3ds_shadow_read(Lib3dsShadow *shadow, FILE *f)
 Lib3dsBool
 lib3ds_shadow_write(Lib3dsShadow *shadow, FILE *f)
 {
-  /* FIXME: */
-  ASSERT(0);
-  return(LIB3DS_FALSE);
+  { /*---- LIB3DS_LO_SHADOW_BIAS ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_LO_SHADOW_BIAS;
+    c.size=10;
+    lib3ds_chunk_write(&c,f);
+    lib3ds_float_write(shadow->lo_bias,f);
+  }
+  { /*---- LIB3DS_HI_SHADOW_BIAS ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_HI_SHADOW_BIAS;
+    c.size=10;
+    lib3ds_chunk_write(&c,f);
+    lib3ds_float_write(shadow->hi_bias,f);
+  }
+  { /*---- LIB3DS_SHADOW_MAP_SIZE ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_SHADOW_MAP_SIZE;
+    c.size=8;
+    lib3ds_chunk_write(&c,f);
+    lib3ds_intw_write(shadow->map_size,f);
+  }
+  { /*---- LIB3DS_SHADOW_SAMPLES ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_SHADOW_SAMPLES;
+    c.size=8;
+    lib3ds_chunk_write(&c,f);
+    lib3ds_intw_write(shadow->samples,f);
+  }
+  { /*---- LIB3DS_SHADOW_RANGE ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_SHADOW_RANGE;
+    c.size=8;
+    lib3ds_chunk_write(&c,f);
+    lib3ds_intw_write(shadow->range,f);
+  }
+  { /*---- LIB3DS_SHADOW_FILTER ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_SHADOW_FILTER;
+    c.size=10;
+    lib3ds_chunk_write(&c,f);
+    lib3ds_float_write(shadow->filter,f);
+  }
+  { /*---- LIB3DS_RAY_BIAS ----*/
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_RAY_BIAS;
+    c.size=10;
+    lib3ds_chunk_write(&c,f);
+    lib3ds_float_write(shadow->ray_bias,f);
+  }
+  return(LIB3DS_TRUE);
 }
 
 

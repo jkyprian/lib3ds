@@ -549,11 +549,11 @@ fi
 # if backwards compatibility has been broken,
 # set LIB3DS_BINARY_AGE and LIB3DS_INTERFACE_AGE to 0.
 #
-LIB3DS_MAJOR_VERSION=0
-LIB3DS_MINOR_VERSION=9
-LIB3DS_MICRO_VERSION=1
-LIB3DS_INTERFACE_AGE=1
-LIB3DS_BINARY_AGE=1
+LIB3DS_MAJOR_VERSION=1
+LIB3DS_MINOR_VERSION=0
+LIB3DS_MICRO_VERSION=0
+LIB3DS_INTERFACE_AGE=0
+LIB3DS_BINARY_AGE=0
 LIB3DS_VERSION=$LIB3DS_MAJOR_VERSION.$LIB3DS_MINOR_VERSION.$LIB3DS_MICRO_VERSION
 
 
@@ -1132,14 +1132,13 @@ fi
 
 if test "$LIB3DS_DEBUG_MODE" = yes; then
   echo "$ac_t""yes" 1>&6
-  CFLAGS="-ansi -D_DEBUG -g3 -Wall -pedantic-errors"
+  CFLAGS="$CFLAGS -D_DEBUG"
 else
   echo "$ac_t""no" 1>&6
-  CFLAGS="-O2 "
 fi
 
 echo $ac_n "checking for dmalloc debugging""... $ac_c" 1>&6
-echo "configure:1143: checking for dmalloc debugging" >&5
+echo "configure:1142: checking for dmalloc debugging" >&5
 DMALLOC_CFLAGS=""
 DMALLOC_LIBS=""
 # Check whether --enable-dmalloc or --disable-dmalloc was given.
@@ -1241,7 +1240,7 @@ else { echo "configure: error: can not run $ac_config_sub" 1>&2; exit 1; }
 fi
 
 echo $ac_n "checking host system type""... $ac_c" 1>&6
-echo "configure:1245: checking host system type" >&5
+echo "configure:1244: checking host system type" >&5
 
 host_alias=$host
 case "$host_alias" in
@@ -1262,7 +1261,7 @@ host_os=`echo $host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 echo "$ac_t""$host" 1>&6
 
 echo $ac_n "checking build system type""... $ac_c" 1>&6
-echo "configure:1266: checking build system type" >&5
+echo "configure:1265: checking build system type" >&5
 
 build_alias=$build
 case "$build_alias" in
@@ -1282,7 +1281,7 @@ echo "$ac_t""$build" 1>&6
 # Extract the first word of "ranlib", so it can be a program name with args.
 set dummy ranlib; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1286: checking for $ac_word" >&5
+echo "configure:1285: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_RANLIB'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1321,7 +1320,7 @@ ac_prog=ld
 if test "$ac_cv_prog_gcc" = yes; then
   # Check if gcc -print-prog-name=ld gives a path.
   echo $ac_n "checking for ld used by GCC""... $ac_c" 1>&6
-echo "configure:1325: checking for ld used by GCC" >&5
+echo "configure:1324: checking for ld used by GCC" >&5
   ac_prog=`($CC -print-prog-name=ld) 2>&5`
   case "$ac_prog" in
     # Accept absolute paths.
@@ -1345,10 +1344,10 @@ echo "configure:1325: checking for ld used by GCC" >&5
   esac
 elif test "$with_gnu_ld" = yes; then
   echo $ac_n "checking for GNU ld""... $ac_c" 1>&6
-echo "configure:1349: checking for GNU ld" >&5
+echo "configure:1348: checking for GNU ld" >&5
 else
   echo $ac_n "checking for non-GNU ld""... $ac_c" 1>&6
-echo "configure:1352: checking for non-GNU ld" >&5
+echo "configure:1351: checking for non-GNU ld" >&5
 fi
 if eval "test \"`echo '$''{'ac_cv_path_LD'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -1383,7 +1382,7 @@ else
 fi
 test -z "$LD" && { echo "configure: error: no acceptable ld found in \$PATH" 1>&2; exit 1; }
 echo $ac_n "checking if the linker ($LD) is GNU ld""... $ac_c" 1>&6
-echo "configure:1387: checking if the linker ($LD) is GNU ld" >&5
+echo "configure:1386: checking if the linker ($LD) is GNU ld" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_gnu_ld'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1399,7 +1398,7 @@ echo "$ac_t""$ac_cv_prog_gnu_ld" 1>&6
 
 
 echo $ac_n "checking for BSD-compatible nm""... $ac_c" 1>&6
-echo "configure:1403: checking for BSD-compatible nm" >&5
+echo "configure:1402: checking for BSD-compatible nm" >&5
 if eval "test \"`echo '$''{'ac_cv_path_NM'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1435,7 +1434,7 @@ NM="$ac_cv_path_NM"
 echo "$ac_t""$NM" 1>&6
 
 echo $ac_n "checking whether ln -s works""... $ac_c" 1>&6
-echo "configure:1439: checking whether ln -s works" >&5
+echo "configure:1438: checking whether ln -s works" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_LN_S'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1489,8 +1488,8 @@ test x"$silent" = xyes && libtool_flags="$libtool_flags --silent"
 case "$lt_target" in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 1493 "configure"' > conftest.$ac_ext
-  if { (eval echo configure:1494: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+  echo '#line 1492 "configure"' > conftest.$ac_ext
+  if { (eval echo configure:1493: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
     case "`/usr/bin/file conftest.o`" in
     *32-bit*)
       LD="${LD-ld} -32"
@@ -1511,19 +1510,19 @@ case "$lt_target" in
   SAVE_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS -belf"
   echo $ac_n "checking whether the C compiler needs -belf""... $ac_c" 1>&6
-echo "configure:1515: checking whether the C compiler needs -belf" >&5
+echo "configure:1514: checking whether the C compiler needs -belf" >&5
 if eval "test \"`echo '$''{'lt_cv_cc_needs_belf'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 1520 "configure"
+#line 1519 "configure"
 #include "confdefs.h"
 
 int main() {
 
 ; return 0; }
 EOF
-if { (eval echo configure:1527: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1526: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   lt_cv_cc_needs_belf=yes
 else

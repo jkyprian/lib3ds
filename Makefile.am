@@ -1,6 +1,6 @@
  #
  # The 3D Studio File Format Library
- # Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ # Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  # All rights reserved.
  #
  # This program is  free  software;  you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.14 2000/10/25 17:22:01 jeh Exp $
+ # $Id: Makefile.am,v 1.16 2001/01/14 20:55:23 jeh Exp $
  #
 
 SUBDIRS = msvc lib3ds examples

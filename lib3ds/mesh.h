@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_MESH_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: mesh.h,v 1.6 2000/10/09 12:33:50 jeh Exp $
+ * $Id: mesh.h,v 1.8 2001/01/12 10:29:17 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -92,6 +92,8 @@ struct _Lib3dsMesh {
     Lib3dsPoint *pointL;
     Lib3dsDword flags;
     Lib3dsWord *flagL;
+    Lib3dsDword texels;
+    Lib3dsTexel *texelL;
     Lib3dsDword faces;
     Lib3dsFace *faceL;
     Lib3dsBoxMap box_map;
@@ -104,6 +106,8 @@ extern LIB3DSAPI Lib3dsBool lib3ds_mesh_new_point_list(Lib3dsMesh *mesh, Lib3dsD
 extern LIB3DSAPI void lib3ds_mesh_free_point_list(Lib3dsMesh *mesh);
 extern LIB3DSAPI Lib3dsBool lib3ds_mesh_new_flag_list(Lib3dsMesh *mesh, Lib3dsDword flags);
 extern LIB3DSAPI void lib3ds_mesh_free_flag_list(Lib3dsMesh *mesh);
+extern LIB3DSAPI Lib3dsBool lib3ds_mesh_new_texel_list(Lib3dsMesh *mesh, Lib3dsDword texels);
+extern LIB3DSAPI void lib3ds_mesh_free_texel_list(Lib3dsMesh *mesh);
 extern LIB3DSAPI Lib3dsBool lib3ds_mesh_new_face_list(Lib3dsMesh *mesh, Lib3dsDword flags);
 extern LIB3DSAPI void lib3ds_mesh_free_face_list(Lib3dsMesh *mesh);
 extern LIB3DSAPI void lib3ds_mesh_bounding_box(Lib3dsMesh *mesh, Lib3dsVector min, Lib3dsVector max);

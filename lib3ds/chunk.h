@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_CHUNK_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: chunk.h,v 1.6 2000/10/19 17:35:35 jeh Exp $
+ * $Id: chunk.h,v 1.9 2001/01/15 09:35:45 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -266,13 +266,16 @@ typedef struct _Lib3dsChunk {
     Lib3dsDword cur;
 } Lib3dsChunk; 
 
+extern LIB3DSAPI void lib3ds_chunk_enable_dump(Lib3dsBool enable, Lib3dsBool unknown);
 extern LIB3DSAPI Lib3dsBool lib3ds_chunk_read(Lib3dsChunk *c, FILE *f);
-extern LIB3DSAPI Lib3dsBool lib3ds_chunk_start(Lib3dsChunk *c, Lib3dsWord chunk, FILE *f);
-extern LIB3DSAPI void lib3ds_chunk_tell(Lib3dsChunk *c, FILE *f);
-extern LIB3DSAPI Lib3dsWord lib3ds_chunk_next(Lib3dsChunk *c, FILE *f);
-extern LIB3DSAPI void lib3ds_chunk_reset(Lib3dsChunk *c, FILE *f);
-extern LIB3DSAPI void lib3ds_chunk_end(Lib3dsChunk *c, FILE *f);
+extern LIB3DSAPI Lib3dsBool lib3ds_chunk_read_start(Lib3dsChunk *c, Lib3dsWord chunk, FILE *f);
+extern LIB3DSAPI void lib3ds_chunk_read_tell(Lib3dsChunk *c, FILE *f);
+extern LIB3DSAPI Lib3dsWord lib3ds_chunk_read_next(Lib3dsChunk *c, FILE *f);
+extern LIB3DSAPI void lib3ds_chunk_read_reset(Lib3dsChunk *c, FILE *f);
+extern LIB3DSAPI void lib3ds_chunk_read_end(Lib3dsChunk *c, FILE *f);
 extern LIB3DSAPI Lib3dsBool lib3ds_chunk_write(Lib3dsChunk *c, FILE *f);
+extern LIB3DSAPI Lib3dsBool lib3ds_chunk_write_start(Lib3dsChunk *c, FILE *f);
+extern LIB3DSAPI Lib3dsBool lib3ds_chunk_write_end(Lib3dsChunk *c, FILE *f);
 extern LIB3DSAPI const char* lib3ds_chunk_name(Lib3dsWord chunk);
 extern LIB3DSAPI void lib3ds_chunk_unknown(Lib3dsWord chunk);
 

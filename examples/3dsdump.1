@@ -1,36 +1,40 @@
-.TH lib3ds2rib 1 "25 Oct 2000" Version 0.9.1
+.TH 3dsdump 1 "12 Jan 2001" Version 1.0
 .SH NAME
-lib3ds2rib - Simple 3DS to RIB (RenderMan Interface Bytestream) converter.
+3dsdump - Displays information about the internal structure of a 3DS file.
 .SH SYNOPSIS
-.B lib3ds2rib
+.B 3dsdump
 [options] filename [options]
 .SH DESCRIPTION
 .PP
-\fIlib3ds2rib\fP is a tool to convert 3DS files into RIB 
-(RenderMan Interface Bytestream) files.
+\fI3dsdump\fP is a tool that is used to display information about
+the internal structure of a 3DS file.
+.
 .SH OPTIONS
 .l
-\fIlib3ds2rib\fP accepts the following options:
+\fI3dsdump\fP accepts the following options:
 .TP 8
-.B -h/--help
+.B \-h/\-\-help
 This help
 .TP 8
-.B -o/--output <filename>
-Write output to <filename> instead of stdout
+.B \-m/\-\-materials
+Dump materials
 .TP 8
-.B -c/--camera <name>
-Use camera <name> for rendering
+.B \-t/\-\-trimeshes
+Dump meshes
 .TP 8
-.B -a/--all
-Render all frames
+.B \-i/\-\-instance
+Dump mesh instances
 .TP 8
-.B -f/--frame #
-Render frame #
+.B \-c/\-\-cameras
+Dump cameras
 .TP 8
-.B -d/--downcuts #
-Render # frames of animation
+.B \-l/\-\-lights
+Dump lights
+.TP 8
+.B \-n/\-\-nodes
+Dump node hierarchy
 .SH COPYRIGHT
-lib3dsdump Copyright \(co 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+3dsdump Copyright \(co 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -45,11 +49,4 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
-
-
-
-
-
-
 

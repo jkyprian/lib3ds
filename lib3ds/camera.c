@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: camera.c,v 1.5 2000/10/19 17:35:35 jeh Exp $
+ * $Id: camera.c,v 1.8 2001/01/12 10:29:17 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/camera.h>
@@ -55,6 +55,7 @@ lib3ds_camera_new(const char *name)
     return(0);
   }
   strcpy(camera->name, name);
+  camera->fov=45.0f;
   return(camera);
 }
 
@@ -79,7 +80,7 @@ lib3ds_camera_read(Lib3dsCamera *camera, FILE *f)
   Lib3dsChunk c;
   Lib3dsWord chunk;
 
-  if (!lib3ds_chunk_start(&c, LIB3DS_N_CAMERA, f)) {
+  if (!lib3ds_chunk_read_start(&c, LIB3DS_N_CAMERA, f)) {
     return(LIB3DS_FALSE);
   }
   {
@@ -102,9 +103,9 @@ lib3ds_camera_read(Lib3dsCamera *camera, FILE *f)
       camera->fov=2400.0f/s;
     }
   }
-  lib3ds_chunk_tell(&c, f);
+  lib3ds_chunk_read_tell(&c, f);
   
-  while ((chunk=lib3ds_chunk_next(&c, f))!=0) {
+  while ((chunk=lib3ds_chunk_read_next(&c, f))!=0) {
     switch (chunk) {
       case LIB3DS_CAM_SEE_CONE:
         {
@@ -122,7 +123,7 @@ lib3ds_camera_read(Lib3dsCamera *camera, FILE *f)
     }
   }
   
-  lib3ds_chunk_end(&c, f);
+  lib3ds_chunk_read_end(&c, f);
   return(LIB3DS_TRUE);
 }
 
@@ -133,9 +134,42 @@ lib3ds_camera_read(Lib3dsCamera *camera, FILE *f)
 Lib3dsBool
 lib3ds_camera_write(Lib3dsCamera *camera, FILE *f)
 {
-  /* FIXME: */
-  ASSERT(0);
-  return(LIB3DS_FALSE);
+  Lib3dsChunk c;
+
+  c.chunk=LIB3DS_N_CAMERA;
+  if (!lib3ds_chunk_write_start(&c,f)) {
+    return(LIB3DS_FALSE);
+  }
+
+  lib3ds_vector_write(camera->position, f);
+  lib3ds_vector_write(camera->target, f);
+  lib3ds_float_write(camera->roll, f);
+  if (fabs(camera->fov)<LIB3DS_EPSILON) {
+    lib3ds_float_write(2400.0f/45.0f, f);
+  }
+  else {
+    lib3ds_float_write(2400.0f/camera->fov, f);
+  }
+
+  if (camera->see_cone) {
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_CAM_SEE_CONE;
+    c.size=6;
+    lib3ds_chunk_write(&c, f);
+  }
+  {
+    Lib3dsChunk c;
+    c.chunk=LIB3DS_CAM_RANGES;
+    c.size=14;
+    lib3ds_chunk_write(&c, f);
+    lib3ds_float_write(camera->near_range, f);
+    lib3ds_float_write(camera->far_range, f);
+  }
+
+  if (!lib3ds_chunk_write_end(&c,f)) {
+    return(LIB3DS_FALSE);
+  }
+  return(LIB3DS_TRUE);
 }
 
 

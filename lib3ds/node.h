@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_NODE_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: node.h,v 1.3 2000/10/09 12:33:50 jeh Exp $
+ * $Id: node.h,v 1.5 2001/01/12 10:29:17 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TRACKS_H
@@ -159,8 +159,8 @@ extern LIB3DSAPI Lib3dsNode* lib3ds_node_by_name(Lib3dsNode *node, const char* n
   Lib3dsNodeTypes type);
 extern LIB3DSAPI Lib3dsNode* lib3ds_node_by_id(Lib3dsNode *node, Lib3dsWord id);
 extern LIB3DSAPI void lib3ds_node_dump(Lib3dsNode *node, Lib3dsIntd level);
-extern LIB3DSAPI Lib3dsBool lib3ds_node_read(Lib3dsNode *node, FILE *f);
-extern LIB3DSAPI Lib3dsBool lib3ds_node_write(Lib3dsNode *node, FILE *f);
+extern LIB3DSAPI Lib3dsBool lib3ds_node_read(Lib3dsNode *node, Lib3dsFile *file, FILE *f);
+extern LIB3DSAPI Lib3dsBool lib3ds_node_write(Lib3dsNode *node, Lib3dsFile *file, FILE *f);
 
 #ifdef __cplusplus
 };

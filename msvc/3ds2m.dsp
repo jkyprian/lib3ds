@@ -1,24 +1,24 @@
-# Microsoft Developer Studio Project File - Name="lib3dsdump" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="3ds2m" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** NICHT BEARBEITEN **
 
 # TARGTYPE "Win32 (x86) Console Application" 0x0103
 
-CFG=lib3dsdump - Win32 Debug
+CFG=3ds2m - Win32 Debug
 !MESSAGE Dies ist kein gültiges Makefile. Zum Erstellen dieses Projekts mit NMAKE
 !MESSAGE verwenden Sie den Befehl "Makefile exportieren" und führen Sie den Befehl
 !MESSAGE 
-!MESSAGE NMAKE /f "lib3dsdump.mak".
+!MESSAGE NMAKE /f "3ds2m.mak".
 !MESSAGE 
 !MESSAGE Sie können beim Ausführen von NMAKE eine Konfiguration angeben
 !MESSAGE durch Definieren des Makros CFG in der Befehlszeile. Zum Beispiel:
 !MESSAGE 
-!MESSAGE NMAKE /f "lib3dsdump.mak" CFG="lib3dsdump - Win32 Debug"
+!MESSAGE NMAKE /f "3ds2m.mak" CFG="3ds2m - Win32 Debug"
 !MESSAGE 
 !MESSAGE Für die Konfiguration stehen zur Auswahl:
 !MESSAGE 
-!MESSAGE "lib3dsdump - Win32 Release" (basierend auf  "Win32 (x86) Console Application")
-!MESSAGE "lib3dsdump - Win32 Debug" (basierend auf  "Win32 (x86) Console Application")
+!MESSAGE "3ds2m - Win32 Release" (basierend auf  "Win32 (x86) Console Application")
+!MESSAGE "3ds2m - Win32 Debug" (basierend auf  "Win32 (x86) Console Application")
 !MESSAGE 
 
 # Begin Project
@@ -28,7 +28,7 @@ CFG=lib3dsdump - Win32 Debug
 CPP=cl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "lib3dsdump - Win32 Release"
+!IF  "$(CFG)" == "3ds2m - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -52,12 +52,12 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
 
-!ELSEIF  "$(CFG)" == "lib3dsdump - Win32 Debug"
+!ELSEIF  "$(CFG)" == "3ds2m - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
-# PROP BASE Output_Dir "lib3dsdump___Win32_Debug"
-# PROP BASE Intermediate_Dir "lib3dsdump___Win32_Debug"
+# PROP BASE Output_Dir "3ds2m___Win32_Debug"
+# PROP BASE Intermediate_Dir "3ds2m___Win32_Debug"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
@@ -80,14 +80,14 @@ LINK32=link.exe
 
 # Begin Target
 
-# Name "lib3dsdump - Win32 Release"
-# Name "lib3dsdump - Win32 Debug"
+# Name "3ds2m - Win32 Release"
+# Name "3ds2m - Win32 Debug"
 # Begin Group "Quellcodedateien"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\examples\lib3dsdump.c
+SOURCE=..\examples\3ds2m.c
 # End Source File
 # End Group
 # Begin Group "Header-Dateien"

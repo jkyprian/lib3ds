@@ -5,7 +5,7 @@
 #define INCLUDED_LIB3DS_CHUNKTABLE_H\
 /*\
  * The 3D Studio File Format Library\
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>\
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>\
  * All rights reserved.\
  *\
  * This program is  free  software;  you can redistribute it and/or modify it\
@@ -22,7 +22,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,\
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.\
  *\
- * $Id: chunktable.sed,v 1.5 2000/10/19 18:30:55 jeh Exp $\
+ * $Id: chunktable.sed,v 1.6 2001/01/12 10:29:17 jeh Exp $\
  */\
 \
 #ifndef INCLUDED_LIB3DS_CHUNK_H\

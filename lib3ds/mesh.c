@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: mesh.c,v 1.7 2000/10/19 17:35:35 jeh Exp $
+ * $Id: mesh.c,v 1.11 2001/01/14 20:55:23 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/mesh.h>
@@ -48,7 +48,7 @@ face_array_read(Lib3dsMesh *mesh, FILE *f)
   int i;
   int faces;
 
-  if (!lib3ds_chunk_start(&c, LIB3DS_FACE_ARRAY, f)) {
+  if (!lib3ds_chunk_read_start(&c, LIB3DS_FACE_ARRAY, f)) {
     return(LIB3DS_FALSE);
   }
   lib3ds_mesh_free_face_list(mesh);
@@ -66,9 +66,9 @@ face_array_read(Lib3dsMesh *mesh, FILE *f)
       mesh->faceL[i].points[2]=lib3ds_word_read(f);
       mesh->faceL[i].flags=lib3ds_word_read(f);
     }
-    lib3ds_chunk_tell(&c, f);
+    lib3ds_chunk_read_tell(&c, f);
 
-    while ((chunk=lib3ds_chunk_next(&c, f))!=0) {
+    while ((chunk=lib3ds_chunk_read_next(&c, f))!=0) {
       switch (chunk) {
         case LIB3DS_SMOOTH_GROUP:
           {
@@ -133,7 +133,7 @@ face_array_read(Lib3dsMesh *mesh, FILE *f)
     }
     
   }
-  lib3ds_chunk_end(&c, f);
+  lib3ds_chunk_read_end(&c, f);
   return(LIB3DS_TRUE);
 }
 
@@ -154,6 +154,7 @@ lib3ds_mesh_new(const char *name)
     return(0);
   }
   strcpy(mesh->name, name);
+  lib3ds_matrix_identity(mesh->matrix);
   return(mesh);
 }
 
@@ -166,6 +167,7 @@ lib3ds_mesh_free(Lib3dsMesh *mesh)
 {
   lib3ds_mesh_free_point_list(mesh);
   lib3ds_mesh_free_flag_list(mesh);
+  lib3ds_mesh_free_texel_list(mesh);
   lib3ds_mesh_free_face_list(mesh);
   memset(mesh, 0, sizeof(Lib3dsMesh));
   free(mesh);
@@ -252,6 +254,48 @@ lib3ds_mesh_free_flag_list(Lib3dsMesh *mesh)
   }
   else {
     ASSERT(!mesh->flags);
+  }
+}
+
+
+/*!
+ * \ingroup mesh
+ */
+Lib3dsBool
+lib3ds_mesh_new_texel_list(Lib3dsMesh *mesh, Lib3dsDword texels)
+{
+  ASSERT(mesh);
+  if (mesh->texelL) {
+    ASSERT(mesh->texels);
+    lib3ds_mesh_free_texel_list(mesh);
+  }
+  ASSERT(!mesh->texelL && !mesh->texels);
+  mesh->texels=0;
+  mesh->texelL=calloc(sizeof(Lib3dsTexel)*texels,1);
+  if (!mesh->texelL) {
+    LIB3DS_ERROR_LOG;
+    return(LIB3DS_FALSE);
+  }
+  mesh->texels=texels;
+  return(LIB3DS_TRUE);
+}
+
+
+/*!
+ * \ingroup mesh
+ */
+void
+lib3ds_mesh_free_texel_list(Lib3dsMesh *mesh)
+{
+  ASSERT(mesh);
+  if (mesh->texelL) {
+    ASSERT(mesh->texels);
+    free(mesh->texelL);
+    mesh->texelL=0;
+    mesh->texels=0;
+  }
+  else {
+    ASSERT(!mesh->texels);
   }
 }
 
@@ -363,11 +407,11 @@ lib3ds_mesh_read(Lib3dsMesh *mesh, FILE *f)
   Lib3dsChunk c;
   Lib3dsWord chunk;
 
-  if (!lib3ds_chunk_start(&c, LIB3DS_N_TRI_OBJECT, f)) {
+  if (!lib3ds_chunk_read_start(&c, LIB3DS_N_TRI_OBJECT, f)) {
     return(LIB3DS_FALSE);
   }
 
-  while ((chunk=lib3ds_chunk_next(&c, f))!=0) {
+  while ((chunk=lib3ds_chunk_read_next(&c, f))!=0) {
     switch (chunk) {
       case LIB3DS_MESH_MATRIX:
         {
@@ -404,6 +448,7 @@ lib3ds_mesh_read(Lib3dsMesh *mesh, FILE *f)
               }
             }
             ASSERT((!mesh->flags) || (mesh->points==mesh->flags));
+            ASSERT((!mesh->texels) || (mesh->points==mesh->texels));
           }
         }
         break;
@@ -422,13 +467,14 @@ lib3ds_mesh_read(Lib3dsMesh *mesh, FILE *f)
             for (i=0; i<mesh->flags; ++i) {
               mesh->flagL[i]=lib3ds_word_read(f);
             }
-            ASSERT((!mesh->points) || (mesh->points==mesh->flags));
+            ASSERT((!mesh->points) || (mesh->flags==mesh->points));
+            ASSERT((!mesh->texels) || (mesh->flags==mesh->texels));
           }
         }
         break;
       case LIB3DS_FACE_ARRAY:
         {
-          lib3ds_chunk_reset(&c, f);
+          lib3ds_chunk_read_reset(&c, f);
           if (!face_array_read(mesh, f)) {
             return(LIB3DS_FALSE);
           }
@@ -436,27 +482,51 @@ lib3ds_mesh_read(Lib3dsMesh *mesh, FILE *f)
         break;
       case LIB3DS_MESH_TEXTURE_INFO:
         {
+          int i,j;
+
+          for (i=0; i<2; ++i) {
+            mesh->map_data.tile[i]=lib3ds_float_read(f);
+          }
+          for (i=0; i<3; ++i) {
+            mesh->map_data.pos[i]=lib3ds_float_read(f);
+          }
+          mesh->map_data.scale=lib3ds_float_read(f);
+
+          lib3ds_matrix_identity(mesh->map_data.matrix);
+          for (i=0; i<4; i++) {
+            for (j=0; j<3; j++) {
+              mesh->map_data.matrix[i][j]=lib3ds_float_read(f);
+            }
+          }
+          for (i=0; i<2; ++i) {
+            mesh->map_data.planar_size[i]=lib3ds_float_read(f);
+          }
+          mesh->map_data.cylinder_height=lib3ds_float_read(f);
         }
         break;
       case LIB3DS_TEX_VERTS:
         {
+          unsigned i;
+          unsigned texels;
+          
+          lib3ds_mesh_free_texel_list(mesh);
+          texels=lib3ds_word_read(f);
+          if (texels) {
+            if (!lib3ds_mesh_new_texel_list(mesh, texels)) {
+              LIB3DS_ERROR_LOG;
+              return(LIB3DS_FALSE);
+            }
+            for (i=0; i<mesh->texels; ++i) {
+              mesh->texelL[i][0]=lib3ds_float_read(f);
+              mesh->texelL[i][1]=lib3ds_float_read(f);
+            }
+            ASSERT((!mesh->points) || (mesh->texels==mesh->points));
+            ASSERT((!mesh->flags) || (mesh->texels==mesh->flags));
+          }
         }
         break;
       default:
         lib3ds_chunk_unknown(chunk);
-    }
-  }
-  {
-    Lib3dsMatrix M;
-    Lib3dsVector v;
-    unsigned j;
-
-    lib3ds_matrix_copy(M, mesh->matrix);
-    if (lib3ds_matrix_inv(M)) {
-      for (j=0; j<mesh->points; ++j) {
-        lib3ds_vector_copy(v, mesh->pointL[j].pos);
-        lib3ds_vector_transform(mesh->pointL[j].pos, M, v);
-      }
     }
   }
   {
@@ -475,7 +545,183 @@ lib3ds_mesh_read(Lib3dsMesh *mesh, FILE *f)
     }
   }
   
-  lib3ds_chunk_end(&c, f);
+  lib3ds_chunk_read_end(&c, f);
+  return(LIB3DS_TRUE);
+}
+
+
+static Lib3dsBool
+point_array_write(Lib3dsMesh *mesh, FILE *f)
+{
+  Lib3dsChunk c;
+  unsigned i;
+
+  if (!mesh->points || !mesh->pointL) {
+    return(LIB3DS_TRUE);
+  }
+  ASSERT(mesh->points<0x10000);
+  c.chunk=LIB3DS_POINT_ARRAY;
+  c.size=8+12*mesh->points;
+  lib3ds_chunk_write(&c, f);
+  
+  lib3ds_word_write((Lib3dsWord)mesh->points, f);
+  for (i=0; i<mesh->points; ++i) {
+    lib3ds_vector_write(mesh->pointL[i].pos, f);
+  }
+  return(LIB3DS_TRUE);
+}
+
+
+static Lib3dsBool
+flag_array_write(Lib3dsMesh *mesh, FILE *f)
+{
+  Lib3dsChunk c;
+  unsigned i;
+  
+  if (!mesh->flags || !mesh->flagL) {
+    return(LIB3DS_TRUE);
+  }
+  ASSERT(mesh->flags<0x10000);
+  c.chunk=LIB3DS_POINT_FLAG_ARRAY;
+  c.size=8+2*mesh->flags;
+  lib3ds_chunk_write(&c, f);
+  
+  lib3ds_word_write((Lib3dsWord)mesh->flags, f);
+  for (i=0; i<mesh->flags; ++i) {
+    lib3ds_word_write(mesh->flagL[i], f);
+  }
+  return(LIB3DS_TRUE);
+}
+
+
+static Lib3dsBool
+face_array_write(Lib3dsMesh *mesh, FILE *f)
+{
+  Lib3dsChunk c;
+  
+  if (!mesh->faces || !mesh->faceL) {
+    return(LIB3DS_TRUE);
+  }
+  ASSERT(mesh->faces<0x10000);
+  c.chunk=LIB3DS_FACE_ARRAY;
+  if (!lib3ds_chunk_write_start(&c, f)) {
+    return(LIB3DS_FALSE);
+  }
+  {
+    unsigned i;
+
+    lib3ds_word_write((Lib3dsWord)mesh->faces, f);
+    for (i=0; i<mesh->faces; ++i) {
+      lib3ds_word_write(mesh->faceL[i].points[0], f);
+      lib3ds_word_write(mesh->faceL[i].points[1], f);
+      lib3ds_word_write(mesh->faceL[i].points[2], f);
+      lib3ds_word_write(mesh->faceL[i].flags, f);
+    }
+  }
+
+  { /*---- MSH_MAT_GROUP ----*/
+    Lib3dsChunk c;
+    unsigned i,j;
+    Lib3dsWord num;
+    char *matf=calloc(sizeof(char), mesh->faces);
+    if (!matf) {
+      return(LIB3DS_FALSE);
+    }
+    
+    for (i=0; i<mesh->faces; ++i) {
+      if (!matf[i]) {
+        matf[i]=1;
+        num=1;
+        
+        for (j=i+1; j<mesh->faces; ++j) {
+          if (strcmp(mesh->faceL[i].material, mesh->faceL[j].material)==0) ++num;
+        }
+        
+        c.chunk=LIB3DS_MSH_MAT_GROUP;
+        c.size=6+ strlen(mesh->faceL[i].material)+1 +2+2*num;
+        lib3ds_chunk_write(&c, f);
+        lib3ds_string_write(mesh->faceL[i].material, f);
+        lib3ds_word_write(num, f);
+        lib3ds_word_write((Lib3dsWord)i, f);
+        
+        for (j=i+1; j<mesh->faces; ++j) {
+          if (strcmp(mesh->faceL[i].material, mesh->faceL[j].material)==0) {
+            lib3ds_word_write((Lib3dsWord)j, f);
+            matf[j]=1;
+          }
+        }
+      }      
+    }
+    free(matf);
+  }
+
+  { /*---- SMOOTH_GROUP ----*/
+    Lib3dsChunk c;
+    unsigned i;
+    
+    c.chunk=LIB3DS_SMOOTH_GROUP;
+    c.size=6+4*mesh->faces;
+    lib3ds_chunk_write(&c, f);
+    
+    for (i=0; i<mesh->faces; ++i) {
+      lib3ds_dword_write(mesh->faceL[i].smoothing, f);
+    }
+  }
+  
+  { /*---- MSH_BOXMAP ----*/
+    Lib3dsChunk c;
+
+    if (strlen(mesh->box_map.front) ||
+      strlen(mesh->box_map.back) ||
+      strlen(mesh->box_map.left) ||
+      strlen(mesh->box_map.right) ||
+      strlen(mesh->box_map.top) ||
+      strlen(mesh->box_map.bottom)) {
+    
+      c.chunk=LIB3DS_MSH_BOXMAP;
+      if (!lib3ds_chunk_write_start(&c, f)) {
+        return(LIB3DS_FALSE);
+      }
+      
+      lib3ds_string_write(mesh->box_map.front, f);
+      lib3ds_string_write(mesh->box_map.back, f);
+      lib3ds_string_write(mesh->box_map.left, f);
+      lib3ds_string_write(mesh->box_map.right, f);
+      lib3ds_string_write(mesh->box_map.top, f);
+      lib3ds_string_write(mesh->box_map.bottom, f);
+      
+      if (!lib3ds_chunk_write_end(&c, f)) {
+        return(LIB3DS_FALSE);
+      }
+    }
+  }
+
+  if (!lib3ds_chunk_write_end(&c, f)) {
+    return(LIB3DS_FALSE);
+  }
+  return(LIB3DS_TRUE);
+}
+
+
+static Lib3dsBool
+texel_array_write(Lib3dsMesh *mesh, FILE *f)
+{
+  Lib3dsChunk c;
+  unsigned i;
+  
+  if (!mesh->texels || !mesh->texelL) {
+    return(LIB3DS_TRUE);
+  }
+  ASSERT(mesh->texels<0x10000);
+  c.chunk=LIB3DS_TEX_VERTS;
+  c.size=8+8*mesh->texels;
+  lib3ds_chunk_write(&c, f);
+  
+  lib3ds_word_write((Lib3dsWord)mesh->texels, f);
+  for (i=0; i<mesh->texels; ++i) {
+    lib3ds_float_write(mesh->texelL[i][0], f);
+    lib3ds_float_write(mesh->texelL[i][1], f);
+  }
   return(LIB3DS_TRUE);
 }
 
@@ -486,9 +732,84 @@ lib3ds_mesh_read(Lib3dsMesh *mesh, FILE *f)
 Lib3dsBool
 lib3ds_mesh_write(Lib3dsMesh *mesh, FILE *f)
 {
-  /* FIXME: */
-  ASSERT(0);
-  return(LIB3DS_FALSE);
+  Lib3dsChunk c;
+
+  c.chunk=LIB3DS_N_TRI_OBJECT;
+  if (!lib3ds_chunk_write_start(&c,f)) {
+    return(LIB3DS_FALSE);
+  }
+  if (!point_array_write(mesh, f)) {
+    return(LIB3DS_FALSE);
+  }
+  if (!flag_array_write(mesh, f)) {
+    return(LIB3DS_FALSE);
+  }
+  if (!face_array_write(mesh, f)) {
+    return(LIB3DS_FALSE);
+  }
+  if (!texel_array_write(mesh, f)) {
+    return(LIB3DS_FALSE);
+  }
+  { /*---- LIB3DS_MESH_MATRIX ----*/
+    Lib3dsChunk c;
+    int i,j;
+
+    c.chunk=LIB3DS_MESH_MATRIX;
+    c.size=54;
+    if (!lib3ds_chunk_write(&c,f)) {
+      return(LIB3DS_FALSE);
+    }
+    for (i=0; i<4; i++) {
+      for (j=0; j<3; j++) {
+        lib3ds_float_write(mesh->matrix[i][j], f);
+      }
+    }
+  }
+
+  { /*---- LIB3DS_MESH_COLOR ----*/
+    Lib3dsChunk c;
+    
+    c.chunk=LIB3DS_MESH_COLOR;
+    c.size=7;
+    if (!lib3ds_chunk_write(&c,f)) {
+      return(LIB3DS_FALSE);
+    }
+    lib3ds_byte_write(mesh->color, f);
+  }
+
+  { /*---- LIB3DS_MESH_TEXTURE_INFO ----*/
+    Lib3dsChunk c;
+    int i,j;
+    
+    c.chunk=LIB3DS_MESH_TEXTURE_INFO;
+    c.size=90;
+    if (!lib3ds_chunk_write(&c,f)) {
+      return(LIB3DS_FALSE);
+    }
+
+    for (i=0; i<2; ++i) {
+      lib3ds_float_write(mesh->map_data.tile[i], f);
+    }
+    for (i=0; i<3; ++i) {
+      lib3ds_float_write(mesh->map_data.pos[i], f);
+    }
+    lib3ds_float_write(mesh->map_data.scale, f);
+
+    for (i=0; i<4; i++) {
+      for (j=0; j<3; j++) {
+        lib3ds_float_write(mesh->map_data.matrix[i][j], f);
+      }
+    }
+    for (i=0; i<2; ++i) {
+      lib3ds_float_write(mesh->map_data.planar_size[i], f);
+    }
+    lib3ds_float_write(mesh->map_data.cylinder_height, f);
+  }
+
+  if (!lib3ds_chunk_write_end(&c,f)) {
+    return(LIB3DS_FALSE);
+  }
+  return(LIB3DS_TRUE);
 }
 
 

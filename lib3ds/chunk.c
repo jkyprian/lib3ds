@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,13 +17,17 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: chunk.c,v 1.6 2000/10/19 17:35:35 jeh Exp $
+ * $Id: chunk.c,v 1.12 2001/01/15 09:35:45 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/chunk.h>
 #include <lib3ds/readwrite.h>
 #include <lib3ds/chunktable.h>
 #include <string.h>
+
+
+/*#define LIB3DS_CHUNK_DEBUG*/
+/*#define LIB3DS_CHUNK_WARNING*/
 
 
 /*!
@@ -33,7 +37,8 @@
  */
 
 
-#ifdef _DEBUG
+static Lib3dsBool enable_dump=LIB3DS_FALSE;
+static Lib3dsBool enable_unknown=LIB3DS_FALSE;
 static char lib3ds_chunk_level[128]="";
 
 
@@ -54,15 +59,26 @@ lib3ds_chunk_debug_leave(Lib3dsChunk *c)
 static void
 lib3ds_chunk_debug_dump(Lib3dsChunk *c)
 {
-  /*
-  fprintf(stderr, "%s%s (0x%X) size=%lu\n",
-    lib3ds_chunk_level,
-    lib3ds_chunk_name(c->chunk),
-    c->chunk,
-    c->size
-    );*/
+  if (enable_dump) {
+    printf("%s%s (0x%X) size=%lu\n",
+      lib3ds_chunk_level,
+      lib3ds_chunk_name(c->chunk),
+      c->chunk,
+      c->size
+    );
+  }
 }
-#endif
+
+
+/*!
+ * \ingroup chunk
+ */
+void
+lib3ds_chunk_enable_dump(Lib3dsBool enable, Lib3dsBool unknown)
+{
+  enable_dump=enable;
+  enable_unknown=unknown;
+}
 
 
 /*!
@@ -85,7 +101,7 @@ lib3ds_chunk_read(Lib3dsChunk *c, FILE *f)
   c->size=lib3ds_dword_read(f);
   c->end=c->cur+c->size;
   c->cur+=6;
-  if (ferror(f)) {
+  if (ferror(f) || (c->size<6)) {
     return(LIB3DS_FALSE);
   }
   return(LIB3DS_TRUE);
@@ -97,16 +113,14 @@ lib3ds_chunk_read(Lib3dsChunk *c, FILE *f)
  * \ingroup chunk
  */
 Lib3dsBool
-lib3ds_chunk_start(Lib3dsChunk *c, Lib3dsWord chunk, FILE *f)
+lib3ds_chunk_read_start(Lib3dsChunk *c, Lib3dsWord chunk, FILE *f)
 {
   ASSERT(c);
   ASSERT(f);
   if (!lib3ds_chunk_read(c, f)) {
     return(LIB3DS_FALSE);
   }
-  #ifdef _DEBUG
   lib3ds_chunk_debug_enter(c);
-  #endif
   return((chunk==0) || (c->chunk==chunk));
 }
 
@@ -115,7 +129,7 @@ lib3ds_chunk_start(Lib3dsChunk *c, Lib3dsWord chunk, FILE *f)
  * \ingroup chunk
  */
 void
-lib3ds_chunk_tell(Lib3dsChunk *c, FILE *f)
+lib3ds_chunk_read_tell(Lib3dsChunk *c, FILE *f)
 {
   c->cur=ftell(f);
 }
@@ -125,7 +139,7 @@ lib3ds_chunk_tell(Lib3dsChunk *c, FILE *f)
  * \ingroup chunk
  */
 Lib3dsWord
-lib3ds_chunk_next(Lib3dsChunk *c, FILE *f)
+lib3ds_chunk_read_next(Lib3dsChunk *c, FILE *f)
 {
   Lib3dsChunk d;
 
@@ -134,12 +148,10 @@ lib3ds_chunk_next(Lib3dsChunk *c, FILE *f)
     return(0);
   }
 
-  fseek(f, c->cur, SEEK_SET);
+  fseek(f, (long)c->cur, SEEK_SET);
   d.chunk=lib3ds_word_read(f);
   d.size=lib3ds_dword_read(f);
-  #ifdef _DEBUG
   lib3ds_chunk_debug_dump(&d);
-  #endif
   c->cur+=d.size;
   return(d.chunk);
 }
@@ -149,7 +161,7 @@ lib3ds_chunk_next(Lib3dsChunk *c, FILE *f)
  * \ingroup chunk
  */
 void
-lib3ds_chunk_reset(Lib3dsChunk *c, FILE *f)
+lib3ds_chunk_read_reset(Lib3dsChunk *c, FILE *f)
 {
   fseek(f, -6, SEEK_CUR);
 }
@@ -159,11 +171,9 @@ lib3ds_chunk_reset(Lib3dsChunk *c, FILE *f)
  * \ingroup chunk
  */
 void
-lib3ds_chunk_end(Lib3dsChunk *c, FILE *f)
+lib3ds_chunk_read_end(Lib3dsChunk *c, FILE *f)
 {
-  #ifdef _DEBUG
   lib3ds_chunk_debug_leave(c);
-  #endif
   fseek(f, c->end, SEEK_SET);
 }
 
@@ -183,9 +193,54 @@ lib3ds_chunk_write(Lib3dsChunk *c, FILE *f)
 {
   ASSERT(c);
   if (!lib3ds_word_write(c->chunk, f)) {
+    LIB3DS_ERROR_LOG;
     return(LIB3DS_FALSE);
   }
   if (!lib3ds_dword_write(c->size, f)) {
+    LIB3DS_ERROR_LOG;
+    return(LIB3DS_FALSE);
+  }
+  return(LIB3DS_TRUE);
+}
+
+
+/*!
+ * \ingroup chunk
+ */
+Lib3dsBool
+lib3ds_chunk_write_start(Lib3dsChunk *c, FILE *f)
+{
+  ASSERT(c);
+  c->size=0;
+  c->cur=ftell(f);
+  if (!lib3ds_word_write(c->chunk, f)) {
+    return(LIB3DS_FALSE);
+  }
+  if (!lib3ds_dword_write(c->size, f)) {
+    return(LIB3DS_FALSE);
+  }
+  return(LIB3DS_TRUE);
+}
+
+
+/*!
+ * \ingroup chunk
+ */
+Lib3dsBool
+lib3ds_chunk_write_end(Lib3dsChunk *c, FILE *f)
+{
+  ASSERT(c);
+  c->size=ftell(f) - c->cur;
+  fseek(f, c->cur+2, SEEK_SET);
+  if (!lib3ds_dword_write(c->size, f)) {
+    LIB3DS_ERROR_LOG;
+    return(LIB3DS_FALSE);
+  }
+
+  c->cur+=c->size;
+  fseek(f, c->cur, SEEK_SET);
+  if (ferror(f)) {
+    LIB3DS_ERROR_LOG;
     return(LIB3DS_FALSE);
   }
   return(LIB3DS_TRUE);
@@ -215,14 +270,13 @@ lib3ds_chunk_name(Lib3dsWord chunk)
 void
 lib3ds_chunk_unknown(Lib3dsWord chunk)
 {
-  #ifdef _DEBUG
-  /*
-  fprintf(stderr, "%s***WARNING*** Unknown Chunk: %s (0x%X)\n",
-    lib3ds_chunk_level,
-    lib3ds_chunk_name(chunk),
-    chunk
-    );*/
-  #endif
+  if (enable_unknown) {
+    printf("%s***WARNING*** Unknown Chunk: %s (0x%X)\n",
+      lib3ds_chunk_level,
+      lib3ds_chunk_name(chunk),
+      chunk
+    );
+  }
 }
 
 

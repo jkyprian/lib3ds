@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_MATERIAL_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: material.h,v 1.8 2000/10/19 17:35:35 jeh Exp $
+ * $Id: material.h,v 1.10 2001/01/12 10:29:17 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -58,11 +58,11 @@ typedef struct _Lib3dsTextureMap {
     Lib3dsFloat scale[2];
     Lib3dsFloat offset[2];
     Lib3dsFloat rotation;
-    Lib3dsRgba tint_1;
-    Lib3dsRgba tint_2;
-    Lib3dsRgba tint_r;
-    Lib3dsRgba tint_g;
-    Lib3dsRgba tint_b;
+    Lib3dsRgb tint_1;
+    Lib3dsRgb tint_2;
+    Lib3dsRgb tint_r;
+    Lib3dsRgb tint_g;
+    Lib3dsRgb tint_b;
 } Lib3dsTextureMap;
 
 /*!
@@ -118,11 +118,11 @@ struct _Lib3dsMaterial {
     Lib3dsRgba diffuse;
     Lib3dsRgba specular;
     Lib3dsFloat shininess;
-    Lib3dsIntw shin_strength;
+    Lib3dsFloat shin_strength;
     Lib3dsBool use_blur;
-    Lib3dsIntw blur;
-    Lib3dsIntw transparency;
-    Lib3dsIntw falloff;
+    Lib3dsFloat blur;
+    Lib3dsFloat transparency;
+    Lib3dsFloat falloff;
     Lib3dsBool additive;
     Lib3dsBool use_falloff;
     Lib3dsBool self_illum;
@@ -130,7 +130,7 @@ struct _Lib3dsMaterial {
     Lib3dsBool soften;
     Lib3dsBool face_map;
     Lib3dsBool two_sided;
-    Lib3dsBool map_decale;
+    Lib3dsBool map_decal;
     Lib3dsBool use_wire;
     Lib3dsBool use_wire_abs;
     Lib3dsFloat wire_size;

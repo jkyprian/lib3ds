@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: readwrite.c,v 1.3 2000/10/09 12:33:50 jeh Exp $
+ * $Id: readwrite.c,v 1.6 2001/01/14 20:55:23 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/readwrite.h>
@@ -28,18 +28,6 @@
  *
  * \author J.E. Hoffmann <je-h@gmx.net>
  */
-
-
-/*--WORD & DWORD swapping routines for little/big endian conversations--*/
-#ifdef WORDS_BIGENDIAN 
-#define SWAPWORD(w) w=\
-  ((((w)<<8)&0xFF00)|(((w)>>8)&0xFF));
-#define SWAPDWORD(d) d=\
-  ((((d)>>24)&0xFF)|(((d)>>8)&0xFF00)|(((d)<<8)&0xFF0000)|(((d)<<24)&0xFF000000));
-#else 
-#define SWAPWORD(w)   
-#define SWAPDWORD(d) 
-#endif
 
 
 /*!
@@ -72,11 +60,13 @@ lib3ds_byte_read(FILE *f)
 Lib3dsWord
 lib3ds_word_read(FILE *f)
 {
+  Lib3dsByte b[2];
   Lib3dsWord w;
 
   ASSERT(f);
-  fread(&w,2,1,f);
-  SWAPWORD(w);
+  fread(b,2,1,f);
+  w=((Lib3dsWord)b[1] << 8) |
+    ((Lib3dsWord)b[0]);
   return(w);
 }
 
@@ -93,11 +83,15 @@ lib3ds_word_read(FILE *f)
 Lib3dsDword
 lib3ds_dword_read(FILE *f)
 {
+  Lib3dsByte b[4];
   Lib3dsDword d;        
                          
   ASSERT(f);
-  fread(&d,4,1,f);
-  SWAPDWORD(d);
+  fread(b,4,1,f);
+  d=((Lib3dsDword)b[3] << 24) |
+    ((Lib3dsDword)b[2] << 16) |
+    ((Lib3dsDword)b[1] << 8) |
+    ((Lib3dsDword)b[0]);
   return(d);
 }
 
@@ -134,11 +128,13 @@ lib3ds_intb_read(FILE *f)
 Lib3dsIntw
 lib3ds_intw_read(FILE *f)
 {
+  Lib3dsByte b[2];
   Lib3dsWord w;
 
   ASSERT(f);
-  fread(&w,2,1,f);
-  SWAPWORD(w);
+  fread(b,2,1,f);
+  w=((Lib3dsWord)b[1] << 8) |
+    ((Lib3dsWord)b[0]);
   return((Lib3dsIntw)w);
 }
 
@@ -155,11 +151,15 @@ lib3ds_intw_read(FILE *f)
 Lib3dsIntd
 lib3ds_intd_read(FILE *f)
 {
+  Lib3dsByte b[4];
   Lib3dsDword d;        
                          
   ASSERT(f);
-  fread(&d,4,1,f);
-  SWAPDWORD(d);
+  fread(b,4,1,f);
+  d=((Lib3dsDword)b[3] << 24) |
+    ((Lib3dsDword)b[2] << 16) |
+    ((Lib3dsDword)b[1] << 8) |
+    ((Lib3dsDword)b[0]);
   return((Lib3dsIntd)d);
 }
 
@@ -176,12 +176,58 @@ lib3ds_intd_read(FILE *f)
 Lib3dsFloat
 lib3ds_float_read(FILE *f)
 {
+  Lib3dsByte b[4];
   Lib3dsDword d;
 
   ASSERT(f);
-  fread(&d,4,1,f);
-  SWAPDWORD(d);
+  fread(b,4,1,f);
+  d=((Lib3dsDword)b[3] << 24) |
+    ((Lib3dsDword)b[2] << 16) |
+    ((Lib3dsDword)b[1] << 8) |
+    ((Lib3dsDword)b[0]);
   return(*((Lib3dsFloat*)&d));
+}
+
+
+/*!
+ * \ingroup readwrite
+ * \ingroup vector
+ *
+ * Read a vector from a file stream in little endian format.   
+ *
+ * \param v  The vector to store the data. 
+ * \param f  Input file stream. 
+ *
+ * \return The float read. 
+ */
+Lib3dsBool
+lib3ds_vector_read(Lib3dsVector v, FILE *f)
+{
+  v[0]=lib3ds_float_read(f);
+  v[1]=lib3ds_float_read(f);
+  v[2]=lib3ds_float_read(f);
+
+  if (ferror(f)) {
+    return(LIB3DS_FALSE);
+  }
+  return(LIB3DS_TRUE);
+}
+
+
+/*!
+ * \ingroup readwrite
+ */
+Lib3dsBool
+lib3ds_rgb_read(Lib3dsRgb rgb, FILE *f)
+{
+  rgb[0]=lib3ds_float_read(f);
+  rgb[1]=lib3ds_float_read(f);
+  rgb[2]=lib3ds_float_read(f);
+
+  if (ferror(f)) {
+    return(LIB3DS_FALSE);
+  }
+  return(LIB3DS_TRUE);
 }
 
 
@@ -247,9 +293,12 @@ lib3ds_byte_write(Lib3dsByte b, FILE *f)
 Lib3dsBool
 lib3ds_word_write(Lib3dsWord w, FILE *f)
 {
+  Lib3dsByte b[2];
+
   ASSERT(f);
-  SWAPWORD(w);
-  if (fwrite(&w,2,1,f)!=2) {
+  b[1]=((Lib3dsWord)w & 0xFF00) >> 8;
+  b[0]=((Lib3dsWord)w & 0x00FF);
+  if (fwrite(b,2,1,f)!=1) {
     return(LIB3DS_FALSE);
   }
   return(LIB3DS_TRUE);
@@ -269,9 +318,14 @@ lib3ds_word_write(Lib3dsWord w, FILE *f)
 Lib3dsBool
 lib3ds_dword_write(Lib3dsDword d, FILE *f)
 {
+  Lib3dsByte b[4];
+
   ASSERT(f);
-  SWAPDWORD(d);
-  if (fwrite(&d,4,1,f)!=4) {
+  b[3]=(Lib3dsByte)(((Lib3dsDword)d & 0xFF000000) >> 24);
+  b[2]=(Lib3dsByte)(((Lib3dsDword)d & 0x00FF0000) >> 16);
+  b[1]=(Lib3dsByte)(((Lib3dsDword)d & 0x0000FF00) >> 8);
+  b[0]=(Lib3dsByte)(((Lib3dsDword)d & 0x000000FF));
+  if (fwrite(b,4,1,f)!=1) {
     return(LIB3DS_FALSE);
   }
   return(LIB3DS_TRUE);
@@ -312,12 +366,12 @@ lib3ds_intb_write(Lib3dsIntb b, FILE *f)
 Lib3dsBool
 lib3ds_intw_write(Lib3dsIntw w, FILE *f)
 {
-  Lib3dsWord ww;
+  Lib3dsByte b[2];
 
   ASSERT(f);
-  ww=(Lib3dsWord)w;
-  SWAPWORD(ww);
-  if (fwrite(&ww,2,1,f)!=2) {
+  b[1]=((Lib3dsWord)w & 0xFF00) >> 8;
+  b[0]=((Lib3dsWord)w & 0x00FF);
+  if (fwrite(b,2,1,f)!=1) {
     return(LIB3DS_FALSE);
   }
   return(LIB3DS_TRUE);
@@ -337,12 +391,14 @@ lib3ds_intw_write(Lib3dsIntw w, FILE *f)
 Lib3dsBool
 lib3ds_intd_write(Lib3dsIntd d, FILE *f)
 {
-  Lib3dsDword dd;
+  Lib3dsByte b[4];
 
   ASSERT(f);
-  dd=(Lib3dsDword)d;
-  SWAPDWORD(dd);
-  if (fwrite(&dd,4,1,f)!=4) {
+  b[3]=(Lib3dsByte)(((Lib3dsDword)d & 0xFF000000) >> 24);
+  b[2]=(Lib3dsByte)(((Lib3dsDword)d & 0x00FF0000) >> 16);
+  b[1]=(Lib3dsByte)(((Lib3dsDword)d & 0x0000FF00) >> 8);
+  b[0]=(Lib3dsByte)(((Lib3dsDword)d & 0x000000FF));
+  if (fwrite(b,4,1,f)!=1) {
     return(LIB3DS_FALSE);
   }
   return(LIB3DS_TRUE);
@@ -362,12 +418,60 @@ lib3ds_intd_write(Lib3dsIntd d, FILE *f)
 Lib3dsBool
 lib3ds_float_write(Lib3dsFloat l, FILE *f)
 {
+  Lib3dsByte b[4];
   Lib3dsDword d;
 
   ASSERT(f);
   d=*((Lib3dsDword*)&l);
-  SWAPDWORD(d);
-  if (fwrite(&d,4,1,f)!=sizeof(float)) {
+  b[3]=(Lib3dsByte)(((Lib3dsDword)d & 0xFF000000) >> 24);
+  b[2]=(Lib3dsByte)(((Lib3dsDword)d & 0x00FF0000) >> 16);
+  b[1]=(Lib3dsByte)(((Lib3dsDword)d & 0x0000FF00) >> 8);
+  b[0]=(Lib3dsByte)(((Lib3dsDword)d & 0x000000FF));
+  if (fwrite(b,4,1,f)!=1) {
+    return(LIB3DS_FALSE);
+  }
+  return(LIB3DS_TRUE);
+}
+
+
+/*!
+ * \ingroup readwrite
+ * \ingroup vector
+ *
+ * Writes a vector into a file stream in little endian format.   
+ *
+ * \param v  The vector to write to the file stream. 
+ * \param f  Input file stream. 
+ */
+Lib3dsBool
+lib3ds_vector_write(Lib3dsVector v, FILE *f)
+{
+  if (!lib3ds_float_write(v[0], f)) {
+    return(LIB3DS_FALSE);
+  }
+  if (!lib3ds_float_write(v[1], f)) {
+    return(LIB3DS_FALSE);
+  }
+  if (!lib3ds_float_write(v[2], f)) {
+    return(LIB3DS_FALSE);
+  }
+  return(LIB3DS_TRUE);
+}
+
+
+/*!
+ * \ingroup readwrite
+ */
+Lib3dsBool
+lib3ds_rgb_write(Lib3dsRgb rgb, FILE *f)
+{
+  if (!lib3ds_float_write(rgb[0], f)) {
+    return(LIB3DS_FALSE);
+  }
+  if (!lib3ds_float_write(rgb[1], f)) {
+    return(LIB3DS_FALSE);
+  }
+  if (!lib3ds_float_write(rgb[2], f)) {
     return(LIB3DS_FALSE);
   }
   return(LIB3DS_TRUE);
