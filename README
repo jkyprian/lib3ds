@@ -1,0 +1,12 @@
+
+ This project is not related in any form to Autodesk. The library is 
+ based on unofficial information about the 3DS format found on the web. 
+ 
+ This  program  is  distributed in  the  hope that it will  be useful,  but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ or FITNESS FOR A PARTICULAR PURPOSE. See the GNU  General  Public  License
+ for more details.
+
+ lib3ds needs the Math3d library <http://math3d.sourceforge.net>
+
+
