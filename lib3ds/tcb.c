@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: tcb.c,v 1.3 2000/10/09 12:33:50 jeh Exp $
+ * $Id: tcb.c,v 1.4 2000/10/19 17:35:35 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/tcb.h>
@@ -54,7 +54,7 @@ lib3ds_tcb(Lib3dsTcb *p, Lib3dsTcb *pc, Lib3dsTcb *c, Lib3dsTcb *nc, Lib3dsTcb *
     dt=0.5f*(pc->frame-p->frame+n->frame-nc->frame);
     fp=((pc->frame-p->frame))/dt;
     fn=((n->frame-nc->frame))/dt;
-    cc=fabs(c->cont);
+    cc=(Lib3dsFloat)fabs(c->cont);
     fp=fp+cc-cc*fp;
     fn=fn+cc-cc*fn;
   }

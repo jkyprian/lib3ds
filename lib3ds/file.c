@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: file.c,v 1.8 2000/10/09 13:05:16 jeh Exp $
+ * $Id: file.c,v 1.9 2000/10/19 17:35:35 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/file.h>
@@ -48,7 +48,7 @@ named_object_read(Lib3dsFile *file, FILE *f)
 {
   Lib3dsChunk c;
   char name[64];
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   if (!lib3ds_chunk_start(&c, LIB3DS_NAMED_OBJECT, f)) {
     return(LIB3DS_FALSE);
@@ -119,7 +119,7 @@ static Lib3dsBool
 ambient_read(Lib3dsFile *file, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   if (!lib3ds_chunk_start(&c, LIB3DS_AMBIENT_LIGHT, f)) {
     return(LIB3DS_FALSE);
@@ -149,7 +149,7 @@ static Lib3dsBool
 mdata_read(Lib3dsFile *file, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   if (!lib3ds_chunk_start(&c, LIB3DS_MDATA, f)) {
     return(LIB3DS_FALSE);
@@ -266,7 +266,7 @@ static Lib3dsBool
 kfdata_read(Lib3dsFile *file, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   if (!lib3ds_chunk_start(&c, LIB3DS_KFDATA, f)) {
     return(LIB3DS_FALSE);

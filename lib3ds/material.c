@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: material.c,v 1.5 2000/10/09 12:33:50 jeh Exp $
+ * $Id: material.c,v 1.6 2000/10/19 17:35:35 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/material.h>
@@ -25,6 +25,7 @@
 #include <lib3ds/readwrite.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include <config.h>
 #ifdef WITH_DMALLOC
 #include <dmalloc.h>
@@ -69,7 +70,7 @@ static Lib3dsBool
 color_read(Lib3dsRgba rgb, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   if (!lib3ds_chunk_start(&c, 0, f)) {
     return(LIB3DS_FALSE);
@@ -81,7 +82,7 @@ color_read(Lib3dsRgba rgb, FILE *f)
         {
           int i;
           for (i=0; i<3; ++i) {
-            rgb[i]=1.0*lib3ds_byte_read(f)/255.0;
+            rgb[i]=1.0f*lib3ds_byte_read(f)/255.0f;
           }
           rgb[3]=1.0f;
         }
@@ -102,7 +103,7 @@ static Lib3dsBool
 int_percentage_read(Lib3dsIntw *p, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   if (!lib3ds_chunk_start(&c, 0, f)) {
     return(LIB3DS_FALSE);
@@ -129,7 +130,7 @@ static Lib3dsBool
 texture_map_read(Lib3dsTextureMap *map, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   if (!lib3ds_chunk_start(&c, 0, f)) {
     return(LIB3DS_FALSE);
@@ -181,37 +182,37 @@ texture_map_read(Lib3dsTextureMap *map, FILE *f)
         break;
       case LIB3DS_MAT_MAP_COL1:
         {
-          map->tint_1[0]=1.0*lib3ds_byte_read(f)/255.0;
-          map->tint_1[1]=1.0*lib3ds_byte_read(f)/255.0;
-          map->tint_1[2]=1.0*lib3ds_byte_read(f)/255.0;
+          map->tint_1[0]=1.0f*lib3ds_byte_read(f)/255.0f;
+          map->tint_1[1]=1.0f*lib3ds_byte_read(f)/255.0f;
+          map->tint_1[2]=1.0f*lib3ds_byte_read(f)/255.0f;
         }
         break;
       case LIB3DS_MAT_MAP_COL2:
         {
-          map->tint_2[0]=1.0*lib3ds_byte_read(f)/255.0;
-          map->tint_2[1]=1.0*lib3ds_byte_read(f)/255.0;
-          map->tint_2[2]=1.0*lib3ds_byte_read(f)/255.0;
+          map->tint_2[0]=1.0f*lib3ds_byte_read(f)/255.0f;
+          map->tint_2[1]=1.0f*lib3ds_byte_read(f)/255.0f;
+          map->tint_2[2]=1.0f*lib3ds_byte_read(f)/255.0f;
         }
         break;
       case LIB3DS_MAT_MAP_RCOL:
         {
-          map->tint_r[0]=1.0*lib3ds_byte_read(f)/255.0;
-          map->tint_r[1]=1.0*lib3ds_byte_read(f)/255.0;
-          map->tint_r[2]=1.0*lib3ds_byte_read(f)/255.0;
+          map->tint_r[0]=1.0f*lib3ds_byte_read(f)/255.0f;
+          map->tint_r[1]=1.0f*lib3ds_byte_read(f)/255.0f;
+          map->tint_r[2]=1.0f*lib3ds_byte_read(f)/255.0f;
         }
         break;
       case LIB3DS_MAT_MAP_GCOL:
         {
-          map->tint_g[0]=1.0*lib3ds_byte_read(f)/255.0;
-          map->tint_g[1]=1.0*lib3ds_byte_read(f)/255.0;
-          map->tint_g[2]=1.0*lib3ds_byte_read(f)/255.0;
+          map->tint_g[0]=1.0f*lib3ds_byte_read(f)/255.0f;
+          map->tint_g[1]=1.0f*lib3ds_byte_read(f)/255.0f;
+          map->tint_g[2]=1.0f*lib3ds_byte_read(f)/255.0f;
         }
         break;
       case LIB3DS_MAT_MAP_BCOL:
         {
-          map->tint_b[0]=1.0*lib3ds_byte_read(f)/255.0;
-          map->tint_b[1]=1.0*lib3ds_byte_read(f)/255.0;
-          map->tint_b[2]=1.0*lib3ds_byte_read(f)/255.0;
+          map->tint_b[0]=1.0f*lib3ds_byte_read(f)/255.0f;
+          map->tint_b[1]=1.0f*lib3ds_byte_read(f)/255.0f;
+          map->tint_b[2]=1.0f*lib3ds_byte_read(f)/255.0f;
         }
         break;
       default:
@@ -242,7 +243,7 @@ Lib3dsBool
 lib3ds_material_read(Lib3dsMaterial *material, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   ASSERT(material);
   if (!lib3ds_chunk_start(&c, LIB3DS_MAT_ENTRY, f)) {

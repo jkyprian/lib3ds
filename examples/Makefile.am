@@ -17,27 +17,33 @@
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.1 2000/10/09 12:53:04 jeh Exp $
+ # $Id: Makefile.am,v 1.4 2000/10/25 17:22:01 jeh Exp $
  #
 
 INCLUDES = \
   -I$(top_srcdir) \
   @DMALLOC_CFLAGS@
 
-noinst_PROGRAMS = \
+bin_PROGRAMS = \
   lib3dsdump \
   lib3ds2m \
-  lib3ds2rib \
-  lib3ds2pov 
+  lib3ds2rib
 
 lib3dsdump_SOURCES = lib3dsdump.c
 lib3ds2m_SOURCES = lib3ds2m.c
 lib3ds2rib_SOURCES = lib3ds2rib.c
-lib3ds2pov_SOURCES = lib3ds2pov.c
 
 LDADD = \
   $(top_builddir)/lib3ds/lib3ds.la \
   @DMALLOC_LIBS@
+
+MANPAGES = \
+  lib3dsdump.1 \
+  lib3ds2m.1 \
+  lib3ds2rib.1
+
+man_MANS = $(MANPAGES)
+EXTRA_DIST = $(MANPAGES)
 
 
 

@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: node.c,v 1.5 2000/10/09 12:33:50 jeh Exp $
+ * $Id: node.c,v 1.6 2000/10/19 17:35:35 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/node.h>
@@ -25,6 +25,7 @@
 #include <lib3ds/chunk.h>
 #include <lib3ds/matrix.h>
 #include <stdlib.h>
+#include <string.h>
 #include <config.h>
 #ifdef WITH_DMALLOC
 #include <dmalloc.h>
@@ -407,7 +408,7 @@ Lib3dsBool
 lib3ds_node_read(Lib3dsNode *node, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   ASSERT(node);
   if (!lib3ds_chunk_start(&c, 0, f)) {

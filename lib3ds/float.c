@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: float.c,v 1.2 2000/10/09 12:33:50 jeh Exp $
+ * $Id: float.c,v 1.3 2000/10/19 17:35:35 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/float.h>
@@ -42,6 +42,6 @@ lib3ds_float_cubic(Lib3dsFloat a, Lib3dsFloat p, Lib3dsFloat q, Lib3dsFloat b, L
   y=-2*t*t*t + 3*t*t;
   z=t*t*t - 2*t*t + t;
   w=t*t*t - t*t;
-  return(x*a + y*b + z*p + w*q);
+  return((Lib3dsFloat)(x*a + y*b + z*p + w*q));
 }
 

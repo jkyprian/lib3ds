@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: material.h,v 1.7 2000/10/17 15:16:04 jeh Exp $
+ * $Id: material.h,v 1.8 2000/10/19 17:35:35 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -117,7 +117,7 @@ struct _Lib3dsMaterial {
     Lib3dsRgba ambient;
     Lib3dsRgba diffuse;
     Lib3dsRgba specular;
-    Lib3dsIntw shininess;
+    Lib3dsFloat shininess;
     Lib3dsIntw shin_strength;
     Lib3dsBool use_blur;
     Lib3dsIntw blur;

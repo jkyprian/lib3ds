@@ -17,9 +17,11 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: lib3dsdump.c,v 1.2 2000/10/09 13:05:16 jeh Exp $
+ * $Id: lib3dsdump.c,v 1.3 2000/10/19 20:35:29 jeh Exp $
  */
 #include <lib3ds/file.h>
+#include <stdlib.h>
+#include <string.h>
 #include <config.h>
 #ifdef WITH_DMALLOC
 #include <dmalloc.h>

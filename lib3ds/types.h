@@ -20,13 +20,13 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: types.h,v 1.8 2000/10/09 12:33:50 jeh Exp $
+ * $Id: types.h,v 1.9 2000/10/19 19:07:58 jeh Exp $
  */
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if defined(_WIN32) && (!defined(_NODLLCC))
+#if defined(_WIN32) && (!defined(__GNUC__))
 #ifdef LIB3DS_EXPORT
 #define LIB3DSAPI __declspec(dllexport)
 #else               

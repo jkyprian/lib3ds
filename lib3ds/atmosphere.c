@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: atmosphere.c,v 1.2 2000/10/09 12:33:50 jeh Exp $
+ * $Id: atmosphere.c,v 1.3 2000/10/19 17:35:35 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/atmosphere.h>
@@ -36,7 +36,7 @@ static Lib3dsBool
 fog_read(Lib3dsFog *fog, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   if (!lib3ds_chunk_start(&c, LIB3DS_FOG, f)) {
     return(LIB3DS_FALSE);
@@ -78,7 +78,7 @@ static Lib3dsBool
 layer_fog_read(Lib3dsLayerFog *fog, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   if (!lib3ds_chunk_start(&c, LIB3DS_LAYER_FOG, f)) {
     return(LIB3DS_FALSE);
@@ -115,7 +115,7 @@ static Lib3dsBool
 distance_cue_read(Lib3dsDistanceCue *cue, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   if (!lib3ds_chunk_start(&c, LIB3DS_DISTANCE_CUE, f)) {
     return(LIB3DS_FALSE);

@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: tracks.c,v 1.5 2000/10/09 12:33:50 jeh Exp $
+ * $Id: tracks.c,v 1.6 2000/10/19 17:35:35 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/tracks.h>
@@ -27,6 +27,7 @@
 #include <lib3ds/vector.h>
 #include <lib3ds/quat.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include <config.h>
 #ifdef WITH_DMALLOC
@@ -451,7 +452,7 @@ lib3ds_lin1_track_eval(Lib3dsLin1Track *track, Lib3dsFloat *p, Lib3dsFloat t)
   }
   if (!k->next) {
     if (track->flags&LIB3DS_REPEAT) {
-      nt=fmod(t, k->tcb.frame);
+      nt=(Lib3dsFloat)fmod(t, k->tcb.frame);
       for (k=track->keyL; k->next!=0; k=k->next) {
         if ((nt>=k->tcb.frame) && (nt<k->next->tcb.frame)) {
           break;
@@ -743,7 +744,7 @@ lib3ds_lin3_track_eval(Lib3dsLin3Track *track, Lib3dsVector p, Lib3dsFloat t)
   }
   if (!k->next) {
     if (track->flags&LIB3DS_REPEAT) {
-      nt=fmod(t, k->tcb.frame);
+      nt=(Lib3dsFloat)fmod(t, k->tcb.frame);
       for (k=track->keyL; k->next!=0; k=k->next) {
         if ((nt>=k->tcb.frame) && (nt<k->next->tcb.frame)) {
           break;
@@ -902,8 +903,8 @@ lib3ds_quat_key_setup(Lib3dsQuatKey *p, Lib3dsQuatKey *cp, Lib3dsQuatKey *c,
   if (n && p) {
     lib3ds_tcb(&p->tcb, &cp->tcb, &c->tcb, &cn->tcb, &n->tcb, &ksm, &ksp, &kdm, &kdp);
     for(i=0; i<4; i++) {
-      qa[i]=-0.5*(kdm*qn[i]+kdp*qp[i]);
-      qb[i]=-0.5*(ksm*qn[i]+ksp*qp[i]);
+      qa[i]=-0.5f*(kdm*qn[i]+kdp*qp[i]);
+      qb[i]=-0.5f*(ksm*qn[i]+ksp*qp[i]);
     }
     lib3ds_quat_exp(qa);
     lib3ds_quat_exp(qb);
@@ -1074,7 +1075,7 @@ lib3ds_quat_track_eval(Lib3dsQuatTrack *track, Lib3dsQuat q, Lib3dsFloat t)
   }
   if (!k->next) {
     if (track->flags&LIB3DS_REPEAT) {
-      nt=fmod(t, k->tcb.frame);
+      nt=(Lib3dsFloat)fmod(t, k->tcb.frame);
       for (k=track->keyL; k->next!=0; k=k->next) {
         if ((nt>=k->tcb.frame) && (nt<k->next->tcb.frame)) {
           break;
@@ -1258,6 +1259,7 @@ lib3ds_morph_track_eval(Lib3dsMorphTrack *track, char *p, Lib3dsFloat t)
   }
 
   result=0;
+  k=track->keyL;
   while ((t<k->tcb.frame) && (t>=k->next->tcb.frame)) {
     result=k->name;
     if (!k->next) {

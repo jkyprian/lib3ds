@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: light.c,v 1.3 2000/10/09 12:33:50 jeh Exp $
+ * $Id: light.c,v 1.4 2000/10/19 17:35:35 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/light.h>
@@ -25,6 +25,7 @@
 #include <lib3ds/readwrite.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include <config.h>
 #ifdef WITH_DMALLOC
 #include <dmalloc.h>
@@ -76,7 +77,7 @@ Lib3dsBool
 lib3ds_light_read(Lib3dsLight *light, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   if (!lib3ds_chunk_start(&c, LIB3DS_N_DIRECT_LIGHT, f)) {
     return(LIB3DS_FALSE);

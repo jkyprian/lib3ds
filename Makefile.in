@@ -82,13 +82,16 @@ PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 
-SUBDIRS = lib3ds examples
+SUBDIRS = msvc lib3ds examples
 
 bin_SCRIPTS = lib3ds-config
 
 AUTOMAKE_OPTIONS = 1.4
 
-EXTRA_DIST =    lib3ds.m4   AUTHORS   COPYING   ChangeLog   INSTALL   README   TODO 
+man_MANS =    lib3ds-config.1
+
+
+EXTRA_DIST =    lib3ds.m4   lib3ds-config.1   AUTHORS   COPYING   ChangeLog   INSTALL   README   TODO   config.h 
 
 
 m4datadir = $(datadir)/aclocal
@@ -99,6 +102,10 @@ CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =  lib3ds-config
 SCRIPTS =  $(bin_SCRIPTS)
 
+man1dir = $(mandir)/man1
+MANS = $(man_MANS)
+
+NROFF = nroff
 DATA =  $(m4data_DATA)
 
 DIST_COMMON =  README ./stamp-h.in AUTHORS COPYING ChangeLog INSTALL \
@@ -176,6 +183,45 @@ uninstall-binSCRIPTS:
 	list='$(bin_SCRIPTS)'; for p in $$list; do \
 	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
 	done
+
+install-man1:
+	$(mkinstalldirs) $(DESTDIR)$(man1dir)
+	@list='$(man1_MANS)'; \
+	l2='$(man_MANS)'; for i in $$l2; do \
+	  case "$$i" in \
+	    *.1*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
+	  else file=$$i; fi; \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " $(INSTALL_DATA) $$file $(DESTDIR)$(man1dir)/$$inst"; \
+	  $(INSTALL_DATA) $$file $(DESTDIR)$(man1dir)/$$inst; \
+	done
+
+uninstall-man1:
+	@list='$(man1_MANS)'; \
+	l2='$(man_MANS)'; for i in $$l2; do \
+	  case "$$i" in \
+	    *.1*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " rm -f $(DESTDIR)$(man1dir)/$$inst"; \
+	  rm -f $(DESTDIR)$(man1dir)/$$inst; \
+	done
+install-man: $(MANS)
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) install-man1
+uninstall-man:
+	@$(NORMAL_UNINSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) uninstall-man1
 
 install-m4dataDATA: $(m4data_DATA)
 	@$(NORMAL_INSTALL)
@@ -357,21 +403,22 @@ all-recursive-am: config.h
 install-exec-am: install-binSCRIPTS
 install-exec: install-exec-recursive
 
-install-data-am: install-m4dataDATA
+install-data-am: install-man install-m4dataDATA
 install-data: install-data-recursive
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-recursive
-uninstall-am: uninstall-binSCRIPTS uninstall-m4dataDATA
+uninstall-am: uninstall-binSCRIPTS uninstall-man uninstall-m4dataDATA
 uninstall: uninstall-recursive
-all-am: Makefile $(SCRIPTS) $(DATA) config.h
+all-am: Makefile $(SCRIPTS) $(MANS) $(DATA) config.h
 all-redirect: all-recursive-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
 installdirs: installdirs-recursive
 installdirs-am:
-	$(mkinstalldirs)  $(DESTDIR)$(bindir) $(DESTDIR)$(m4datadir)
+	$(mkinstalldirs)  $(DESTDIR)$(bindir) $(DESTDIR)$(mandir)/man1 \
+		$(DESTDIR)$(m4datadir)
 
 
 mostlyclean-generic:
@@ -406,12 +453,12 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f config.status
 
 .PHONY: mostlyclean-hdr distclean-hdr clean-hdr maintainer-clean-hdr \
-uninstall-binSCRIPTS install-binSCRIPTS uninstall-m4dataDATA \
-install-m4dataDATA install-data-recursive uninstall-data-recursive \
-install-exec-recursive uninstall-exec-recursive installdirs-recursive \
-uninstalldirs-recursive all-recursive check-recursive \
-installcheck-recursive info-recursive dvi-recursive \
-mostlyclean-recursive distclean-recursive clean-recursive \
+uninstall-binSCRIPTS install-binSCRIPTS install-man1 uninstall-man1 \
+install-man uninstall-man uninstall-m4dataDATA install-m4dataDATA \
+install-data-recursive uninstall-data-recursive install-exec-recursive \
+uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
+all-recursive check-recursive installcheck-recursive info-recursive \
+dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
 maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
 distclean-tags clean-tags maintainer-clean-tags distdir info-am info \
 dvi-am dvi check check-am installcheck-am installcheck all-recursive-am \
@@ -440,7 +487,7 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.9 2000/10/17 16:07:24 jeh Exp $
+ # $Id: Makefile.am,v 1.14 2000/10/25 17:22:01 jeh Exp $
  #
 
 .PHONY: release snapshot

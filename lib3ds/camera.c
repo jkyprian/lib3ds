@@ -17,13 +17,15 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: camera.c,v 1.3 2000/10/09 12:33:50 jeh Exp $
+ * $Id: camera.c,v 1.5 2000/10/19 17:35:35 jeh Exp $
  */
+#define LIB3DS_EXPORT
 #include <lib3ds/camera.h>
 #include <lib3ds/chunk.h>
 #include <lib3ds/readwrite.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include <config.h>
 #ifdef WITH_DMALLOC
 #include <dmalloc.h>
@@ -38,7 +40,7 @@
 
 
 /*!
- * \ingroup cameras 
+ * \ingroup camera
  */
 Lib3dsCamera*
 lib3ds_camera_new(const char *name)
@@ -58,7 +60,7 @@ lib3ds_camera_new(const char *name)
 
 
 /*!
- * \ingroup cameras 
+ * \ingroup camera 
  */
 void
 lib3ds_camera_free(Lib3dsCamera *camera)
@@ -69,13 +71,13 @@ lib3ds_camera_free(Lib3dsCamera *camera)
 
 
 /*!
- * \ingroup cameras 
+ * \ingroup camera
  */
 Lib3dsBool
 lib3ds_camera_read(Lib3dsCamera *camera, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   if (!lib3ds_chunk_start(&c, LIB3DS_N_CAMERA, f)) {
     return(LIB3DS_FALSE);
@@ -126,7 +128,7 @@ lib3ds_camera_read(Lib3dsCamera *camera, FILE *f)
 
 
 /*!
- * \ingroup cameras 
+ * \ingroup camera
  */
 Lib3dsBool
 lib3ds_camera_write(Lib3dsCamera *camera, FILE *f)

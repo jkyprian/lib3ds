@@ -17,43 +17,12 @@
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.14 2000/10/25 17:22:01 jeh Exp $
+ # $Id: Makefile.am,v 1.2 2000/10/19 19:56:19 jeh Exp $
  #
 
-SUBDIRS = msvc lib3ds examples
-
-bin_SCRIPTS = lib3ds-config
-
-AUTOMAKE_OPTIONS = 1.4
-
-man_MANS = \
-  lib3ds-config.1
-
 EXTRA_DIST = \
-  lib3ds.m4 \
-  lib3ds-config.1 \
-  AUTHORS \
-  COPYING \
-  ChangeLog \
-  INSTALL \
-  README \
-  TODO \
-  config.h 
-
-m4datadir = $(datadir)/aclocal
-m4data_DATA = lib3ds.m4
-
-.PHONY: release snapshot
-
-release:
-	rm -rf .deps */.deps
-	$(MAKE) distcheck
-
-snapshot:
-	$(MAKE) dist distdir=$(PACKAGE)`date +"%y%m%d"`
-
-
-
-
-
-
+  Lib3ds.dsw \
+  Lib3ds.dsp \
+  lib3dsdump.dsp \
+  lib3ds2m.dsp \
+  lib3ds2rib.dsp

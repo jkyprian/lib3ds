@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: vector.c,v 1.4 2000/10/11 19:53:31 jeh Exp $
+ * $Id: vector.c,v 1.5 2000/10/19 17:35:35 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/vector.h>
@@ -151,7 +151,7 @@ lib3ds_vector_squared(Lib3dsVector c)
 Lib3dsFloat
 lib3ds_vector_length(Lib3dsVector c)
 {
-  return(sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]));
+  return((Lib3dsFloat)sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]));
 }
 
 
@@ -161,9 +161,9 @@ lib3ds_vector_length(Lib3dsVector c)
 void
 lib3ds_vector_normalize(Lib3dsVector c)
 {
-  float l,m;
+  Lib3dsFloat l,m;
 
-  l=sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
+  l=(Lib3dsFloat)sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
   if (fabs(l)<LIB3DS_EPSILON) {
     c[0]=c[1]=c[2]=0.0f;
     if ((c[0]>=c[1]) && (c[0]>=c[2])) {
@@ -178,7 +178,7 @@ lib3ds_vector_normalize(Lib3dsVector c)
     }
   }
   else {
-    m=1.0/l;
+    m=1.0f/l;
     c[0]*=m;
     c[1]*=m;
     c[2]*=m;
@@ -226,9 +226,9 @@ lib3ds_vector_cubic(Lib3dsVector c, Lib3dsVector a, Lib3dsVector p, Lib3dsVector
   y=-2*t*t*t + 3*t*t;
   z=t*t*t - 2*t*t + t;
   w=t*t*t - t*t;
-  c[0]=x*a[0] + y*b[0] + z*p[0] + w*q[0];
-  c[1]=x*a[1] + y*b[1] + z*p[1] + w*q[1];
-  c[2]=x*a[2] + y*b[2] + z*p[2] + w*q[2];
+  c[0]=(Lib3dsFloat)(x*a[0] + y*b[0] + z*p[0] + w*q[0]);
+  c[1]=(Lib3dsFloat)(x*a[1] + y*b[1] + z*p[1] + w*q[1]);
+  c[2]=(Lib3dsFloat)(x*a[2] + y*b[2] + z*p[2] + w*q[2]);
 }
 
 

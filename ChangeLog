@@ -1,3 +1,19 @@
+2000-10-25  J E Hoffmann  <je-h@gmx.net>
+
+	* Release 0.9.1
+	* Examples get installed now
+	* Man pages get installed now
+
+2000-10-24  J E Hoffmann  <je-h@gmx.net>
+
+	* lib3ds.spec: Created
+
+2000-10-19  J E Hoffmann  <je-h@gmx.net>
+
+	* CVSROOT/cvswrappers: created entries for msvc project files 
+	* Created MSVC project files
+	* Setting up cvs commit logging 
+
 2000-10-17  J E Hoffmann  <je-h@gmx.net>
 
 	* Release: 0.9.0

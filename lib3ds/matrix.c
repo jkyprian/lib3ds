@@ -17,12 +17,13 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: matrix.c,v 1.4 2000/10/11 19:53:31 jeh Exp $
+ * $Id: matrix.c,v 1.5 2000/10/19 17:35:35 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/matrix.h>
 #include <lib3ds/quat.h>
 #include <lib3ds/vector.h>
+#include <string.h>
 #include <math.h>
 
 
@@ -102,7 +103,7 @@ lib3ds_matrix_abs(Lib3dsMatrix m)
 
   for (j=0; j<4; j++) {
     for (i=0; i<4; i++) {
-      m[j][i]=fabs(m[j][i]);
+      m[j][i]=(Lib3dsFloat)fabs(m[j][i]);
     }
   }
 }
@@ -464,8 +465,8 @@ lib3ds_matrix_rotate_x(Lib3dsMatrix m, Lib3dsFloat phi)
   Lib3dsFloat SinPhi,CosPhi;
   Lib3dsFloat a1[4],a2[4];
 
-  SinPhi=sin(phi);
-  CosPhi=cos(phi);
+  SinPhi=(Lib3dsFloat)sin(phi);
+  CosPhi=(Lib3dsFloat)cos(phi);
   memcpy(a1,m[1],4*sizeof(Lib3dsFloat));
   memcpy(a2,m[2],4*sizeof(Lib3dsFloat));
   m[1][0]=CosPhi*a1[0]+SinPhi*a2[0];
@@ -488,8 +489,8 @@ lib3ds_matrix_rotate_y(Lib3dsMatrix m, Lib3dsFloat phi)
   Lib3dsFloat SinPhi,CosPhi;
   Lib3dsFloat a0[4],a2[4];
 
-  SinPhi=sin(phi);
-  CosPhi=cos(phi);
+  SinPhi=(Lib3dsFloat)sin(phi);
+  CosPhi=(Lib3dsFloat)cos(phi);
   memcpy(a0,m[0],4*sizeof(Lib3dsFloat));
   memcpy(a2,m[2],4*sizeof(Lib3dsFloat));
   m[0][0]=CosPhi*a0[0]-SinPhi*a2[0];
@@ -512,8 +513,8 @@ lib3ds_matrix_rotate_z(Lib3dsMatrix m, Lib3dsFloat phi)
   Lib3dsFloat SinPhi,CosPhi;
   Lib3dsFloat a0[4],a1[4];
   
-  SinPhi=sin(phi);
-  CosPhi=cos(phi);
+  SinPhi=(Lib3dsFloat)sin(phi);
+  CosPhi=(Lib3dsFloat)cos(phi);
   memcpy(a0,m[0],4*sizeof(Lib3dsFloat));
   memcpy(a1,m[1],4*sizeof(Lib3dsFloat));
   m[0][0]=CosPhi*a0[0]+SinPhi*a1[0];
@@ -592,8 +593,8 @@ lib3ds_matrix_camera(Lib3dsMatrix matrix, Lib3dsVector pos,
 
   lib3ds_vector_sub(dir, tgt, pos);
   lib3ds_vector_normalize(dir);
-  az=atan2(dir[0],dir[1]);
-  ax=-asin(dir[2]);
+  az=(Lib3dsFloat)atan2(dir[0],dir[1]);
+  ax=-(Lib3dsFloat)asin(dir[2]);
   lib3ds_matrix_identity(matrix);
   lib3ds_matrix_rotate_y(matrix, roll);
   lib3ds_matrix_rotate_x(matrix, ax);

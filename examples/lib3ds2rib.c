@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: lib3ds2rib.c,v 1.5 2000/10/17 15:16:04 jeh Exp $
+ * $Id: lib3ds2rib.c,v 1.6 2000/10/19 20:35:29 jeh Exp $
  */
 #include <lib3ds/file.h>
 #include <lib3ds/vector.h>
@@ -28,6 +28,7 @@
 #include <lib3ds/mesh.h>
 #include <lib3ds/node.h>
 #include <stdlib.h>
+#include <string.h>
 #include <config.h>
 #ifdef WITH_DMALLOC
 #include <dmalloc.h>
@@ -119,7 +120,7 @@ parse_args(int argc, char **argv)
         if (i>=argc) {
           help();
         }
-        frame=atof(argv[i]);
+        frame=(Lib3dsFloat)atof(argv[i]);
       }
       else
       if ((strcmp(argv[i],"-c")==0) || (strcmp(argv[i],"--camera")==0)) {
@@ -373,7 +374,7 @@ main(int argc, char **argv)
   if (flags&LIB3DS2RIB_ALL) {
     int i;
     for (i=f->segment_from; i<=f->segment_to; ++i) {
-      lib3ds_file_eval(f,i);
+      lib3ds_file_eval(f,1.0f*i);
       create_rib(f,o,i);
     }
   }
@@ -382,14 +383,14 @@ main(int argc, char **argv)
     int i;
     int delta=f->segment_to-f->segment_from;
     for (i=0; i<downcuts; ++i) {
-      float frame=f->segment_from+1.0*i*delta/(downcuts-1);
-      lib3ds_file_eval(f,frame);
+      float frame=f->segment_from+1.0f*i*delta/(downcuts-1);
+      lib3ds_file_eval(f, frame);
       create_rib(f,o,i);
     }
   }
   else {  
     lib3ds_file_eval(f,frame);
-    create_rib(f,o,frame);
+    create_rib(f,o, (int)frame);
   }
 
   if (o!=stdout) {

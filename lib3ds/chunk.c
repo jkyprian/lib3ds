@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: chunk.c,v 1.5 2000/10/11 19:53:31 jeh Exp $
+ * $Id: chunk.c,v 1.6 2000/10/19 17:35:35 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/chunk.h>
@@ -124,7 +124,7 @@ lib3ds_chunk_tell(Lib3dsChunk *c, FILE *f)
 /*!
  * \ingroup chunk
  */
-Lib3dsDword
+Lib3dsWord
 lib3ds_chunk_next(Lib3dsChunk *c, FILE *f)
 {
   Lib3dsChunk d;

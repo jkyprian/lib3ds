@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: background.c,v 1.2 2000/10/09 12:33:50 jeh Exp $
+ * $Id: background.c,v 1.3 2000/10/19 17:35:35 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/background.h>
@@ -36,7 +36,7 @@ static Lib3dsBool
 solid_bgnd_read(Lib3dsBackground *background, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   if (!lib3ds_chunk_start(&c, LIB3DS_SOLID_BGND, f)) {
     return(LIB3DS_FALSE);
@@ -68,7 +68,7 @@ static Lib3dsBool
 v_gradient_read(Lib3dsBackground *background, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
   int col;
 
   if (!lib3ds_chunk_start(&c, LIB3DS_V_GRADIENT, f)) {

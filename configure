@@ -551,9 +551,9 @@ fi
 #
 LIB3DS_MAJOR_VERSION=0
 LIB3DS_MINOR_VERSION=9
-LIB3DS_MICRO_VERSION=0
-LIB3DS_INTERFACE_AGE=0
-LIB3DS_BINARY_AGE=0
+LIB3DS_MICRO_VERSION=1
+LIB3DS_INTERFACE_AGE=1
+LIB3DS_BINARY_AGE=1
 LIB3DS_VERSION=$LIB3DS_MAJOR_VERSION.$LIB3DS_MINOR_VERSION.$LIB3DS_MICRO_VERSION
 
 
@@ -1729,6 +1729,7 @@ ac_given_INSTALL="$INSTALL"
 trap 'rm -fr `echo " \
   lib3ds-config \
   Makefile \
+  msvc/Makefile \
   lib3ds/Makefile \
   examples/Makefile \
  config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
@@ -1844,6 +1845,7 @@ cat >> $CONFIG_STATUS <<EOF
 CONFIG_FILES=\${CONFIG_FILES-"\
   lib3ds-config \
   Makefile \
+  msvc/Makefile \
   lib3ds/Makefile \
   examples/Makefile \
 "}

@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: ease.c,v 1.2 2000/10/09 12:33:50 jeh Exp $
+ * $Id: ease.c,v 1.3 2000/10/19 17:35:35 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/ease.h>
@@ -37,16 +37,16 @@ Lib3dsFloat
 lib3ds_ease(Lib3dsFloat fp, Lib3dsFloat fc, Lib3dsFloat fn,
   Lib3dsFloat ease_from, Lib3dsFloat ease_to)
 {
-  Lib3dsFloat s,step;
-  Lib3dsFloat tofrom;
-  Lib3dsFloat a;
+  Lib3dsDouble s,step;
+  Lib3dsDouble tofrom;
+  Lib3dsDouble a;
 
   s=step=(Lib3dsFloat)(fc-fp)/(fn-fp);
   tofrom=ease_to+ease_from;
   if (tofrom!=0.0) {
     if (tofrom>1.0) {
-      ease_to/=tofrom;
-      ease_from/=tofrom;
+      ease_to=(Lib3dsFloat)(ease_to/tofrom);
+      ease_from=(Lib3dsFloat)(ease_from/tofrom);
     }
     a=1.0/(2.0-(ease_to+ease_from));
 
@@ -61,5 +61,5 @@ lib3ds_ease(Lib3dsFloat fp, Lib3dsFloat fc, Lib3dsFloat fn,
       }
     }
   }
-  return(s);
+  return((Lib3dsFloat)s);
 }

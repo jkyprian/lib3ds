@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: mesh.c,v 1.6 2000/10/11 19:53:31 jeh Exp $
+ * $Id: mesh.c,v 1.7 2000/10/19 17:35:35 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/mesh.h>
@@ -26,6 +26,7 @@
 #include <lib3ds/vector.h>
 #include <lib3ds/matrix.h>
 #include <stdlib.h>
+#include <string.h>
 #include <config.h>
 #ifdef WITH_DMALLOC
 #include <dmalloc.h>
@@ -43,7 +44,7 @@ static Lib3dsBool
 face_array_read(Lib3dsMesh *mesh, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
   int i;
   int faces;
 
@@ -71,7 +72,7 @@ face_array_read(Lib3dsMesh *mesh, FILE *f)
       switch (chunk) {
         case LIB3DS_SMOOTH_GROUP:
           {
-            int i;
+            unsigned i;
             
             for (i=0; i<mesh->faces; ++i) {
               mesh->faceL[i].smoothing=lib3ds_dword_read(f);
@@ -81,9 +82,9 @@ face_array_read(Lib3dsMesh *mesh, FILE *f)
         case LIB3DS_MSH_MAT_GROUP:
           {
             char name[64];
-            int faces;
-            int i;
-            int index;
+            unsigned faces;
+            unsigned i;
+            unsigned index;
 
             if (!lib3ds_string_read(name, 64, f)) {
               return(LIB3DS_FALSE);
@@ -303,7 +304,7 @@ lib3ds_mesh_free_face_list(Lib3dsMesh *mesh)
 void
 lib3ds_mesh_bounding_box(Lib3dsMesh *mesh, Lib3dsVector min, Lib3dsVector max)
 {
-  int i,j;
+  unsigned i,j;
   Lib3dsFloat v;
 
   if (!mesh->points) {
@@ -334,7 +335,7 @@ lib3ds_mesh_bounding_box(Lib3dsMesh *mesh, Lib3dsVector min, Lib3dsVector max)
 void
 lib3ds_mesh_dump(Lib3dsMesh *mesh)
 {
-  int i;
+  unsigned i;
   Lib3dsVector p;
 
   ASSERT(mesh);
@@ -360,7 +361,7 @@ Lib3dsBool
 lib3ds_mesh_read(Lib3dsMesh *mesh, FILE *f)
 {
   Lib3dsChunk c;
-  Lib3dsDword chunk;
+  Lib3dsWord chunk;
 
   if (!lib3ds_chunk_start(&c, LIB3DS_N_TRI_OBJECT, f)) {
     return(LIB3DS_FALSE);
@@ -387,8 +388,8 @@ lib3ds_mesh_read(Lib3dsMesh *mesh, FILE *f)
         break;
       case LIB3DS_POINT_ARRAY:
         {
-          int i,j;
-          int points;
+          unsigned i,j;
+          unsigned points;
           
           lib3ds_mesh_free_point_list(mesh);
           points=lib3ds_word_read(f);
@@ -408,8 +409,8 @@ lib3ds_mesh_read(Lib3dsMesh *mesh, FILE *f)
         break;
       case LIB3DS_POINT_FLAG_ARRAY:
         {
-          int i;
-          int flags;
+          unsigned i;
+          unsigned flags;
           
           lib3ds_mesh_free_flag_list(mesh);
           flags=lib3ds_word_read(f);
@@ -448,7 +449,7 @@ lib3ds_mesh_read(Lib3dsMesh *mesh, FILE *f)
   {
     Lib3dsMatrix M;
     Lib3dsVector v;
-    int j;
+    unsigned j;
 
     lib3ds_matrix_copy(M, mesh->matrix);
     if (lib3ds_matrix_inv(M)) {
@@ -459,7 +460,7 @@ lib3ds_mesh_read(Lib3dsMesh *mesh, FILE *f)
     }
   }
   {
-    int j;
+    unsigned j;
 
     for (j=0; j<mesh->faces; ++j) {
       ASSERT(mesh->faceL[j].points[0]<mesh->points);

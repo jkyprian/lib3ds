@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: light.h,v 1.4 2000/10/09 12:33:50 jeh Exp $
+ * $Id: light.h,v 1.5 2000/10/19 17:35:35 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -49,7 +49,7 @@ struct _Lib3dsLight {
     Lib3dsFloat inner_range;
     Lib3dsFloat multiplier;
     /*const char** excludes;*/
-    Lib3dsBool attenuation;
+    Lib3dsFloat attenuation;
     Lib3dsBool rectangular_spot;
     Lib3dsBool shadowed;
     Lib3dsFloat shadow_bias;
