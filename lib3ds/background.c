@@ -17,13 +17,14 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: background.c,v 1.6 2001/01/12 10:29:16 jeh Exp $
+ * $Id: background.c,v 1.7 2001/06/08 14:22:56 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/background.h>
 #include <lib3ds/chunk.h>
 #include <lib3ds/readwrite.h>
 #include <string.h>
+#include <math.h>
 
 
 /*!
@@ -183,27 +184,44 @@ colorf_write(Lib3dsRgba rgb, FILE *f)
 }
 
 
+static Lib3dsBool
+colorf_defined(Lib3dsRgba rgb)
+{
+  int i;
+  for (i=0; i<3; ++i) {
+    if (fabs(rgb[i])>LIB3DS_EPSILON) {
+      break;
+    }
+  }
+  return(i<3);
+}
+
+
 /*!
  * \ingroup background
  */
 Lib3dsBool
 lib3ds_background_write(Lib3dsBackground *background, FILE *f)
 {
-  { /*---- LIB3DS_BIT_MAP ----*/
+  if (strlen(background->bitmap.name)) { /*---- LIB3DS_BIT_MAP ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_BIT_MAP;
     c.size=6+1+strlen(background->bitmap.name);
     lib3ds_chunk_write(&c,f);
     lib3ds_string_write(background->bitmap.name, f);
   }
-  { /*---- LIB3DS_SOLID_BGND ----*/
+
+  if (colorf_defined(background->solid.col)) { /*---- LIB3DS_SOLID_BGND ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_SOLID_BGND;
     c.size=42;
     lib3ds_chunk_write(&c,f);
     colorf_write(background->solid.col,f);
   }
-  { /*---- LIB3DS_V_GRADIENT ----*/
+
+  if (colorf_defined(background->gradient.top) ||
+    colorf_defined(background->gradient.middle) ||
+    colorf_defined(background->gradient.bottom)) { /*---- LIB3DS_V_GRADIENT ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_V_GRADIENT;
     c.size=118;
@@ -213,18 +231,21 @@ lib3ds_background_write(Lib3dsBackground *background, FILE *f)
     colorf_write(background->gradient.middle,f);
     colorf_write(background->gradient.bottom,f);
   }
+
   if (background->bitmap.use) { /*---- LIB3DS_USE_BIT_MAP ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_USE_BIT_MAP;
     c.size=6;
     lib3ds_chunk_write(&c,f);
   }
+
   if (background->solid.use) { /*---- LIB3DS_USE_SOLID_BGND ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_USE_SOLID_BGND;
     c.size=6;
     lib3ds_chunk_write(&c,f);
   }
+
   if (background->gradient.use) { /*---- LIB3DS_USE_V_GRADIENT ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_USE_V_GRADIENT;

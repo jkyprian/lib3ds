@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: mesh.c,v 1.11 2001/01/14 20:55:23 jeh Exp $
+ * $Id: mesh.c,v 1.17 2001/06/16 14:00:50 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/mesh.h>
@@ -27,6 +27,7 @@
 #include <lib3ds/matrix.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <config.h>
 #ifdef WITH_DMALLOC
 #include <dmalloc.h>
@@ -73,7 +74,7 @@ face_array_read(Lib3dsMesh *mesh, FILE *f)
         case LIB3DS_SMOOTH_GROUP:
           {
             unsigned i;
-            
+
             for (i=0; i<mesh->faces; ++i) {
               mesh->faceL[i].smoothing=lib3ds_dword_read(f);
             }
@@ -155,6 +156,7 @@ lib3ds_mesh_new(const char *name)
   }
   strcpy(mesh->name, name);
   lib3ds_matrix_identity(mesh->matrix);
+  mesh->map_data.maptype=LIB3DS_MAP_NONE;
   return(mesh);
 }
 
@@ -342,6 +344,16 @@ lib3ds_mesh_free_face_list(Lib3dsMesh *mesh)
 }
 
 
+typedef struct _Lib3dsFaces Lib3dsFaces; 
+
+struct _Lib3dsFaces {
+  Lib3dsFaces *next;
+  Lib3dsFace *face;
+};
+
+
+
+
 /*!
  * \ingroup mesh
  */
@@ -374,6 +386,106 @@ lib3ds_mesh_bounding_box(Lib3dsMesh *mesh, Lib3dsVector min, Lib3dsVector max)
 
 
 /*!
+ * Calculates the vertex normals corresponding to the smoothing group
+ * settings for each face of a mesh.
+ *
+ * \param mesh      A pointer to the mesh to calculate the normals for.
+ * \param normalL   A pointer to a buffer to store the calculated
+ *                  normals. The buffer must have the size:
+ *                  3*sizeof(Lib3dsVector)*mesh->faces. 
+ *
+ * To allocate the normal buffer do for example the following:
+ * \code
+ *  Lib3dsVector *normalL = malloc(3*sizeof(Lib3dsVector)*mesh->faces);
+ * \endcode
+ *
+ * To access the normal of the i-th vertex of the j-th face do the 
+ * following:
+ * \code
+ *   normalL[3*j+i]
+ * \endcode
+ */
+void
+lib3ds_mesh_calculate_normals(Lib3dsMesh *mesh, Lib3dsVector *normalL)
+{
+  Lib3dsFaces **fl; 
+  Lib3dsFaces *fa; 
+  unsigned i,j,k;
+
+  if (!mesh->faces) {
+    return;
+  }
+
+  fl=calloc(sizeof(Lib3dsFaces*),mesh->points);
+  ASSERT(fl);
+  fa=calloc(sizeof(Lib3dsFaces),3*mesh->faces);
+  ASSERT(fa);
+  k=0;
+  for (i=0; i<mesh->faces; ++i) {
+    Lib3dsFace *f=&mesh->faceL[i];
+    for (j=0; j<3; ++j) {
+      Lib3dsFaces* l=&fa[k++];
+      ASSERT(f->points[j]<mesh->points);
+      l->face=f;
+      l->next=fl[f->points[j]];
+      fl[f->points[j]]=l;
+    }
+  }
+  
+  for (i=0; i<mesh->faces; ++i) {
+    Lib3dsFace *f=&mesh->faceL[i];
+    for (j=0; j<3; ++j) {
+      Lib3dsVector n,N[32];
+      Lib3dsFaces *p;
+      int k,l;
+      int found;
+
+      ASSERT(f->points[j]<mesh->points);
+
+      if (f->smoothing) {
+        lib3ds_vector_zero(n);
+        k=0;
+        for (p=fl[f->points[j]]; p; p=p->next) {
+          found=0;
+          for (l=0; l<k; ++l) {
+            if (fabs(lib3ds_vector_dot(N[l], p->face->normal)-1.0)<1e-5) {
+              found=1;
+              break;
+            }
+          }
+          if (!found) {
+            if (f->smoothing & p->face->smoothing) {
+              lib3ds_vector_add(n,n, p->face->normal);
+              lib3ds_vector_copy(N[k], p->face->normal);
+              ++k;
+            }
+          }
+        }
+      } 
+      else {
+        lib3ds_vector_copy(n, f->normal);
+      }
+      lib3ds_vector_normalize(n);
+
+      lib3ds_vector_copy(normalL[3*i+j], n);
+    }
+  }
+
+  free(fa);
+  free(fl);
+}
+
+
+/*!
+ * This function prints data associated with the specified mesh such as
+ * vertex and point lists.
+ *
+ * \param mesh  Points to a mesh that you wish to view the data for.
+ *
+ * \return None
+ *
+ * \warning WIN32: Should only be used in a console window not in a GUI.
+ *
  * \ingroup mesh
  */
 void
@@ -392,8 +504,17 @@ lib3ds_mesh_dump(Lib3dsMesh *mesh)
   lib3ds_matrix_dump(mesh->matrix);
   printf("  point list:\n");
   for (i=0; i<mesh->points; ++i) {
-    lib3ds_vector_transform(p, mesh->matrix, mesh->pointL[i].pos);
+    lib3ds_vector_copy(p, mesh->pointL[i].pos);
     printf ("    %8f %8f %8f\n", p[0], p[1], p[2]);
+  }
+  printf("  facelist:\n");
+  for (i=0; i<mesh->points; ++i) {
+    printf ("    %4d %4d %4d  smoothing:%X\n",
+      mesh->faceL[i].points[0],
+      mesh->faceL[i].points[1],
+      mesh->faceL[i].points[2],
+      mesh->faceL[i].smoothing
+    );
   }
 }
 
@@ -629,7 +750,7 @@ face_array_write(Lib3dsMesh *mesh, FILE *f)
     }
     
     for (i=0; i<mesh->faces; ++i) {
-      if (!matf[i]) {
+      if (!matf[i] && strlen(mesh->faceL[i].material)) {
         matf[i]=1;
         num=1;
         
@@ -741,51 +862,21 @@ lib3ds_mesh_write(Lib3dsMesh *mesh, FILE *f)
   if (!point_array_write(mesh, f)) {
     return(LIB3DS_FALSE);
   }
-  if (!flag_array_write(mesh, f)) {
-    return(LIB3DS_FALSE);
-  }
-  if (!face_array_write(mesh, f)) {
-    return(LIB3DS_FALSE);
-  }
   if (!texel_array_write(mesh, f)) {
     return(LIB3DS_FALSE);
   }
-  { /*---- LIB3DS_MESH_MATRIX ----*/
-    Lib3dsChunk c;
-    int i,j;
 
-    c.chunk=LIB3DS_MESH_MATRIX;
-    c.size=54;
-    if (!lib3ds_chunk_write(&c,f)) {
-      return(LIB3DS_FALSE);
-    }
-    for (i=0; i<4; i++) {
-      for (j=0; j<3; j++) {
-        lib3ds_float_write(mesh->matrix[i][j], f);
-      }
-    }
-  }
-
-  { /*---- LIB3DS_MESH_COLOR ----*/
-    Lib3dsChunk c;
-    
-    c.chunk=LIB3DS_MESH_COLOR;
-    c.size=7;
-    if (!lib3ds_chunk_write(&c,f)) {
-      return(LIB3DS_FALSE);
-    }
-    lib3ds_byte_write(mesh->color, f);
-  }
-
-  { /*---- LIB3DS_MESH_TEXTURE_INFO ----*/
+  if (mesh->map_data.maptype!=LIB3DS_MAP_NONE) { /*---- LIB3DS_MESH_TEXTURE_INFO ----*/
     Lib3dsChunk c;
     int i,j;
     
     c.chunk=LIB3DS_MESH_TEXTURE_INFO;
-    c.size=90;
+    c.size=92;
     if (!lib3ds_chunk_write(&c,f)) {
       return(LIB3DS_FALSE);
     }
+
+    lib3ds_word_write(mesh->map_data.maptype, f);
 
     for (i=0; i<2; ++i) {
       lib3ds_float_write(mesh->map_data.tile[i], f);
@@ -804,6 +895,39 @@ lib3ds_mesh_write(Lib3dsMesh *mesh, FILE *f)
       lib3ds_float_write(mesh->map_data.planar_size[i], f);
     }
     lib3ds_float_write(mesh->map_data.cylinder_height, f);
+  }
+
+  if (!flag_array_write(mesh, f)) {
+    return(LIB3DS_FALSE);
+  }
+  { /*---- LIB3DS_MESH_MATRIX ----*/
+    Lib3dsChunk c;
+    int i,j;
+
+    c.chunk=LIB3DS_MESH_MATRIX;
+    c.size=54;
+    if (!lib3ds_chunk_write(&c,f)) {
+      return(LIB3DS_FALSE);
+    }
+    for (i=0; i<4; i++) {
+      for (j=0; j<3; j++) {
+        lib3ds_float_write(mesh->matrix[i][j], f);
+      }
+    }
+  }
+
+  if (mesh->color) { /*---- LIB3DS_MESH_COLOR ----*/
+    Lib3dsChunk c;
+    
+    c.chunk=LIB3DS_MESH_COLOR;
+    c.size=7;
+    if (!lib3ds_chunk_write(&c,f)) {
+      return(LIB3DS_FALSE);
+    }
+    lib3ds_byte_write(mesh->color, f);
+  }
+  if (!face_array_write(mesh, f)) {
+    return(LIB3DS_FALSE);
   }
 
   if (!lib3ds_chunk_write_end(&c,f)) {

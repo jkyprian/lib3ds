@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: 3ds2m.c,v 1.1 2001/01/12 12:23:46 jeh Exp $
+ * $Id: 3ds2m.c,v 1.2 2001/06/08 14:22:56 jeh Exp $
  */
 #include <lib3ds/file.h>
 #include <lib3ds/mesh.h>
@@ -181,7 +181,7 @@ main(int argc, char **argv)
   Lib3dsFile *f=0;
 
   parse_args(argc, argv);
-  f=lib3ds_open(filename);
+  f=lib3ds_file_load(filename);
   if (!f) {
     fprintf(stderr, "***ERROR***\nLoading file %s failed\n", filename);
     exit(1);
@@ -199,7 +199,7 @@ main(int argc, char **argv)
     dump_m_file(f,stdout);
   }
 
-  lib3ds_close(f);
+  lib3ds_file_free(f);
   return(0);
 }
 

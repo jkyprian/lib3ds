@@ -17,7 +17,7 @@
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.16 2001/01/14 20:55:23 jeh Exp $
+ # $Id: Makefile.am,v 1.17 2001/06/16 17:06:52 jeh Exp $
  #
 
 SUBDIRS = msvc lib3ds examples
@@ -30,6 +30,7 @@ man_MANS = \
   lib3ds-config.1
 
 EXTRA_DIST = \
+  lib3ds.spec \
   lib3ds.m4 \
   lib3ds-config.1 \
   AUTHORS \

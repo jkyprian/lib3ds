@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: vector.h,v 1.4 2001/01/12 10:29:17 jeh Exp $
+ * $Id: vector.h,v 1.5 2001/06/16 14:00:50 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -47,6 +47,8 @@ extern LIB3DSAPI void lib3ds_vector_normal(Lib3dsVector n, Lib3dsVector a,
 extern LIB3DSAPI void lib3ds_vector_transform(Lib3dsVector c, Lib3dsMatrix m, Lib3dsVector a);
 extern LIB3DSAPI void lib3ds_vector_cubic(Lib3dsVector c, Lib3dsVector a, Lib3dsVector p,
   Lib3dsVector q, Lib3dsVector b, Lib3dsFloat t);
+extern LIB3DSAPI void lib3ds_vector_min(Lib3dsVector c, Lib3dsVector a);
+extern LIB3DSAPI void lib3ds_vector_max(Lib3dsVector c, Lib3dsVector a);
 extern LIB3DSAPI void lib3ds_vector_dump(Lib3dsVector c);
 
 #ifdef __cplusplus

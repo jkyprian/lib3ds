@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: light.c,v 1.7 2001/01/12 10:29:17 jeh Exp $
+ * $Id: light.c,v 1.8 2001/06/16 14:00:50 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/light.h>
@@ -37,6 +37,14 @@
  *
  * \author J.E. Hoffmann <je-h@gmx.net>
  */
+/*!
+
+\typedef Lib3dsLight
+  \ingroup light
+  \sa _Lib3dsLight
+
+*/
+
 
 
 /*!
@@ -67,6 +75,132 @@ lib3ds_light_free(Lib3dsLight *light)
 {
   memset(light, 0, sizeof(Lib3dsLight));
   free(light);
+}
+
+
+/*!
+ * \ingroup light
+ */
+void
+lib3ds_light_dump(Lib3dsLight *light)
+{
+  ASSERT(light);
+  printf("  name:             %s\n", light->name);
+  printf("  spot_light:       %s\n", light->spot_light ? "yes" : "no");
+  printf("  see_cone:         %s\n", light->see_cone ? "yes" : "no");
+  printf("  color:            (%f, %f, %f)\n", 
+    light->color[0], light->color[1], light->color[2]);
+  printf("  position          (%f, %f, %f)\n", 
+    light->position[0], light->position[1], light->position[2]);
+  printf("  spot              (%f, %f, %f)\n", 
+    light->spot[0], light->spot[1], light->spot[2]);
+  printf("  roll:             %f\n", light->roll);
+  printf("  off:              %s\n", light->off ? "yes" : "no");
+  printf("  outer_range:      %f\n", light->outer_range);
+  printf("  inner_range:      %f\n", light->inner_range);
+  printf("  multiplier:       %f\n", light->multiplier);
+  printf("  attenuation:      %f\n", light->attenuation);
+  printf("  rectangular_spot: %s\n", light->rectangular_spot ? "yes" : "no");
+  printf("  shadowed:         %s\n", light->shadowed ? "yes" : "no");
+  printf("  shadow_bias:      %f\n", light->shadow_bias);
+  printf("  shadow_filter:    %f\n", light->shadow_filter);
+  printf("  shadow_size:      %d\n", light->shadow_size);
+  printf("  spot_aspect:      %f\n", light->spot_aspect);
+  printf("  use_projector:    %s\n", light->use_projector ? "yes" : "no");
+  printf("  projector:        %s\n", light->projector);
+  printf("  spot_overshoot:   %d\n", light->spot_overshoot);
+  printf("  ray_shadows:      %s\n", light->ray_shadows ? "yes" : "no");
+  printf("  ray_bias:         %f\n", light->ray_bias);
+  printf("  hot_spot:         %f\n", light->hot_spot);
+  printf("  fall_off:         %f\n", light->fall_off);
+  printf("\n");
+}
+
+
+/*!
+ * \ingroup light
+ */
+static Lib3dsBool
+spotlight_read(Lib3dsLight *light, FILE *f)
+{
+  Lib3dsChunk c;
+  Lib3dsWord chunk;
+  int i;
+
+  if (!lib3ds_chunk_read_start(&c, LIB3DS_DL_SPOTLIGHT, f)) {
+    return(LIB3DS_FALSE);
+  }
+  light->spot_light=LIB3DS_TRUE;
+  for (i=0; i<3; ++i) {
+    light->spot[i]=lib3ds_float_read(f);
+  }
+  light->hot_spot = lib3ds_float_read(f);
+  light->fall_off = lib3ds_float_read(f);
+  lib3ds_chunk_read_tell(&c, f);
+  
+  while ((chunk=lib3ds_chunk_read_next(&c, f))!=0) {
+    switch (chunk) {
+      case LIB3DS_DL_SPOT_ROLL:
+        {
+          light->roll=lib3ds_float_read(f);
+        }
+        break;
+      case LIB3DS_DL_SHADOWED:
+        {
+          light->shadowed=LIB3DS_TRUE;
+        }
+        break;
+      case LIB3DS_DL_LOCAL_SHADOW2:
+        {
+          light->shadow_bias=lib3ds_float_read(f);
+          light->shadow_filter=lib3ds_float_read(f);
+          light->shadow_size=lib3ds_intw_read(f);
+        }
+        break;
+      case LIB3DS_DL_SEE_CONE:
+        {
+          light->see_cone=LIB3DS_TRUE;
+        }
+        break;
+      case LIB3DS_DL_SPOT_RECTANGULAR:
+        {
+          light->rectangular_spot=LIB3DS_TRUE;
+        }
+        break;
+      case LIB3DS_DL_SPOT_ASPECT:
+        {
+          light->spot_aspect=lib3ds_float_read(f);
+        }
+        break;
+      case LIB3DS_DL_SPOT_PROJECTOR:
+        {
+          light->use_projector=LIB3DS_TRUE;
+          if (!lib3ds_string_read(light->projector, 64, f)) {
+            return(LIB3DS_FALSE);
+          }
+        }
+      case LIB3DS_DL_SPOT_OVERSHOOT:
+        {
+          light->spot_overshoot=LIB3DS_TRUE;
+        }
+        break;
+      case LIB3DS_DL_RAY_BIAS:
+        {
+          light->ray_bias=lib3ds_float_read(f);
+        }
+        break;
+      case LIB3DS_DL_RAYSHAD:
+        {
+          light->ray_shadows=LIB3DS_TRUE;
+        }
+        break;
+      default:
+        lib3ds_chunk_unknown(chunk);
+    }
+  }
+  
+  lib3ds_chunk_read_end(&c, f);
+  return(LIB3DS_TRUE);
 }
 
 
@@ -132,67 +266,10 @@ lib3ds_light_read(Lib3dsLight *light, FILE *f)
         break;
       case LIB3DS_DL_SPOTLIGHT:
         {
-          int i;
-          light->spot_light=LIB3DS_TRUE;
-          for (i=0; i<3; ++i) {
-            light->spot[i]=lib3ds_float_read(f);
-          }
-          light->hot_spot=lib3ds_float_read(f);
-          light->fall_off=lib3ds_float_read(f);
-        }
-        break;
-      case LIB3DS_DL_SPOT_ROLL:
-        {
-          light->roll=lib3ds_float_read(f);
-        }
-        break;
-      case LIB3DS_DL_SHADOWED:
-        {
-          light->shadowed=LIB3DS_TRUE;
-        }
-        break;
-      case LIB3DS_DL_LOCAL_SHADOW2:
-        {
-          light->shadow_bias=lib3ds_float_read(f);
-          light->shadow_filter=lib3ds_float_read(f);
-          light->shadow_size=lib3ds_intw_read(f);
-        }
-        break;
-      case LIB3DS_DL_SEE_CONE:
-        {
-          light->see_cone=LIB3DS_TRUE;
-        }
-        break;
-      case LIB3DS_DL_SPOT_RECTANGULAR:
-        {
-          light->rectangular_spot=LIB3DS_TRUE;
-        }
-        break;
-      case LIB3DS_DL_SPOT_ASPECT:
-        {
-          light->spot_aspect=lib3ds_float_read(f);
-        }
-        break;
-      case LIB3DS_DL_SPOT_PROJECTOR:
-        {
-          light->use_projector=LIB3DS_TRUE;
-          if (!lib3ds_string_read(light->projector, 64, f)) {
+          lib3ds_chunk_read_reset(&c, f);
+          if (!spotlight_read(light, f)) {
             return(LIB3DS_FALSE);
           }
-        }
-      case LIB3DS_DL_SPOT_OVERSHOOT:
-        {
-          light->spot_overshoot=LIB3DS_TRUE;
-        }
-        break;
-      case LIB3DS_DL_RAY_BIAS:
-        {
-          light->ray_bias=lib3ds_float_read(f);
-        }
-        break;
-      case LIB3DS_DL_RAYSHAD:
-        {
-          light->ray_shadows=LIB3DS_TRUE;
         }
         break;
       default:
@@ -283,7 +360,9 @@ lib3ds_light_write(Lib3dsLight *light, FILE *f)
       c.size=6;
       lib3ds_chunk_write(&c, f);
     }
-    { /*---- LIB3DS_DL_LOCAL_SHADOW2 ----*/
+    if ((fabs(light->shadow_bias)>LIB3DS_EPSILON) ||
+      (fabs(light->shadow_filter)>LIB3DS_EPSILON) ||
+      (light->shadow_size!=0)) { /*---- LIB3DS_DL_LOCAL_SHADOW2 ----*/
       Lib3dsChunk c;
       c.chunk=LIB3DS_DL_LOCAL_SHADOW2;
       c.size=16;
@@ -304,7 +383,7 @@ lib3ds_light_write(Lib3dsLight *light, FILE *f)
       c.size=6;
       lib3ds_chunk_write(&c, f);
     }
-    { /*---- LIB3DS_DL_SPOT_ASPECT ----*/
+    if (fabs(light->spot_aspect)>LIB3DS_EPSILON) { /*---- LIB3DS_DL_SPOT_ASPECT ----*/
       Lib3dsChunk c;
       c.chunk=LIB3DS_DL_SPOT_ASPECT;
       c.size=10;
@@ -324,7 +403,7 @@ lib3ds_light_write(Lib3dsLight *light, FILE *f)
       c.size=6;
       lib3ds_chunk_write(&c, f);
     }
-    { /*---- LIB3DS_DL_RAY_BIAS ----*/
+    if (fabs(light->ray_bias)>LIB3DS_EPSILON) { /*---- LIB3DS_DL_RAY_BIAS ----*/
       Lib3dsChunk c;
       c.chunk=LIB3DS_DL_RAY_BIAS;
       c.size=10;
@@ -347,12 +426,4 @@ lib3ds_light_write(Lib3dsLight *light, FILE *f)
   return(LIB3DS_TRUE);
 }
 
-
-/*!
-
-\typedef Lib3dsLight
-  \ingroup light
-  \sa _Lib3dsLight
-
-*/
 

@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: camera.h,v 1.5 2001/01/12 10:29:17 jeh Exp $
+ * $Id: camera.h,v 1.6 2001/06/16 14:00:50 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -49,6 +49,7 @@ struct _Lib3dsCamera {
 
 extern LIB3DSAPI Lib3dsCamera* lib3ds_camera_new(const char *name);
 extern LIB3DSAPI void lib3ds_camera_free(Lib3dsCamera *mesh);
+extern LIB3DSAPI void lib3ds_camera_dump(Lib3dsCamera *camera);
 extern LIB3DSAPI Lib3dsBool lib3ds_camera_read(Lib3dsCamera *camera, FILE *f);
 extern LIB3DSAPI Lib3dsBool lib3ds_camera_write(Lib3dsCamera *camera, FILE *f);
 

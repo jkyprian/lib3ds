@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: readwrite.c,v 1.6 2001/01/14 20:55:23 jeh Exp $
+ * $Id: readwrite.c,v 1.7 2001/06/08 15:00:51 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/readwrite.h>
@@ -248,7 +248,7 @@ lib3ds_string_read(char *s, int buflen, FILE *f)
   int k=0;
   ASSERT(f);
   while ((*s++=fgetc(f))!=0) {
-    if (++k>buflen) {
+    if (++k>=buflen) {
       return(LIB3DS_FALSE);
     }
   }

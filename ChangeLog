@@ -1,3 +1,46 @@
+2001-06-16  J E Hoffmann  <je-h@gmx.net>
+
+	* fixed spotlight reader/writer
+	* added lib3ds_light_dump, lib3ds_camera_dump
+	* updated lib3ds_material_dump
+	* added lib3ds_file_bounding_box
+	* Release 1.1.0
+
+2001-06-07  J E Hoffmann  <je-h@gmx.net>
+
+	* write only necessary chunks to .3ds file
+	* file.h/file.c: renamed lib3ds_open to lib3ds_file_load
+	  removed lib3ds_close (use lib3ds_file_free instead !!)
+          created lib3ds_file_save.
+	* Added msvc project file to create a dll.
+	* LIB3DS_KFHDR remains unchanged when saving a previously loaded file.
+
+2001-06-05  J E Hoffmann  <je-h@gmx.net>
+
+	* node.h/node.c, file.h/file.c: renamed "id" to node_id
+	* recreated MSVC project files. Only static library creation
+	  supported at the moment.
+
+2001-05-08  Michael Fink  <michael.fink@redspark.com>
+
+	* in lib3ds_atmosphere_write() the two chunk id's were accidentally swapped
+	* in lib3ds_mesh_write(), the chunks were reordered to enable a successful 
+	  import into AutoCAD 2000i and 3d Studio MAX 3.1
+	* in the struct _Lib3dsMapData the "maptype" data member was added, increasing
+	  the size of the chunk LIB3DS_MESH_TEXTURE_INFO to 92 bytes (as seen in 3ds 
+	  files from 3d Studio)
+	* the chunk LIB3DS_SHADOW_RANGE contains, according to the 3ds file development
+	  kit (3ds-fdk) a dword chunk; reading and writing the chunk should be fixed.
+
+2001-03-20  J E Hoffmann  <je-h@gmx.net>
+
+	* examples/3dsplay.c: new simples 3dsplayer example
+	  using glut. msvc support only at the moment.
+	* lib3ds/mesh.c: started working on vertex normal support
+	  (smoothing not supported at the moment, can't test them)
+	* Doxygen documentation files changed from *.doc to *.txt
+	  to avoid collisions with MS-Word on windows platforms  
+
 2001-01-15  J E Hoffmann  <je-h@gmx.net>
 
 	* lib3ds/material.c (lib3ds_material_dump): 

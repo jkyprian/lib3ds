@@ -11,7 +11,7 @@ AC_INIT(Makefile.am)
 # set LIB3DS_BINARY_AGE and LIB3DS_INTERFACE_AGE to 0.
 #
 LIB3DS_MAJOR_VERSION=1
-LIB3DS_MINOR_VERSION=0
+LIB3DS_MINOR_VERSION=1
 LIB3DS_MICRO_VERSION=0
 LIB3DS_INTERFACE_AGE=0
 LIB3DS_BINARY_AGE=0
@@ -38,47 +38,6 @@ AM_INIT_AUTOMAKE(lib3ds, $LIB3DS_VERSION)
 
 dnl Checks for programs.
 AC_PROG_CC
-
-dnl Byte order check.
-AC_MSG_CHECKING([for byte order])
-bigendian=""
-AC_ARG_ENABLE(little-endian,   
-  [  --enable-little-endian  enable little endian byte order],
-  [
-    bigendian=no
-  ]) 
-AC_ARG_ENABLE(big-endian,   
-  [  --enable-big-endian     enable big endian byte order],
-  [
-    bigendian=yes
-  ]) 
-if test -z "$bigendian"; then
-  AC_TRY_RUN([
-    main () 
-    {
-      /* Are we little or big endian?  From Harbison&Steele.  */
-      union
-      {
-        long l;
-        char c[sizeof (long)];
-      } u;
-      u.l = 1;
-      exit (u.c[sizeof (long) - 1] == 1);
-    }
-    ],[
-      bigendian=no
-    ],[
-      bigendian=yes
-    ],
-    AC_MSG_ERROR([Byte order not configured])
-  )
-fi
-if test $bigendian = yes; then
-  AC_MSG_RESULT([big endian])
-  AC_DEFINE(WORDS_BIGENDIAN)
-else
-  AC_MSG_RESULT([little endian])
-fi
 
 dnl Byte order check.
 AC_MSG_CHECKING([for debugging mode])

@@ -17,12 +17,16 @@
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.4 2001/01/14 20:55:24 jeh Exp $
+ # $Id: Makefile.am,v 1.6 2001/06/16 17:06:52 jeh Exp $
  #
 
 EXTRA_DIST = \
+  all.dsp \
   lib3ds.dsw \
-  lib3ds.dsp \
+  lib3ds_lib.dsp \
+  lib3ds_dll.dsp \
   3dsdump.dsp \
   3ds2m.dsp \
-  3ds2rib.dsp
+  3ds2rib.dsp \
+  3dsplay.dsp
+

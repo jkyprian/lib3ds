@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: vector.c,v 1.6 2001/01/12 10:29:17 jeh Exp $
+ * $Id: vector.c,v 1.7 2001/06/16 14:00:50 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/vector.h>
@@ -229,6 +229,38 @@ lib3ds_vector_cubic(Lib3dsVector c, Lib3dsVector a, Lib3dsVector p, Lib3dsVector
   c[0]=(Lib3dsFloat)(x*a[0] + y*b[0] + z*p[0] + w*q[0]);
   c[1]=(Lib3dsFloat)(x*a[1] + y*b[1] + z*p[1] + w*q[1]);
   c[2]=(Lib3dsFloat)(x*a[2] + y*b[2] + z*p[2] + w*q[2]);
+}
+
+
+/*!
+ * c[i] = min(c[i], a[i]);
+ * \ingroup vector
+ */
+void 
+lib3ds_vector_min(Lib3dsVector c, Lib3dsVector a)
+{
+  int i;
+  for (i=0; i<3; ++i) {
+    if (a[i]<c[i]) {
+      c[i] = a[i];
+    }
+  }
+}
+
+
+/*!
+ * c[i] = max(c[i], a[i]);
+ * \ingroup vector
+ */
+void 
+lib3ds_vector_max(Lib3dsVector c, Lib3dsVector a)
+{
+  int i;
+  for (i=0; i<3; ++i) {
+    if (a[i]>c[i]) {
+      c[i] = a[i];
+    }
+  }
 }
 
 

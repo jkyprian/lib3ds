@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: chunktable.h,v 1.9 2001/01/15 09:35:45 jeh Exp $
+ * $Id: chunktable.h,v 1.10 2001/06/16 16:26:20 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_CHUNK_H

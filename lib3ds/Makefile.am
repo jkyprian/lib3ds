@@ -17,7 +17,7 @@
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.8 2001/01/12 10:29:16 jeh Exp $
+ # $Id: Makefile.am,v 1.9 2001/06/16 16:26:20 jeh Exp $
  #
 
 lib3dsdir=$(includedir)/lib3ds
@@ -71,7 +71,7 @@ lib3ds_HEADERS = \
   node.h
 
 EXTRA_DIST = \
-  types.doc \
+  types.txt \
   chunktable.sed
 
 chunktable.h: chunk.h chunktable.sed

@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: node.c,v 1.9 2001/01/12 10:29:17 jeh Exp $
+ * $Id: node.c,v 1.11 2001/06/08 14:22:57 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/node.h>
@@ -27,6 +27,7 @@
 #include <lib3ds/matrix.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <config.h>
 #ifdef WITH_DMALLOC
 #include <dmalloc.h>
@@ -339,15 +340,15 @@ lib3ds_node_by_name(Lib3dsNode *node, const char* name, Lib3dsNodeTypes type)
  * \ingroup node
  */
 Lib3dsNode*
-lib3ds_node_by_id(Lib3dsNode *node, Lib3dsWord id)
+lib3ds_node_by_id(Lib3dsNode *node, Lib3dsWord node_id)
 {
   Lib3dsNode *p,*q;
 
   for (p=node->childs; p!=0; p=p->next) {
-    if (p->id==id) {
+    if (p->node_id==node_id) {
       return(p);
     }
-    q=lib3ds_node_by_id(p, id);
+    q=lib3ds_node_by_id(p, node_id);
     if (q) {
       return(q);
     }
@@ -432,7 +433,8 @@ lib3ds_node_read(Lib3dsNode *node, Lib3dsFile *file, FILE *f)
     switch (chunk) {
       case LIB3DS_NODE_ID:
         {
-          node->id=lib3ds_word_read(f);
+          node->node_id=lib3ds_word_read(f);
+          lib3ds_chunk_dump_info("  ID = %d", (short)node->node_id);
         }
         break;
       case LIB3DS_NODE_HDR:
@@ -443,6 +445,8 @@ lib3ds_node_read(Lib3dsNode *node, Lib3dsFile *file, FILE *f)
           node->flags1=lib3ds_word_read(f);
           node->flags2=lib3ds_word_read(f);
           node->parent_id=lib3ds_word_read(f);
+          lib3ds_chunk_dump_info("  NAME =%s", node->name);
+          lib3ds_chunk_dump_info("  PARENT=%d", (short)node->parent_id);
         }
         break;
       case LIB3DS_PIVOT:
@@ -700,7 +704,7 @@ lib3ds_node_write(Lib3dsNode *node, Lib3dsFile *file, FILE *f)
     c.chunk=LIB3DS_NODE_ID;
     c.size=8;
     lib3ds_chunk_write(&c,f);
-    lib3ds_intw_write(node->id,f);
+    lib3ds_intw_write(node->node_id,f);
   }
 
   { /*---- LIB3DS_NODE_HDR ----*/
@@ -743,22 +747,30 @@ lib3ds_node_write(Lib3dsNode *node, Lib3dsFile *file, FILE *f)
         const char *name;
         if (strlen(node->data.object.instance)) {
           name=node->data.object.instance;
+
+          c.chunk=LIB3DS_INSTANCE_NAME;
+          c.size=6+1+strlen(name);
+          lib3ds_chunk_write(&c,f);
+          lib3ds_string_write(name,f);
         }
-        else {
-          name=node->name;
-        }
-        c.chunk=LIB3DS_INSTANCE_NAME;
-        c.size=6+1+strlen(name);
-        lib3ds_chunk_write(&c,f);
-        lib3ds_string_write(name,f);
       }
-      { /*---- LIB3DS_BOUNDBOX ----*/
-        Lib3dsChunk c;
-        c.chunk=LIB3DS_BOUNDBOX;
-        c.size=30;
-        lib3ds_chunk_write(&c,f);
-        lib3ds_vector_write(node->data.object.bbox_min, f);
-        lib3ds_vector_write(node->data.object.bbox_max, f);
+      {
+        int i;
+        for (i=0; i<3; ++i) {
+          if ((fabs(node->data.object.bbox_min[i])>LIB3DS_EPSILON) ||
+            (fabs(node->data.object.bbox_max[i])>LIB3DS_EPSILON)) {
+            break;
+          }
+        }
+        
+        if (i<3) { /*---- LIB3DS_BOUNDBOX ----*/
+          Lib3dsChunk c;
+          c.chunk=LIB3DS_BOUNDBOX;
+          c.size=30;
+          lib3ds_chunk_write(&c,f);
+          lib3ds_vector_write(node->data.object.bbox_min, f);
+          lib3ds_vector_write(node->data.object.bbox_max, f);
+        }
       }
       { /*---- LIB3DS_POS_TRACK_TAG ----*/
         Lib3dsChunk c;
@@ -799,7 +811,7 @@ lib3ds_node_write(Lib3dsNode *node, Lib3dsFile *file, FILE *f)
           return(LIB3DS_FALSE);
         }
       }
-      { /*---- LIB3DS_HIDE_TRACK_TAG ----*/
+      if (node->data.object.hide_track.keyL) { /*---- LIB3DS_HIDE_TRACK_TAG ----*/
         Lib3dsChunk c;
         c.chunk=LIB3DS_HIDE_TRACK_TAG;
         if (!lib3ds_chunk_write_start(&c,f)) {
@@ -812,7 +824,7 @@ lib3ds_node_write(Lib3dsNode *node, Lib3dsFile *file, FILE *f)
           return(LIB3DS_FALSE);
         }
       }
-      { /*---- LIB3DS_MORPH_SMOOTH ----*/
+      if (fabs(node->data.object.morph_smooth)>LIB3DS_EPSILON){ /*---- LIB3DS_MORPH_SMOOTH ----*/
         Lib3dsChunk c;
         c.chunk=LIB3DS_MORPH_SMOOTH;
         c.size=10;

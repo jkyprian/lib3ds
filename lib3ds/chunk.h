@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: chunk.h,v 1.9 2001/01/15 09:35:45 jeh Exp $
+ * $Id: chunk.h,v 1.10 2001/06/08 14:22:56 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -278,6 +278,7 @@ extern LIB3DSAPI Lib3dsBool lib3ds_chunk_write_start(Lib3dsChunk *c, FILE *f);
 extern LIB3DSAPI Lib3dsBool lib3ds_chunk_write_end(Lib3dsChunk *c, FILE *f);
 extern LIB3DSAPI const char* lib3ds_chunk_name(Lib3dsWord chunk);
 extern LIB3DSAPI void lib3ds_chunk_unknown(Lib3dsWord chunk);
+extern LIB3DSAPI void lib3ds_chunk_dump_info(const char *format, ...);
 
 #ifdef __cplusplus
 };

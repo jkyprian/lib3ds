@@ -85,17 +85,30 @@ VERSION = @VERSION@
 INCLUDES =    -I$(top_srcdir)   @DMALLOC_CFLAGS@
 
 
-bin_PROGRAMS =    3dsdump   3ds2m   3ds2rib
+bin_PROGRAMS =    lib3dsdump   lib3ds2m   lib3ds2rib   lib3dsplay
 
 
-LDADD =    $(top_builddir)/lib3ds/lib3ds.la   @DMALLOC_LIBS@
+lib3dsdump_SOURCES = 3dsdump.c
+lib3dsdump_LDADD =    $(top_builddir)/lib3ds/lib3ds.la   @DMALLOC_LIBS@
 
 
-MANPAGES =    3dsdump.1   3ds2m.1   3ds2rib.1
+lib3ds2m_SOURCES = 3ds2m.c
+lib3ds2m_LDADD =    $(top_builddir)/lib3ds/lib3ds.la   @DMALLOC_LIBS@
+
+
+lib3ds2rib_SOURCES = 3ds2rib.c
+lib3ds2rib_LDADD =    $(top_builddir)/lib3ds/lib3ds.la   @DMALLOC_LIBS@
+
+
+lib3dsplay_SOURCES = 3dsplay.c
+lib3dsplay_LDADD =    $(top_builddir)/lib3ds/lib3ds.la   @DMALLOC_LIBS@   -lglut -lGLU -lGL
+
+
+MANPAGES =    3dsdump.1   3ds2m.1   3ds2rib.1   3dsplay.1
 
 
 man_MANS = $(MANPAGES)
-EXTRA_DIST = $(MANPAGES)
+EXTRA_DIST = $(MANPAGES) 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -106,21 +119,18 @@ DEFS = @DEFS@ -I. -I$(srcdir) -I..
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-3dsdump_SOURCES = 3dsdump.c
-3dsdump_OBJECTS =  3dsdump.o
-3dsdump_LDADD = $(LDADD)
-3dsdump_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
-3dsdump_LDFLAGS = 
-3ds2m_SOURCES = 3ds2m.c
-3ds2m_OBJECTS =  3ds2m.o
-3ds2m_LDADD = $(LDADD)
-3ds2m_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
-3ds2m_LDFLAGS = 
-3ds2rib_SOURCES = 3ds2rib.c
-3ds2rib_OBJECTS =  3ds2rib.o
-3ds2rib_LDADD = $(LDADD)
-3ds2rib_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
-3ds2rib_LDFLAGS = 
+lib3dsdump_OBJECTS =  3dsdump.o
+lib3dsdump_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
+lib3dsdump_LDFLAGS = 
+lib3ds2m_OBJECTS =  3ds2m.o
+lib3ds2m_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
+lib3ds2m_LDFLAGS = 
+lib3ds2rib_OBJECTS =  3ds2rib.o
+lib3ds2rib_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
+lib3ds2rib_LDFLAGS = 
+lib3dsplay_OBJECTS =  3dsplay.o
+lib3dsplay_DEPENDENCIES =  $(top_builddir)/lib3ds/lib3ds.la
+lib3dsplay_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -137,8 +147,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-SOURCES = 3dsdump.c 3ds2m.c 3ds2rib.c
-OBJECTS = 3dsdump.o 3ds2m.o 3ds2rib.o
+SOURCES = $(lib3dsdump_SOURCES) $(lib3ds2m_SOURCES) $(lib3ds2rib_SOURCES) $(lib3dsplay_SOURCES)
+OBJECTS = $(lib3dsdump_OBJECTS) $(lib3ds2m_OBJECTS) $(lib3ds2rib_OBJECTS) $(lib3dsplay_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
@@ -214,17 +224,21 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 
-3dsdump: $(3dsdump_OBJECTS) $(3dsdump_DEPENDENCIES)
-	@rm -f 3dsdump
-	$(LINK) $(3dsdump_LDFLAGS) $(3dsdump_OBJECTS) $(3dsdump_LDADD) $(LIBS)
+lib3dsdump: $(lib3dsdump_OBJECTS) $(lib3dsdump_DEPENDENCIES)
+	@rm -f lib3dsdump
+	$(LINK) $(lib3dsdump_LDFLAGS) $(lib3dsdump_OBJECTS) $(lib3dsdump_LDADD) $(LIBS)
 
-3ds2m: $(3ds2m_OBJECTS) $(3ds2m_DEPENDENCIES)
-	@rm -f 3ds2m
-	$(LINK) $(3ds2m_LDFLAGS) $(3ds2m_OBJECTS) $(3ds2m_LDADD) $(LIBS)
+lib3ds2m: $(lib3ds2m_OBJECTS) $(lib3ds2m_DEPENDENCIES)
+	@rm -f lib3ds2m
+	$(LINK) $(lib3ds2m_LDFLAGS) $(lib3ds2m_OBJECTS) $(lib3ds2m_LDADD) $(LIBS)
 
-3ds2rib: $(3ds2rib_OBJECTS) $(3ds2rib_DEPENDENCIES)
-	@rm -f 3ds2rib
-	$(LINK) $(3ds2rib_LDFLAGS) $(3ds2rib_OBJECTS) $(3ds2rib_LDADD) $(LIBS)
+lib3ds2rib: $(lib3ds2rib_OBJECTS) $(lib3ds2rib_DEPENDENCIES)
+	@rm -f lib3ds2rib
+	$(LINK) $(lib3ds2rib_LDFLAGS) $(lib3ds2rib_OBJECTS) $(lib3ds2rib_LDADD) $(LIBS)
+
+lib3dsplay: $(lib3dsplay_OBJECTS) $(lib3dsplay_DEPENDENCIES)
+	@rm -f lib3dsplay
+	$(LINK) $(lib3dsplay_LDFLAGS) $(lib3dsplay_OBJECTS) $(lib3dsplay_LDADD) $(LIBS)
 
 install-man1:
 	$(mkinstalldirs) $(DESTDIR)$(man1dir)
@@ -319,6 +333,8 @@ check: check-am
 installcheck-am:
 installcheck: installcheck-am
 install-exec-am: install-binPROGRAMS
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) install-exec-hook
 install-exec: install-exec-am
 
 install-data-am: install-man
@@ -405,8 +421,14 @@ mostlyclean distclean maintainer-clean
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.9 2001/01/14 20:55:23 jeh Exp $
+ # $Id: Makefile.am,v 1.11 2001/06/16 17:06:52 jeh Exp $
  #
+
+install-exec-hook:
+	mv $(DESTDIR)$(bindir)/lib3dsdump $(DESTDIR)$(bindir)/3dsdump
+	mv $(DESTDIR)$(bindir)/lib3ds2m $(DESTDIR)$(bindir)/3ds2m
+	mv $(DESTDIR)$(bindir)/lib3ds2rib $(DESTDIR)$(bindir)/3ds2rib
+	mv $(DESTDIR)$(bindir)/lib3dsplay $(DESTDIR)$(bindir)/3dsplay
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

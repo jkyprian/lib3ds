@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: material.c,v 1.11 2001/01/15 10:00:41 jeh Exp $
+ * $Id: material.c,v 1.13 2001/06/16 14:00:50 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/material.h>
@@ -160,6 +160,7 @@ texture_map_read(Lib3dsTextureMap *map, FILE *f)
           if (!lib3ds_string_read(map->name, 64, f)) {
             return(LIB3DS_FALSE);
           }
+          lib3ds_chunk_dump_info("  NAME=%s", map->name);
         }
         break;
       case LIB3DS_MAT_MAP_TILING:
@@ -245,32 +246,86 @@ texture_map_read(Lib3dsTextureMap *map, FILE *f)
 /*!
  * \ingroup material
  */
+static void
+texture_dump(const char *maptype, Lib3dsTextureMap *texture)
+{
+  ASSERT(texture);
+  if (strlen(texture->name)==0) {
+    return;
+  }
+  printf("  %s:\n", maptype);
+  printf("    name:        %s\n", texture->name);
+  printf("    flags:       %X\n", texture->flags);
+  printf("    percent:     %f\n", texture->percent);
+  printf("    blur:        %f\n", texture->blur);
+  printf("    scale:       (%f, %f)\n", texture->scale[0], texture->scale[1]);
+  printf("    offset:      (%f, %f)\n", texture->offset[0], texture->offset[1]);
+  printf("    rotation:    %f\n", texture->rotation);
+  printf("    tint_1:      (%f, %f, %f)\n",
+    texture->tint_1[0], texture->tint_1[1], texture->tint_1[2]);
+  printf("    tint_2:      (%f, %f, %f)\n",
+    texture->tint_2[0], texture->tint_2[1], texture->tint_2[2]);
+  printf("    tint_r:      (%f, %f, %f)\n",
+    texture->tint_r[0], texture->tint_r[1], texture->tint_r[2]);
+  printf("    tint_g:      (%f, %f, %f)\n",
+    texture->tint_g[0], texture->tint_g[1], texture->tint_g[2]);
+  printf("    tint_b:      (%f, %f, %f)\n",
+    texture->tint_b[0], texture->tint_b[1], texture->tint_b[2]);
+}
+
+
+/*!
+ * \ingroup material
+ */
 void
 lib3ds_material_dump(Lib3dsMaterial *material)
 {
   ASSERT(material);
-  printf("  %s\n", material->name);
-  printf("    Ambient:        %1.2f %1.2f %1.2f\n",
-    material->ambient[0],material->ambient[1], material->ambient[2]);
-  printf("    Diffuse:        %1.2f %1.2f %1.2f\n",
-    material->diffuse[0],material->diffuse[1], material->diffuse[2]);
-  printf("    Specular:       %1.2f %1.2f %1.2f\n",
-    material->specular[0],material->specular[1], material->specular[2]);
-  printf("    Shininess:      %1.2f\n", material->shininess);
-  printf("    Shin. Strength: %1.2f\n", material->shin_strength);
-  printf("    Shading:        %d\n", material->shading);
-  if (*material->texture1_map.name) {
-    printf("    Texture 1 Map:  '%s'\n", material->texture1_map.name);
-  }
-  if (*material->texture1_mask.name) {
-    printf("    Texture 1 Mask: '%s'\n", material->texture1_mask.name);
-  }
-  if (*material->texture2_map.name) {
-    printf("    Texture 2 Map:  '%s'\n", material->texture2_map.name);
-  }
-  if (*material->texture2_mask.name) {
-    printf("    Texture 2 Mask: '%s'\n", material->texture2_mask.name);
-  }
+  printf("  name:          %s\n", material->name);
+  printf("  ambient:       (%f, %f, %f)\n",
+    material->ambient[0], material->ambient[1], material->ambient[2]);
+  printf("  diffuse:       (%f, %f, %f)\n",
+    material->diffuse[0], material->diffuse[1], material->diffuse[2]);
+  printf("  specular:      (%f, %f, %f)\n",
+    material->specular[0], material->specular[1], material->specular[2]);
+  printf("  shininess:     %f\n", material->shininess);
+  printf("  shin_strength: %f\n", material->shin_strength);
+  printf("  use_blur:      %s\n", material->use_blur ? "yes" : "no");
+  printf("  blur:          %f\n", material->blur);
+  printf("  falloff:       %f\n", material->falloff);
+  printf("  additive:      %s\n", material->additive ? "yes" : "no");
+  printf("  use_falloff:   %s\n", material->use_falloff ? "yes" : "no");
+  printf("  self_illum:    %s\n", material->self_illum ? "yes" : "no");
+  printf("  shading:       %d\n", material->shading);
+  printf("  soften:        %s\n", material->soften ? "yes" : "no");
+  printf("  face_map:      %s\n", material->face_map ? "yes" : "no");
+  printf("  two_sided:     %s\n", material->two_sided ? "yes" : "no");
+  printf("  map_decal:     %s\n", material->map_decal ? "yes" : "no");
+  printf("  use_wire:      %s\n", material->use_wire ? "yes" : "no");
+  printf("  use_wire_abs:  %s\n", material->use_wire_abs ? "yes" : "no");
+  printf("  wire_size:     %f\n", material->wire_size);
+  texture_dump("texture1_map", &material->texture1_map);
+  texture_dump("texture1_mask", &material->texture1_mask);
+  texture_dump("texture2_map", &material->texture2_map);
+  texture_dump("texture2_mask", &material->texture2_mask);
+  texture_dump("opacity_map", &material->opacity_map);
+  texture_dump("opacity_mask", &material->opacity_mask);
+  texture_dump("bump_map", &material->bump_map);
+  texture_dump("bump_mask", &material->bump_mask);
+  texture_dump("specular_map", &material->specular_map);
+  texture_dump("specular_mask", &material->specular_mask);
+  texture_dump("shininess_map", &material->shininess_map);
+  texture_dump("shininess_mask", &material->shininess_mask);
+  texture_dump("self_illum_map", &material->self_illum_map);
+  texture_dump("self_illum_mask", &material->self_illum_mask);
+  texture_dump("reflection_map", &material->reflection_map);
+  texture_dump("reflection_mask", &material->reflection_mask);
+  printf("  autorefl_map:\n");
+  printf("    flags        %X\n", material->autorefl_map.flags);
+  printf("    level        %d\n", material->autorefl_map.level);
+  printf("    size         %d\n", material->autorefl_map.size);
+  printf("    frame_step   %d\n", material->autorefl_map.frame_step);
+  printf("\n");
 }
 
 
@@ -295,6 +350,7 @@ lib3ds_material_read(Lib3dsMaterial *material, FILE *f)
           if (!lib3ds_string_read(material->name, 64, f)) {
             return(LIB3DS_FALSE);
           }
+          lib3ds_chunk_dump_info("  NAME=%s", material->name);
         }
         break;
       case LIB3DS_MAT_AMBIENT:

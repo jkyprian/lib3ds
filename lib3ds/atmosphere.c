@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: atmosphere.c,v 1.6 2001/01/12 10:29:16 jeh Exp $
+ * $Id: atmosphere.c,v 1.8 2001/06/08 14:22:56 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/atmosphere.h>
@@ -205,7 +205,7 @@ lib3ds_atmosphere_read(Lib3dsAtmosphere *atmosphere, FILE *f)
 Lib3dsBool
 lib3ds_atmosphere_write(Lib3dsAtmosphere *atmosphere, FILE *f)
 {
-  { /*---- LIB3DS_FOG ----*/
+  if (atmosphere->fog.use) { /*---- LIB3DS_FOG ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_FOG;
     if (!lib3ds_chunk_write_start(&c,f)) {
@@ -217,14 +217,14 @@ lib3ds_atmosphere_write(Lib3dsAtmosphere *atmosphere, FILE *f)
     lib3ds_float_write(atmosphere->fog.far_density,f);
     {
       Lib3dsChunk c;
-      c.chunk=LIB3DS_FOG_BGND;
+      c.chunk=LIB3DS_COLOR_F;
       c.size=18;
       lib3ds_chunk_write(&c,f);
       lib3ds_rgb_write(atmosphere->fog.col,f);
     }
     if (atmosphere->fog.fog_background) {
       Lib3dsChunk c;
-      c.chunk=LIB3DS_COLOR_F;
+      c.chunk=LIB3DS_FOG_BGND;
       c.size=6;
       lib3ds_chunk_write(&c,f);
     }
@@ -232,7 +232,8 @@ lib3ds_atmosphere_write(Lib3dsAtmosphere *atmosphere, FILE *f)
       return(LIB3DS_FALSE);
     }
   }
-  { /*---- LIB3DS_LAYER_FOG ----*/
+
+  if (atmosphere->layer_fog.use) { /*---- LIB3DS_LAYER_FOG ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_LAYER_FOG;
     c.size=40;
@@ -249,7 +250,8 @@ lib3ds_atmosphere_write(Lib3dsAtmosphere *atmosphere, FILE *f)
       lib3ds_rgb_write(atmosphere->fog.col,f);
     }
   }
-  { /*---- LIB3DS_DISTANCE_CUE ----*/
+
+  if (atmosphere->dist_cue.use) { /*---- LIB3DS_DISTANCE_CUE ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_DISTANCE_CUE;
     if (!lib3ds_chunk_write_start(&c,f)) {
@@ -269,18 +271,21 @@ lib3ds_atmosphere_write(Lib3dsAtmosphere *atmosphere, FILE *f)
       return(LIB3DS_FALSE);
     }
   }
+
   if (atmosphere->fog.use) { /*---- LIB3DS_USE_FOG ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_USE_FOG;
     c.size=6;
     lib3ds_chunk_write(&c,f);
   }
+
   if (atmosphere->layer_fog.use) { /*---- LIB3DS_USE_LAYER_FOG ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_USE_LAYER_FOG;
     c.size=6;
     lib3ds_chunk_write(&c,f);
   }
+
   if (atmosphere->dist_cue.use) { /*---- LIB3DS_USE_DISTANCE_CUE ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_USE_V_GRADIENT;

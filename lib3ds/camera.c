@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: camera.c,v 1.8 2001/01/12 10:29:17 jeh Exp $
+ * $Id: camera.c,v 1.9 2001/06/16 14:00:50 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/camera.h>
@@ -68,6 +68,27 @@ lib3ds_camera_free(Lib3dsCamera *camera)
 {
   memset(camera, 0, sizeof(Lib3dsCamera));
   free(camera);
+}
+
+
+/*!
+ * \ingroup camera
+ */
+void
+lib3ds_camera_dump(Lib3dsCamera *camera)
+{
+  ASSERT(camera);
+  printf("  name:       %s\n", camera->name);
+  printf("  position:   (%f, %f, %f)\n", 
+    camera->position[0], camera->position[1], camera->position[2]);
+  printf("  target      (%f, %f, %f)\n", 
+    camera->target[0], camera->target[1], camera->target[2]);
+  printf("  roll:       %f\n", camera->roll);
+  printf("  fov:        %f\n", camera->fov);
+  printf("  see_cone:   %s\n", camera->see_cone ? "yes" : "no");
+  printf("  near_range: %f\n", camera->near_range);
+  printf("  far_range:  %f\n", camera->near_range);
+  printf("\n");
 }
 
 

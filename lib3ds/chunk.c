@@ -17,13 +17,14 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: chunk.c,v 1.12 2001/01/15 09:35:45 jeh Exp $
+ * $Id: chunk.c,v 1.13 2001/06/08 14:22:56 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/chunk.h>
 #include <lib3ds/readwrite.h>
 #include <lib3ds/chunktable.h>
 #include <string.h>
+#include <stdarg.h>
 
 
 /*#define LIB3DS_CHUNK_DEBUG*/
@@ -276,6 +277,25 @@ lib3ds_chunk_unknown(Lib3dsWord chunk)
       lib3ds_chunk_name(chunk),
       chunk
     );
+  }
+}
+
+
+/*!
+ * \ingroup chunk
+ */
+void 
+lib3ds_chunk_dump_info(const char *format, ...)
+{
+  if (enable_dump) {
+    char s[1024];
+    va_list marker;
+
+    va_start(marker, format);
+    vsprintf(s, format, marker);
+    va_end(marker);
+
+    printf("%s%s\n", lib3ds_chunk_level, s);
   }
 }
 

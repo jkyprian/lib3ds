@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: shadow.h,v 1.6 2001/01/14 20:55:23 jeh Exp $
+ * $Id: shadow.h,v 1.7 2001/05/15 12:39:54 vividos Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -40,7 +40,7 @@ struct _Lib3dsShadow {
     Lib3dsFloat lo_bias;
     Lib3dsFloat hi_bias;
     Lib3dsIntw samples;
-    Lib3dsIntw range;
+    Lib3dsIntd range;
     Lib3dsFloat filter;
     Lib3dsFloat ray_bias;
 };

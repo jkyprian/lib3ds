@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: 3dsdump.c,v 1.4 2001/01/16 16:00:52 jeh Exp $
+ * $Id: 3dsdump.c,v 1.5 2001/06/08 14:22:56 jeh Exp $
  */
 #include <lib3ds/file.h>
 #include <lib3ds/chunk.h>
@@ -38,15 +38,16 @@ Displays imformation about the content of a <i>3DS</i> file.
 Syntax: 3dsdump [options] filename [options]
 
 Options:
-  -h/--help          This help
-  -s/--structure     Dump structure of file
-  -u/--unknown       Report unknown chunks  
-  -m/--materials     Dump materials
-  -t/--trimeshes     Dump meshes
-  -i/--instance      Dump mesh instances
-  -c/--cameras       Dump cameras
-  -l/--lights        Dump lights
-  -n/--nodes         Dump node hierarchy
+  -h/--help           This help
+  -s/--structure      Dump structure of file
+  -u/--unknown        Report unknown chunks  
+  -m/--materials      Dump materials
+  -t/--trimeshes      Dump meshes
+  -i/--instance       Dump mesh instances
+  -c/--cameras        Dump cameras
+  -l/--lights         Dump lights
+  -n/--nodes          Dump node hierarchy
+  -w/--write filename Write new 3ds file to disk
 \endcode
 
 \author J.E. Hoffmann <je-h@gmx.net>
@@ -64,15 +65,16 @@ help()
 "Syntax: 3dsdump [options] filename [options]\n"
 "\n"
 "Options:\n"
-"  -h/--help          This help\n"
-"  -s/--structure     Dump structure of file\n"
-"  -u/--unknown       Report unknown chunks\n"  
-"  -m/--materials     Dump materials\n"
-"  -t/--trimeshes     Dump meshes\n"
-"  -i/--instance      Dump mesh instances\n"
-"  -c/--cameras       Dump cameras\n"
-"  -l/--lights        Dump lights\n"
-"  -n/--nodes         Dump node hierarchy\n"
+"  -h/--help           This help\n"
+"  -s/--structure      Dump structure of file\n"
+"  -u/--unknown        Report unknown chunks\n"  
+"  -m/--materials      Dump materials\n"
+"  -t/--trimeshes      Dump meshes\n"
+"  -i/--instance       Dump mesh instances\n"
+"  -c/--cameras        Dump cameras\n"
+"  -l/--lights         Dump lights\n"
+"  -n/--nodes          Dump node hierarchy\n"
+"  -w/--write filename Write new 3ds file to disk\n"
 "\n"
 );
   exit(1);
@@ -86,10 +88,12 @@ typedef enum _Flags {
   LIB3DSDUMP_INSTANCES  =0x0010,
   LIB3DSDUMP_CAMERAS    =0x0020,
   LIB3DSDUMP_LIGHTS     =0x0040,
-  LIB3DSDUMP_NODES      =0x0080
+  LIB3DSDUMP_NODES      =0x0080,
+  LIB3DSDUMP_WRITE_3DS  =0x0100
 } Flags;
 
 static const char* filename=0;
+static const char* output=0;
 static Lib3dsDword flags=0;
 
 
@@ -135,6 +139,15 @@ parse_args(int argc, char **argv)
       if ((strcmp(argv[i],"-n")==0) || (strcmp(argv[i],"--nodes")==0)) {
         flags|=LIB3DSDUMP_NODES;
       }
+      else
+      if ((strcmp(argv[i],"-w")==0) || (strcmp(argv[i],"--write")==0)) {
+        flags|=LIB3DSDUMP_WRITE_3DS;
+        ++i;
+        if (i>=argc) {
+          help();
+        }
+        output=argv[i];
+      }
       else {
         help();
       }
@@ -163,7 +176,7 @@ main(int argc, char **argv)
   parse_args(argc, argv);
 
   lib3ds_chunk_enable_dump(flags&LIB3DSDUMP_STRUCTURE, flags&LIB3DSDUMP_UNKNOWN);
-  f=lib3ds_open(filename);
+  f=lib3ds_file_load(filename);
   if (!f) {
     fprintf(stderr, "***ERROR***\nLoading file %s failed\n", filename);
     exit(1);
@@ -199,7 +212,12 @@ main(int argc, char **argv)
     lib3ds_file_dump_nodes(f);
     printf("\n");
   }
-  
-  lib3ds_close(f);
+  if (output && (flags&LIB3DSDUMP_WRITE_3DS)) {
+    if (!lib3ds_file_save(f, output)) {
+      printf("***ERROR**** Writing %s\n", output);
+    }
+  }
+
+  lib3ds_file_free(f);
   return(0);
 }

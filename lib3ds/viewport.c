@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: viewport.c,v 1.3 2001/01/14 20:55:23 jeh Exp $
+ * $Id: viewport.c,v 1.4 2001/06/08 14:22:57 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/viewport.h>
@@ -43,7 +43,7 @@ lib3ds_viewport_read(Lib3dsViewport *viewport, FILE *f)
   Lib3dsChunk c;
   Lib3dsWord chunk;
 
-  if (!lib3ds_chunk_read(&c, f)) {
+  if (!lib3ds_chunk_read_start(&c, 0, f)) {
     return(LIB3DS_FALSE);
   }
   
@@ -95,7 +95,6 @@ lib3ds_viewport_read(Lib3dsViewport *viewport, FILE *f)
               lib3ds_chunk_unknown(chunk);
           }
         }
-        lib3ds_chunk_read_end(&c, f);
       }
       break;
     case LIB3DS_DEFAULT_VIEW:
@@ -165,10 +164,11 @@ lib3ds_viewport_read(Lib3dsViewport *viewport, FILE *f)
               lib3ds_chunk_unknown(chunk);
           }
         }
-        lib3ds_chunk_read_end(&c, f);
       }
       break;
   }
+
+  lib3ds_chunk_read_end(&c, f);
   return(LIB3DS_TRUE);
 }
 
