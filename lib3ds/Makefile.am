@@ -17,17 +17,17 @@
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.9 2001/06/16 16:26:20 jeh Exp $
+ # $Id: Makefile.am,v 1.11 2002/01/14 12:27:45 jeh Exp $
  #
 
 lib3dsdir=$(includedir)/lib3ds
 
 INCLUDES = -I$(top_srcdir)
 
-lib_LTLIBRARIES = lib3ds.la
+lib_LIBRARIES = lib3ds.a
 
-lib3ds_la_SOURCES = \
-  readwrite.c \
+lib3ds_a_SOURCES = \
+  io.c \
   float.c \
   vector.c \
   matrix.c \
@@ -50,7 +50,7 @@ lib3ds_la_SOURCES = \
 
 lib3ds_HEADERS = \
   types.h \
-  readwrite.h \
+  io.h \
   float.h \
   vector.h \
   matrix.h \
@@ -79,9 +79,4 @@ chunktable.h: chunk.h chunktable.sed
 
 chunk.c: chunktable.h
 
-lib3ds_la_LDFLAGS= \
- -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
- -release $(LT_RELEASE)
 
-lib3ds_la_LIBADD= \
-  -lm

@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: types.h,v 1.13 2001/06/05 01:52:00 jeh Exp $
+ * $Id: types.h,v 1.14 2001/07/07 19:05:30 jeh Exp $
  */
 #ifdef __cplusplus
 extern "C" {
@@ -82,6 +82,7 @@ typedef float Lib3dsRgba[4];
   #define LIB3DS_ERROR_LOG
 #endif
 
+typedef struct _Lib3dsIo Lib3dsIo;
 typedef struct _Lib3dsFile Lib3dsFile;
 typedef struct _Lib3dsBackground Lib3dsBackground;
 typedef struct _Lib3dsAtmosphere Lib3dsAtmosphere;

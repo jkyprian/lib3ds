@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: mesh.h,v 1.12 2001/06/16 14:00:50 jeh Exp $
+ * $Id: mesh.h,v 1.13 2001/07/07 19:05:30 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -125,8 +125,8 @@ extern LIB3DSAPI void lib3ds_mesh_free_face_list(Lib3dsMesh *mesh);
 extern LIB3DSAPI void lib3ds_mesh_bounding_box(Lib3dsMesh *mesh, Lib3dsVector min, Lib3dsVector max);
 extern LIB3DSAPI void lib3ds_mesh_calculate_normals(Lib3dsMesh *mesh, Lib3dsVector *normalL);
 extern LIB3DSAPI void lib3ds_mesh_dump(Lib3dsMesh *mesh);
-extern LIB3DSAPI Lib3dsBool lib3ds_mesh_read(Lib3dsMesh *mesh, FILE *f);
-extern LIB3DSAPI Lib3dsBool lib3ds_mesh_write(Lib3dsMesh *mesh, FILE *f);
+extern LIB3DSAPI Lib3dsBool lib3ds_mesh_read(Lib3dsMesh *mesh, Lib3dsIo *io);
+extern LIB3DSAPI Lib3dsBool lib3ds_mesh_write(Lib3dsMesh *mesh, Lib3dsIo *io);
 
 #ifdef __cplusplus
 };

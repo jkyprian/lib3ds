@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: shadow.h,v 1.7 2001/05/15 12:39:54 vividos Exp $
+ * $Id: shadow.h,v 1.8 2001/07/07 19:05:30 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -45,8 +45,8 @@ struct _Lib3dsShadow {
     Lib3dsFloat ray_bias;
 };
 
-extern LIB3DSAPI Lib3dsBool lib3ds_shadow_read(Lib3dsShadow *shadow, FILE *f);
-extern LIB3DSAPI Lib3dsBool lib3ds_shadow_write(Lib3dsShadow *shadow, FILE *f);
+extern LIB3DSAPI Lib3dsBool lib3ds_shadow_read(Lib3dsShadow *shadow, Lib3dsIo *io);
+extern LIB3DSAPI Lib3dsBool lib3ds_shadow_write(Lib3dsShadow *shadow, Lib3dsIo *io);
 
 #ifdef __cplusplus
 };

@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: light.h,v 1.8 2001/06/16 14:00:50 jeh Exp $
+ * $Id: light.h,v 1.9 2001/07/07 19:05:30 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -68,8 +68,8 @@ struct _Lib3dsLight {
 extern LIB3DSAPI Lib3dsLight* lib3ds_light_new(const char *name);
 extern LIB3DSAPI void lib3ds_light_free(Lib3dsLight *mesh);
 extern LIB3DSAPI void lib3ds_light_dump(Lib3dsLight *light);
-extern LIB3DSAPI Lib3dsBool lib3ds_light_read(Lib3dsLight *light, FILE *f);
-extern LIB3DSAPI Lib3dsBool lib3ds_light_write(Lib3dsLight *light, FILE *f);
+extern LIB3DSAPI Lib3dsBool lib3ds_light_read(Lib3dsLight *light, Lib3dsIo *io);
+extern LIB3DSAPI Lib3dsBool lib3ds_light_write(Lib3dsLight *light, Lib3dsIo *io);
 
 #ifdef __cplusplus
 };

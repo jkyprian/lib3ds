@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: file.h,v 1.12 2001/06/16 14:00:50 jeh Exp $
+ * $Id: file.h,v 1.13 2001/07/07 19:05:30 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_BACKGROUND_H
@@ -72,8 +72,8 @@ extern LIB3DSAPI Lib3dsBool lib3ds_file_save(Lib3dsFile *file, const char *filen
 extern LIB3DSAPI Lib3dsFile* lib3ds_file_new();
 extern LIB3DSAPI void lib3ds_file_free(Lib3dsFile *file);
 extern LIB3DSAPI void lib3ds_file_eval(Lib3dsFile *file, Lib3dsFloat t);
-extern LIB3DSAPI Lib3dsBool lib3ds_file_read(Lib3dsFile *file, FILE *f);
-extern LIB3DSAPI Lib3dsBool lib3ds_file_write(Lib3dsFile *file, FILE *f);
+extern LIB3DSAPI Lib3dsBool lib3ds_file_read(Lib3dsFile *file, Lib3dsIo *io);
+extern LIB3DSAPI Lib3dsBool lib3ds_file_write(Lib3dsFile *file, Lib3dsIo *io);
 extern LIB3DSAPI void lib3ds_file_insert_material(Lib3dsFile *file, Lib3dsMaterial *material);
 extern LIB3DSAPI void lib3ds_file_remove_material(Lib3dsFile *file, Lib3dsMaterial *material);
 extern LIB3DSAPI Lib3dsMaterial* lib3ds_file_material_by_name(Lib3dsFile *file, const char *name);

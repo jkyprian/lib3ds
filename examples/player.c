@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: 3dsplay.c,v 1.5 2001/06/16 16:26:20 jeh Exp $
+ * $Id: player.c,v 1.2 2001/07/20 16:40:16 sunshine Exp $
  */
 #include <lib3ds/file.h>                        
 #include <lib3ds/camera.h>
@@ -26,22 +26,24 @@
 #include <lib3ds/material.h>
 #include <lib3ds/matrix.h>
 #include <lib3ds/vector.h>
+#include <lib3ds/light.h>
 #include <string.h>
 #include <config.h>
 #include <stdlib.h>
+#include <math.h>
 #ifdef WITH_DMALLOC
 #include <dmalloc.h>
 #endif
-#include <GL/glut.h>
+#include "glstub.h"
 
 
 /*!
-\example 3dsplay.c
+\example player.c
 
-Previews the <i>3DS</i> file using OpenGL.
+Previews a <i>3DS</i> file using OpenGL.
 
 \code
-Syntax: 3dsplay filename
+Syntax: player filename
 \endcode
 
 \warning To compile this program you must have OpenGL and glut installed.
@@ -89,6 +91,7 @@ init(void)
   glShadeModel(GL_SMOOTH);
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
+  glDisable(GL_LIGHT1);
   glDepthFunc(GL_LEQUAL);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
@@ -172,13 +175,18 @@ render_node(Lib3dsNode *node)
           if (f->material[0]) {
             mat=lib3ds_file_material_by_name(file, f->material);
           }
+
           if (mat) {
-            float s[1];
-            s[0]=1.0;
-            glMaterialfv(GL_FRONT, GL_AMBIENT, mat->ambient);
+            static GLfloat a[4]={0,0,0,1};
+            float s;
+            glMaterialfv(GL_FRONT, GL_AMBIENT, a);
             glMaterialfv(GL_FRONT, GL_DIFFUSE, mat->diffuse);
             glMaterialfv(GL_FRONT, GL_SPECULAR, mat->specular);
-            glMaterialf(GL_FRONT, GL_SHININESS, 11.0-0.2*mat->shininess);
+            s = pow(2, 10.0*mat->shininess);
+            if (s>128.0) {
+              s=128.0;
+            }
+            glMaterialf(GL_FRONT, GL_SHININESS, s);
           }
           else {
             Lib3dsRgba a={0.2, 0.2, 0.2, 1.0};
@@ -247,13 +255,36 @@ display(void)
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glRotatef(-90, 1.0,0,0);
+
   {
-    GLfloat lightPos[] = {0.0f, -1.0f, 0.0f, 0.0f};
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
-    glPushMatrix();
-    glTranslatef(0,-10,0);
-    glutSolidTeapot(10.0);
-    glPopMatrix();
+    GLfloat a[] = {0.0f, 0.0f, 0.0f, 1.0f};
+    GLfloat c[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    GLfloat p[] = {0.0f, 0.0f, 0.0f, 1.0f};
+    Lib3dsLight *l;
+
+    int li=GL_LIGHT0;
+    for (l=file->lights; l; l=l->next) {
+      glEnable(li);
+
+      glLightfv(li, GL_AMBIENT, a);
+      glLightfv(li, GL_DIFFUSE, c);
+      glLightfv(li, GL_SPECULAR, c);
+
+      p[0] = l->position[0];
+      p[1] = l->position[1];
+      p[2] = l->position[2];
+      glLightfv(li, GL_POSITION, p);
+
+      if (!l->spot_light) {
+        continue;
+      }
+
+      p[0] = l->spot[0] - l->position[0];
+      p[1] = l->spot[1] - l->position[1];
+      p[2] = l->spot[2] - l->position[2];      
+      glLightfv(li, GL_SPOT_DIRECTION, p);
+      ++li;
+    }
   }
 
   lib3ds_matrix_camera(M, c->data.camera.pos, t->data.target.pos, c->data.camera.roll);

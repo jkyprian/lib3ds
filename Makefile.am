@@ -17,10 +17,10 @@
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.17 2001/06/16 17:06:52 jeh Exp $
+ # $Id: Makefile.am,v 1.18 2001/07/18 12:17:49 jeh Exp $
  #
 
-SUBDIRS = msvc lib3ds examples
+SUBDIRS = msvc lib3ds tools examples
 
 bin_SCRIPTS = lib3ds-config
 

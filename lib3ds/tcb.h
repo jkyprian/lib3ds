@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: tcb.h,v 1.7 2001/01/14 20:55:23 jeh Exp $
+ * $Id: tcb.h,v 1.8 2001/07/07 19:05:30 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -52,8 +52,8 @@ typedef struct _Lib3dsTcb {
 extern LIB3DSAPI void lib3ds_tcb(Lib3dsTcb *p, Lib3dsTcb *pc, Lib3dsTcb *c,
   Lib3dsTcb *nc, Lib3dsTcb *n, Lib3dsFloat *ksm, Lib3dsFloat *ksp,
   Lib3dsFloat *kdm, Lib3dsFloat *kdp);
-extern LIB3DSAPI Lib3dsBool lib3ds_tcb_read(Lib3dsTcb *tcb, FILE *f);
-extern LIB3DSAPI Lib3dsBool lib3ds_tcb_write(Lib3dsTcb *tcb, FILE *f);
+extern LIB3DSAPI Lib3dsBool lib3ds_tcb_read(Lib3dsTcb *tcb, Lib3dsIo *io);
+extern LIB3DSAPI Lib3dsBool lib3ds_tcb_write(Lib3dsTcb *tcb, Lib3dsIo *io);
 
 #ifdef __cplusplus
 };

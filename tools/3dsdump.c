@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: 3dsdump.c,v 1.5 2001/06/08 14:22:56 jeh Exp $
+ * $Id: 3dsdump.c,v 1.1 2001/07/18 12:17:49 jeh Exp $
  */
 #include <lib3ds/file.h>
 #include <lib3ds/chunk.h>

@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: atmosphere.h,v 1.4 2001/01/12 10:29:16 jeh Exp $
+ * $Id: atmosphere.h,v 1.5 2001/07/07 19:05:30 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -91,8 +91,8 @@ struct _Lib3dsAtmosphere {
     Lib3dsDistanceCue dist_cue;
 };
 
-extern LIB3DSAPI Lib3dsBool lib3ds_atmosphere_read(Lib3dsAtmosphere *atmosphere, FILE *f);
-extern LIB3DSAPI Lib3dsBool lib3ds_atmosphere_write(Lib3dsAtmosphere *atmosphere, FILE *f);
+extern LIB3DSAPI Lib3dsBool lib3ds_atmosphere_read(Lib3dsAtmosphere *atmosphere, Lib3dsIo *io);
+extern LIB3DSAPI Lib3dsBool lib3ds_atmosphere_write(Lib3dsAtmosphere *atmosphere, Lib3dsIo *io);
 
 #ifdef __cplusplus
 };

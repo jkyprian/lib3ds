@@ -1,6 +1,6 @@
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
-# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -57,32 +57,38 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-host_alias = @host_alias@
-host_triplet = @host@
-AS = @AS@
 CC = @CC@
-DLLTOOL = @DLLTOOL@
 DMALLOC_CFLAGS = @DMALLOC_CFLAGS@
 DMALLOC_LIBS = @DMALLOC_LIBS@
+GLUT_CFLAGS = @GLUT_CFLAGS@
+GLUT_HEADER_DIR = @GLUT_HEADER_DIR@
+GLUT_LIBS = @GLUT_LIBS@
+GLU_HEADER_DIR = @GLU_HEADER_DIR@
+GL_HEADER_DIR = @GL_HEADER_DIR@
 LIB3DS_BINARY_AGE = @LIB3DS_BINARY_AGE@
 LIB3DS_INTERFACE_AGE = @LIB3DS_INTERFACE_AGE@
 LIB3DS_MAJOR_VERSION = @LIB3DS_MAJOR_VERSION@
 LIB3DS_MICRO_VERSION = @LIB3DS_MICRO_VERSION@
 LIB3DS_MINOR_VERSION = @LIB3DS_MINOR_VERSION@
 LIB3DS_VERSION = @LIB3DS_VERSION@
-LIBTOOL = @LIBTOOL@
-LN_S = @LN_S@
 LT_AGE = @LT_AGE@
 LT_CURRENT = @LT_CURRENT@
 LT_RELEASE = @LT_RELEASE@
 LT_REVISION = @LT_REVISION@
 MAKEINFO = @MAKEINFO@
-OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 
-EXTRA_DIST =    all.dsp   lib3ds.dsw   lib3ds_lib.dsp   lib3ds_dll.dsp   3dsdump.dsp   3ds2m.dsp   3ds2rib.dsp   3dsplay.dsp
+EXTRA_DIST = \
+  all.dsp \
+  lib3ds.dsw \
+  lib3ds_lib.dsp \
+  lib3ds_dll.dsp \
+  3dsdump.dsp \
+  3ds2m.dsp \
+  3ds2rib.dsp \
+  player.dsp
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
@@ -166,7 +172,6 @@ clean-am:  clean-generic mostlyclean-am
 clean: clean-am
 
 distclean-am:  distclean-generic clean-am
-	-rm -f libtool
 
 distclean: distclean-am
 
@@ -203,7 +208,7 @@ mostlyclean distclean maintainer-clean
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.6 2001/06/16 17:06:52 jeh Exp $
+ # $Id: Makefile.am,v 1.7 2001/07/18 14:17:04 jeh Exp $
  #
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

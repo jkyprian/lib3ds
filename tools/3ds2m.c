@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: 3ds2m.c,v 1.2 2001/06/08 14:22:56 jeh Exp $
+ * $Id: 3ds2m.c,v 1.1 2001/07/18 12:17:49 jeh Exp $
  */
 #include <lib3ds/file.h>
 #include <lib3ds/mesh.h>
@@ -156,7 +156,7 @@ dump_m_file(Lib3dsFile *f, FILE *o)
     fprintf(o, "#\n");
     
     for (i=0; i<m->points; ++i) {
-      lib3ds_vector_transform(pos, m->matrix, m->pointL[i].pos);
+      lib3ds_vector_copy(pos, m->pointL[i].pos);
       fprintf(o, "Vertex %d %f %f %f\n", points+i, pos[0], pos[1],pos[2]);
     }
 

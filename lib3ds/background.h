@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: background.h,v 1.4 2001/01/12 10:29:16 jeh Exp $
+ * $Id: background.h,v 1.5 2001/07/07 19:05:30 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -71,8 +71,8 @@ struct _Lib3dsBackground {
     Lib3dsGradient gradient;
 };
 
-extern LIB3DSAPI Lib3dsBool lib3ds_background_read(Lib3dsBackground *background, FILE *f);
-extern LIB3DSAPI Lib3dsBool lib3ds_background_write(Lib3dsBackground *background, FILE *f);
+extern LIB3DSAPI Lib3dsBool lib3ds_background_read(Lib3dsBackground *background, Lib3dsIo *io);
+extern LIB3DSAPI Lib3dsBool lib3ds_background_write(Lib3dsBackground *background, Lib3dsIo *io);
 
 #ifdef __cplusplus
 };

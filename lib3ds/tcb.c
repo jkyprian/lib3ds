@@ -17,11 +17,11 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: tcb.c,v 1.8 2001/01/14 20:55:23 jeh Exp $
+ * $Id: tcb.c,v 1.9 2001/07/07 19:05:30 jeh Exp $
  */
 #define LIB3DS_EXPORT
 #include <lib3ds/tcb.h>
-#include <lib3ds/readwrite.h>
+#include <lib3ds/io.h>
 #include <math.h>
 
 
@@ -77,28 +77,28 @@ lib3ds_tcb(Lib3dsTcb *p, Lib3dsTcb *pc, Lib3dsTcb *c, Lib3dsTcb *nc, Lib3dsTcb *
  * \ingroup tcb 
  */
 Lib3dsBool
-lib3ds_tcb_read(Lib3dsTcb *tcb, FILE *f)
+lib3ds_tcb_read(Lib3dsTcb *tcb, Lib3dsIo *io)
 {
   Lib3dsWord flags;
   
-  tcb->frame=lib3ds_intd_read(f);
-  tcb->flags=flags=lib3ds_word_read(f);
+  tcb->frame=lib3ds_io_read_intd(io);
+  tcb->flags=flags=lib3ds_io_read_word(io);
   if (flags&LIB3DS_USE_TENSION) {
-    tcb->tens=lib3ds_float_read(f);
+    tcb->tens=lib3ds_io_read_float(io);
   }
   if (flags&LIB3DS_USE_CONTINUITY) {
-    tcb->cont=lib3ds_float_read(f);
+    tcb->cont=lib3ds_io_read_float(io);
   }
   if (flags&LIB3DS_USE_BIAS) {
-    tcb->bias=lib3ds_float_read(f);
+    tcb->bias=lib3ds_io_read_float(io);
   }
   if (flags&LIB3DS_USE_EASE_TO) {
-    tcb->ease_to=lib3ds_float_read(f);
+    tcb->ease_to=lib3ds_io_read_float(io);
   }
   if (flags&LIB3DS_USE_EASE_FROM) {
-    tcb->ease_from=lib3ds_float_read(f);
+    tcb->ease_from=lib3ds_io_read_float(io);
   }
-  if (ferror(f)) {
+  if (lib3ds_io_error(io)) {
     return(LIB3DS_FALSE);
   }
   return(LIB3DS_TRUE);
@@ -109,26 +109,26 @@ lib3ds_tcb_read(Lib3dsTcb *tcb, FILE *f)
  * \ingroup tcb 
  */
 Lib3dsBool
-lib3ds_tcb_write(Lib3dsTcb *tcb, FILE *f)
+lib3ds_tcb_write(Lib3dsTcb *tcb, Lib3dsIo *io)
 {
-  lib3ds_intd_write(tcb->frame,f);
-  lib3ds_word_write(tcb->flags,f);
+  lib3ds_io_write_intd(io, tcb->frame);
+  lib3ds_io_write_word(io, tcb->flags);
   if (tcb->flags&LIB3DS_USE_TENSION) {
-    lib3ds_float_write(tcb->tens,f);
+    lib3ds_io_write_float(io, tcb->tens);
   }
   if (tcb->flags&LIB3DS_USE_CONTINUITY) {
-    lib3ds_float_write(tcb->cont,f);
+    lib3ds_io_write_float(io, tcb->cont);
   }
   if (tcb->flags&LIB3DS_USE_BIAS) {
-    lib3ds_float_write(tcb->bias,f);
+    lib3ds_io_write_float(io, tcb->bias);
   }
   if (tcb->flags&LIB3DS_USE_EASE_TO) {
-    lib3ds_float_write(tcb->ease_to,f);
+    lib3ds_io_write_float(io, tcb->ease_to);
   }
   if (tcb->flags&LIB3DS_USE_EASE_FROM) {
-    lib3ds_float_write(tcb->ease_from,f);
+    lib3ds_io_write_float(io, tcb->ease_from);
   }
-  if (ferror(f)) {
+  if (lib3ds_io_error(io)) {
     return(LIB3DS_FALSE);
   }
   return(LIB3DS_TRUE);

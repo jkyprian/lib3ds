@@ -17,7 +17,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: 3ds2rib.c,v 1.2 2001/06/08 14:22:56 jeh Exp $
+ * $Id: 3ds2rib.c,v 1.3 2001/07/07 19:05:30 jeh Exp $
  */
 #include <lib3ds/file.h>
 #include <lib3ds/vector.h>
@@ -163,7 +163,7 @@ rib_concat_transform(FILE *o, Lib3dsMatrix m)
   fprintf(o, "ConcatTransform [");
   for (i=0; i<4; ++i) {
     for (j=0; j<4; ++j) {
-      printf("%f ", m[i][j]);
+      fprintf(o, "%f ", m[i][j]);
     }
   }
   fprintf(o, "]\n");
@@ -171,11 +171,10 @@ rib_concat_transform(FILE *o, Lib3dsMatrix m)
 
 
 static void
-rib_camera(FILE *o, Lib3dsFile *f)
+rib_camera(FILE *o, Lib3dsFile *f, Lib3dsMatrix M)
 {
   Lib3dsNode *c;
   Lib3dsNode *t;
-  Lib3dsMatrix M;
   const char *name=camera;
 
   ASSERT(f);
@@ -201,9 +200,8 @@ rib_camera(FILE *o, Lib3dsFile *f)
 }
 
 
-/*
 static void
-rib_lights(FILE *o, Lib3dsFile *f)
+rib_lights(FILE *o, Lib3dsFile *f, Lib3dsMatrix M)
 {
   Lib3dsLight *light;
   Lib3dsNode *l;
@@ -218,37 +216,43 @@ rib_lights(FILE *o, Lib3dsFile *f)
       exit(1);
     }
     if (s) {
+      Lib3dsVector pos,spot;
+      lib3ds_vector_copy(pos, l->data.light.pos);
+      lib3ds_vector_copy(spot, s->data.spot.pos);
       fprintf(o,
         "LightSource "
-        "\"spotlight\" "
+        "\"lib3dslight\" "
         "%d "
-        "\"from\" [%f %f %f] "
-        "\"to\" [%f %f %f] ",
+        "\"string lighttype\" [\"spot\"] "
+        "\"point from\" [%f %f %f] "
+        "\"point to\" [%f %f %f]\n",
         i,
-        l->data.light.pos[0],
-        l->data.light.pos[1],
-        l->data.light.pos[2],
-        l->data.spot.pos[0],
-        l->data.spot.pos[1],
-        l->data.spot.pos[2]
+        pos[0],
+        pos[1],
+        pos[2],
+        spot[0],
+        spot[1],
+        spot[2]
       );
     }
     else {
+      Lib3dsVector pos;
+      lib3ds_vector_copy(pos, l->data.light.pos);
       fprintf(o,
         "LightSource "
         "\"pointlight\" "
         "%d "
-        "\"from\" [%f %f %f] ",
+        "\"from\" [%f %f %f]\n",
         i,
-        l->data.light.pos[0],
-        l->data.light.pos[1],
-        l->data.light.pos[2]
+        pos[0],
+        pos[1],
+        pos[2]
       );
     }
+    fprintf(o, "Illuminate %d 1\n", i);
     ++i;
   }
 }
-*/
 
 
 static void
@@ -263,11 +267,22 @@ create_node(Lib3dsFile *f, Lib3dsNode *node, FILE *o)
       Lib3dsObjectData *d=&node->data.object;
       
       fprintf(o, "AttributeBegin\n");
-      rib_concat_transform(o, node->matrix);
-      fprintf(o, "Translate %f %f %f\n", -d->pivot[0], -d->pivot[1], -d->pivot[2] );
+      fprintf(o, "Surface \"matte\" \"Kd\" [0.75]\n");
       fprintf(o, "Color 1 1 1\n");
+
+      {
+        Lib3dsMatrix N,M,X;
+        lib3ds_matrix_copy(N, node->matrix);
+        lib3ds_matrix_translate_xyz(N, -d->pivot[0], -d->pivot[1], -d->pivot[2]);
+        lib3ds_matrix_copy(M, mesh->matrix);
+        lib3ds_matrix_inv(M);
+        lib3ds_matrix_mul(X,N,M);
+        rib_concat_transform(o, X);
+      }
       {
         unsigned p;
+        Lib3dsVector *normalL=malloc(3*sizeof(Lib3dsVector)*mesh->faces);
+        lib3ds_mesh_calculate_normals(mesh, normalL);
         
         for (p=0; p<mesh->faces; ++p) {
           Lib3dsFace *face=&mesh->faceL[p];
@@ -280,16 +295,19 @@ create_node(Lib3dsFile *f, Lib3dsNode *node, FILE *o)
             );
             fprintf(o,
               "Surface "
-              "\"plastic\" "
-              "\"roughness\" [0.25] "
-              "\"specularcolor\" [%f %f %f] "
+              "\"lib3dsmaterial\" "
+              "\"color specularcolor\" [%f %f %f] "
+              "\"float shininess \" [%f] "
+              "\"float shin_stength \" [%f] "
               "\n",
               mat->specular[0],
               mat->specular[1],
-              mat->specular[2]
+              mat->specular[2],
+              mat->shininess,
+              mat->shin_strength
             );
           }
-          fprintf(o, "Polygon \"P\" [%f %f %f %f %f %f %f %f %f]\n",
+          fprintf(o, "Polygon \"P\" [%f %f %f %f %f %f %f %f %f] ",
             mesh->pointL[face->points[0]].pos[0],
             mesh->pointL[face->points[0]].pos[1],
             mesh->pointL[face->points[0]].pos[2],
@@ -300,7 +318,21 @@ create_node(Lib3dsFile *f, Lib3dsNode *node, FILE *o)
             mesh->pointL[face->points[2]].pos[1],
             mesh->pointL[face->points[2]].pos[2] 
           );
+
+          fprintf(o, "\"N\" [%f %f %f %f %f %f %f %f %f] ",
+            normalL[3*p+0][0],
+            normalL[3*p+0][1],
+            normalL[3*p+0][2],
+            normalL[3*p+1][0],
+            normalL[3*p+1][1],
+            normalL[3*p+1][2],
+            normalL[3*p+2][0],
+            normalL[3*p+2][1],
+            normalL[3*p+2][2]
+          );
         }
+
+        free(normalL);
       }
       fprintf(o, "AttributeEnd\n");
     }
@@ -317,14 +349,17 @@ create_node(Lib3dsFile *f, Lib3dsNode *node, FILE *o)
 static void
 create_rib(Lib3dsFile *f, FILE *o, int current)
 {
+  Lib3dsMatrix M;
   fprintf(o, "FrameBegin %d\n", current);
   fprintf(o, "Display \"example%d.tiff\" \"tiff\" \"rgb\"\n", current);
   fprintf(o, "Format 400 400 1\n");
   fprintf(o, "Exposure 1.0 2.0\n");
   fprintf(o, "Clipping 1.0 20000\n");
   fprintf(o, "Scale 1 -1 1\n");
+  fprintf(o, "Sides 1\n");
   fprintf(o, "Rotate 90 1 0 0\n");
 
+  /*
   fprintf(o,
     "LightSource "
     "\"distantlight\" "
@@ -332,10 +367,11 @@ create_rib(Lib3dsFile *f, FILE *o, int current)
     "\"from\" [0 0 0] "
     "\"to\" [0 1 0] "
   );
-  /*rib_lights(o,f);*/
-  rib_camera(o,f);
+  */
+  rib_camera(o,f,M);
   
   fprintf(o, "WorldBegin\n");
+  rib_lights(o,f,M);
   {
     Lib3dsNode *n;
     for (n=f->nodes; n; n=n->next) {
@@ -371,6 +407,7 @@ main(int argc, char **argv)
     o=stdout;
   }
 
+  fprintf(o, "Option \"searchpath\" \"shader\" [\".:../shaders:&\"]\n");
   if (flags&LIB3DS2RIB_ALL) {
     int i;
     for (i=f->segment_from; i<=f->segment_to; ++i) {

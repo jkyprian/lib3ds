@@ -48,7 +48,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "3dsplay"=.\3dsplay.dsp - Package Owner=<4>
+Project: "all"=.\all.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -59,18 +59,9 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name lib3ds_lib
     End Project Dependency
-}}}
-
-###############################################################################
-
-Project: "all"=.\all.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
+    Begin Project Dependency
+    Project_Dep_Name lib3ds_dll
+    End Project Dependency
     Begin Project Dependency
     Project_Dep_Name 3ds2m
     End Project Dependency
@@ -81,13 +72,7 @@ Package=<4>
     Project_Dep_Name 3dsdump
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name 3dsplay
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name lib3ds_lib
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name lib3ds_dll
+    Project_Dep_Name player
     End Project Dependency
 }}}
 
@@ -113,6 +98,21 @@ Package=<5>
 
 Package=<4>
 {{{
+}}}
+
+###############################################################################
+
+Project: "player"=.\player.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name lib3ds_lib
+    End Project Dependency
 }}}
 
 ###############################################################################
