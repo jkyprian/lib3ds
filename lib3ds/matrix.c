@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,9 +17,8 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: matrix.c,v 1.7 2001/01/12 10:29:17 jeh Exp $
+ * $Id: matrix.c,v 1.14 2007/06/20 17:04:08 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/matrix.h>
 #include <lib3ds/quat.h>
 #include <lib3ds/vector.h>
@@ -29,16 +28,20 @@
 
 /*!
  * \defgroup matrix Matrix Mathematics
+ */
+
+
+/*!
+* \typedef Lib3dsMatrix
+* \ingroup matrix
+*/
+
+
+/*!
+ * Clear a matrix to all zeros.
  *
- * \author J.E. Hoffmann <je-h@gmx.net>
- */
-/*!
- * \typedef Lib3dsMatrix
- *   \ingroup matrix
- */
-
-
-/*!
+ * \param m Matrix to be cleared.
+ *
  * \ingroup matrix
  */
 void
@@ -53,6 +56,10 @@ lib3ds_matrix_zero(Lib3dsMatrix m)
 
 
 /*!
+ * Set a matrix to identity.
+ *
+ * \param m Matrix to be set.
+ *
  * \ingroup matrix
  */
 void
@@ -68,6 +75,8 @@ lib3ds_matrix_identity(Lib3dsMatrix m)
 
 
 /*!
+ * Copy a matrix.
+ *
  * \ingroup matrix
  */
 void
@@ -78,6 +87,8 @@ lib3ds_matrix_copy(Lib3dsMatrix dest, Lib3dsMatrix src)
 
 
 /*!
+ * Negate a matrix -- all elements negated.
+ *
  * \ingroup matrix
  */
 void 
@@ -94,6 +105,8 @@ lib3ds_matrix_neg(Lib3dsMatrix m)
 
 
 /*!
+ * Set all matrix elements to their absolute value.
+ *
  * \ingroup matrix
  */
 void 
@@ -110,6 +123,8 @@ lib3ds_matrix_abs(Lib3dsMatrix m)
 
 
 /*!
+ * Transpose a matrix in place.
+ *
  * \ingroup matrix
  */
 void
@@ -129,10 +144,12 @@ lib3ds_matrix_transpose(Lib3dsMatrix m)
 
 
 /*!
+ * Add two matrices.
+ *
  * \ingroup matrix
  */
 void
-lib3ds_matrix_add(Lib3dsMatrix m, Lib3dsMatrix a, Lib3dsMatrix b)
+_lib3ds_matrix_add(Lib3dsMatrix m, Lib3dsMatrix a, Lib3dsMatrix b)
 {
   int i,j;
 
@@ -145,10 +162,16 @@ lib3ds_matrix_add(Lib3dsMatrix m, Lib3dsMatrix a, Lib3dsMatrix b)
 
 
 /*!
+ * Subtract two matrices.
+ *
+ * \param m Result.
+ * \param a Addend.
+ * \param b Minuend.
+ *
  * \ingroup matrix
  */
 void
-lib3ds_matrix_sub(Lib3dsMatrix m, Lib3dsMatrix a, Lib3dsMatrix b)
+_lib3ds_matrix_sub(Lib3dsMatrix m, Lib3dsMatrix a, Lib3dsMatrix b)
 {
   int i,j;
 
@@ -161,18 +184,22 @@ lib3ds_matrix_sub(Lib3dsMatrix m, Lib3dsMatrix a, Lib3dsMatrix b)
 
 
 /*!
+ * Multiplies a matrix by a second one (m = m * n).
+ *
  * \ingroup matrix
  */
 void
-lib3ds_matrix_mul(Lib3dsMatrix m, Lib3dsMatrix a, Lib3dsMatrix b)
+lib3ds_matrix_mult(Lib3dsMatrix m, Lib3dsMatrix n)
 {
+  Lib3dsMatrix tmp;
   int i,j,k;
   Lib3dsFloat ab;
 
+  memcpy(tmp, m, sizeof(Lib3dsMatrix)); 
   for (j=0; j<4; j++) {
     for (i=0; i<4; i++) {
       ab=0.0f;
-      for (k=0; k<4; k++) ab+=a[k][i]*b[j][k];
+      for (k=0; k<4; k++) ab+=tmp[k][i]*n[j][k];
       m[j][i]=ab;
     }
   }
@@ -180,6 +207,11 @@ lib3ds_matrix_mul(Lib3dsMatrix m, Lib3dsMatrix a, Lib3dsMatrix b)
 
 
 /*!
+ * Multiply a matrix by a scalar.
+ *
+ * \param m Matrix to be set.
+ * \param k Scalar.
+ *
  * \ingroup matrix
  */
 void
@@ -219,6 +251,8 @@ det3x3(
 
 
 /*!
+ * Find determinant of a matrix.
+ *
  * \ingroup matrix
  */
 Lib3dsFloat
@@ -252,6 +286,8 @@ lib3ds_matrix_det(Lib3dsMatrix m)
 
 
 /*!
+ * Find the adjoint of a matrix.
+ *
  * \ingroup matrix
  */
 void
@@ -295,6 +331,11 @@ lib3ds_matrix_adjoint(Lib3dsMatrix m)
 
 
 /*!
+ * Invert a matrix in place.
+ *
+ * \param m Matrix to invert.
+ *
+ * \return LIB3DS_TRUE on success, LIB3DS_FALSE on failure.
  * \ingroup matrix
  *
  * GGemsII, K.Wu, Fast Matrix Inversion 
@@ -397,6 +438,8 @@ lib3ds_matrix_inv(Lib3dsMatrix m)
 
 
 /*!
+ * Apply a translation to a matrix.
+ *
  * \ingroup matrix
  */
 void
@@ -411,6 +454,8 @@ lib3ds_matrix_translate_xyz(Lib3dsMatrix m, Lib3dsFloat x, Lib3dsFloat y, Lib3ds
 
 
 /*!
+ * Apply a translation to a matrix.
+ *
  * \ingroup matrix
  */
 void
@@ -425,6 +470,8 @@ lib3ds_matrix_translate(Lib3dsMatrix m, Lib3dsVector t)
 
 
 /*!
+ * Apply scale factors to a matrix.
+ *
  * \ingroup matrix
  */
 void
@@ -441,6 +488,8 @@ lib3ds_matrix_scale_xyz(Lib3dsMatrix m, Lib3dsFloat x, Lib3dsFloat y, Lib3dsFloa
 
 
 /*!
+ * Apply scale factors to a matrix.
+ *
  * \ingroup matrix
  */
 void
@@ -457,6 +506,8 @@ lib3ds_matrix_scale(Lib3dsMatrix m, Lib3dsVector s)
 
 
 /*!
+ * Apply a rotation about the x axis to a matrix.
+ *
  * \ingroup matrix
  */
 void
@@ -481,6 +532,8 @@ lib3ds_matrix_rotate_x(Lib3dsMatrix m, Lib3dsFloat phi)
 
 
 /*!
+ * Apply a rotation about the y axis to a matrix.
+ *
  * \ingroup matrix
  */
 void
@@ -505,6 +558,8 @@ lib3ds_matrix_rotate_y(Lib3dsMatrix m, Lib3dsFloat phi)
 
 
 /*!
+ * Apply a rotation about the z axis to a matrix.
+ *
  * \ingroup matrix
  */
 void
@@ -529,15 +584,15 @@ lib3ds_matrix_rotate_z(Lib3dsMatrix m, Lib3dsFloat phi)
 
 
 /*!
+ * Apply a rotation about an arbitrary axis to a matrix.
+ *
  * \ingroup matrix
  */
 void
 lib3ds_matrix_rotate(Lib3dsMatrix m, Lib3dsQuat q)
 {
   Lib3dsFloat s,xs,ys,zs,wx,wy,wz,xx,xy,xz,yy,yz,zz,l;
-  Lib3dsMatrix a,b;
-
-  lib3ds_matrix_copy(a, m);
+  Lib3dsMatrix R;
 
   l=q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3];
   if (fabs(l)<LIB3DS_EPSILON) {
@@ -552,23 +607,25 @@ lib3ds_matrix_rotate(Lib3dsMatrix m, Lib3dsQuat q)
   xx = q[0] * xs;  xy = q[0] * ys; xz = q[0] * zs;
   yy = q[1] * ys;  yz = q[1] * zs; zz = q[2] * zs;
 
-  b[0][0]=1.0f - (yy +zz);
-  b[1][0]=xy - wz;
-  b[2][0]=xz + wy;
-  b[0][1]=xy + wz;
-  b[1][1]=1.0f - (xx +zz);
-  b[2][1]=yz - wx;
-  b[0][2]=xz - wy;
-  b[1][2]=yz + wx;
-  b[2][2]=1.0f - (xx + yy);
-  b[3][0]=b[3][1]=b[3][2]=b[0][3]=b[1][3]=b[2][3]=0.0f;
-  b[3][3]=1.0f;
+  R[0][0]=1.0f - (yy +zz);
+  R[1][0]=xy - wz;
+  R[2][0]=xz + wy;
+  R[0][1]=xy + wz;
+  R[1][1]=1.0f - (xx +zz);
+  R[2][1]=yz - wx;
+  R[0][2]=xz - wy;
+  R[1][2]=yz + wx;
+  R[2][2]=1.0f - (xx + yy);
+  R[3][0]=R[3][1]=R[3][2]=R[0][3]=R[1][3]=R[2][3]=0.0f;
+  R[3][3]=1.0f;
 
-  lib3ds_matrix_mul(m,a,b);
+  lib3ds_matrix_mult(m,R);
 }
 
 
 /*!
+ * Apply a rotation about an arbitrary axis to a matrix.
+ *
  * \ingroup matrix
  */
 void
@@ -582,26 +639,44 @@ lib3ds_matrix_rotate_axis(Lib3dsMatrix m, Lib3dsVector axis, Lib3dsFloat angle)
 
 
 /*!
+ * Compute a camera matrix based on position, target and roll.
+ *
+ * Generates a translate/rotate matrix that maps world coordinates
+ * to camera coordinates.  Resulting matrix does not include perspective
+ * transform.
+ *
+ * \param matrix Destination matrix.
+ * \param pos Camera position
+ * \param tgt Camera target
+ * \param roll Roll angle
+ *
  * \ingroup matrix
  */
 void
 lib3ds_matrix_camera(Lib3dsMatrix matrix, Lib3dsVector pos,
   Lib3dsVector tgt, Lib3dsFloat roll)
 {
-  Lib3dsMatrix M,R;
+  Lib3dsMatrix M;
   Lib3dsVector x, y, z;
 
   lib3ds_vector_sub(y, tgt, pos);
   lib3ds_vector_normalize(y);
-  
-  z[0] = 0;
-  z[1] = 0;
-  z[2] = 1.0;
-  
+
+  if (y[0] != 0. || y[1] != 0) {
+    z[0] = 0;
+    z[1] = 0;
+    z[2] = 1.0;
+  }
+  else {	/* Special case:  looking straight up or down z axis */
+    z[0] = -1.0;
+    z[1] = 0;
+    z[2] = 0;
+  }
+
   lib3ds_vector_cross(x, y, z);
   lib3ds_vector_cross(z, x, y);
   lib3ds_vector_normalize(x);
-  lib3ds_vector_normalize(y);
+  lib3ds_vector_normalize(z);
 
   lib3ds_matrix_identity(M);
   M[0][0] = x[0];
@@ -614,9 +689,9 @@ lib3ds_matrix_camera(Lib3dsMatrix matrix, Lib3dsVector pos,
   M[1][2] = z[1];
   M[2][2] = z[2];
 
-  lib3ds_matrix_identity(R);
-  lib3ds_matrix_rotate_y(R, roll);
-  lib3ds_matrix_mul(matrix, R,M);
+  lib3ds_matrix_identity(matrix);
+  lib3ds_matrix_rotate_y(matrix, roll);
+  lib3ds_matrix_mult(matrix, M);
   lib3ds_matrix_translate_xyz(matrix, -pos[0],-pos[1],-pos[2]);
 }
 
@@ -633,7 +708,7 @@ lib3ds_matrix_dump(Lib3dsMatrix matrix)
     for (j=0; j<4; ++j) {
       printf("%f ", matrix[j][i]);
     }
-    printf("%f\n", matrix[j][i]);
+    printf("\n");
   }
 }
 

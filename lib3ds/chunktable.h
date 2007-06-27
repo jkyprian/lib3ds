@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_CHUNKTABLE_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: chunktable.h,v 1.11 2001/07/11 13:47:35 jeh Exp $
+ * $Id: chunktable.h,v 1.16 2007/06/20 17:04:08 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_CHUNK_H
@@ -31,7 +31,7 @@
 extern "C" {
 #endif
 
-typedef struct _Lib3dsChunkTable {
+typedef struct Lib3dsChunkTable {
     Lib3dsDword chunk;
     const char* name;
 } Lib3dsChunkTable;
@@ -95,6 +95,7 @@ static Lib3dsChunkTable lib3ds_chunk_table[]={
   {LIB3DS_MAT_TWO_SIDE, "LIB3DS_MAT_TWO_SIDE"},
   {LIB3DS_MAT_DECAL, "LIB3DS_MAT_DECAL"},
   {LIB3DS_MAT_ADDITIVE, "LIB3DS_MAT_ADDITIVE"},
+  {LIB3DS_MAT_SELF_ILPCT, "LIB3DS_MAT_SELF_ILPCT"},
   {LIB3DS_MAT_WIRE, "LIB3DS_MAT_WIRE"},
   {LIB3DS_MAT_FACEMAP, "LIB3DS_MAT_FACEMAP"},
   {LIB3DS_MAT_PHONGSOFT, "LIB3DS_MAT_PHONGSOFT"},
@@ -170,7 +171,7 @@ static Lib3dsChunkTable lib3ds_chunk_table[]={
   {LIB3DS_OBJ_HIDDEN, "LIB3DS_OBJ_HIDDEN"},
   {LIB3DS_OBJ_VIS_LOFTER, "LIB3DS_OBJ_VIS_LOFTER"},
   {LIB3DS_OBJ_DOESNT_CAST, "LIB3DS_OBJ_DOESNT_CAST"},
-  {LIB3DS_OBJ_DONT_RECVSHADOW, "LIB3DS_OBJ_DONT_RECVSHADOW"},
+  {LIB3DS_OBJ_DONT_RCVSHADOW, "LIB3DS_OBJ_DONT_RCVSHADOW"},
   {LIB3DS_OBJ_MATTE, "LIB3DS_OBJ_MATTE"},
   {LIB3DS_OBJ_FAST, "LIB3DS_OBJ_FAST"},
   {LIB3DS_OBJ_PROCEDURAL, "LIB3DS_OBJ_PROCEDURAL"},
@@ -257,7 +258,7 @@ static Lib3dsChunkTable lib3ds_chunk_table[]={
 };
 
 #ifdef __cplusplus
-};
+}
 #endif
 #endif
 

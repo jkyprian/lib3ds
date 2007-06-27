@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_CAMERA_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: camera.h,v 1.7 2001/07/07 19:05:30 jeh Exp $
+ * $Id: camera.h,v 1.11 2007/06/20 17:04:08 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -31,13 +31,14 @@
 extern "C" {
 #endif
 
-/*!
+/**
  * Camera object
  * \ingroup camera
  */
-struct _Lib3dsCamera {
+struct Lib3dsCamera {
     Lib3dsCamera *next;
     char name[64];
+    Lib3dsDword object_flags; /*< @see Lib3dsObjectFlags */ 
     Lib3dsVector position;
     Lib3dsVector target;
     Lib3dsFloat roll;
@@ -54,7 +55,7 @@ extern LIB3DSAPI Lib3dsBool lib3ds_camera_read(Lib3dsCamera *camera, Lib3dsIo *i
 extern LIB3DSAPI Lib3dsBool lib3ds_camera_write(Lib3dsCamera *camera, Lib3dsIo *io);
 
 #ifdef __cplusplus
-};
+}
 #endif
 #endif
 

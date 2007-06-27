@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,9 +17,8 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: shadow.c,v 1.8 2001/07/07 19:05:30 jeh Exp $
+ * $Id: shadow.c,v 1.11 2007/06/20 17:04:09 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/shadow.h>
 #include <lib3ds/chunk.h>
 #include <lib3ds/io.h>
@@ -28,8 +27,6 @@
 
 /*!
  * \defgroup shadow Shadow Map Settings
- *
- * \author J.E. Hoffmann <je-h@gmx.net>
  */
 
 
@@ -150,11 +147,3 @@ lib3ds_shadow_write(Lib3dsShadow *shadow, Lib3dsIo *io)
   return(LIB3DS_TRUE);
 }
 
-
-/*!
-
-\typedef Lib3dsShadow
-  \ingroup shadow
-  \sa _Lib3dsShadow
-
-*/

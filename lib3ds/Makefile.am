@@ -1,6 +1,6 @@
  #
  # The 3D Studio File Format Library
- # Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ # Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  # All rights reserved.
  #
  # This program is  free  software;  you can redistribute it and/or modify it
@@ -17,18 +17,23 @@
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.11 2002/01/14 12:27:45 jeh Exp $
+ # $Id: Makefile.am,v 1.15 2007/06/15 09:53:20 jeh Exp $
  #
 
 lib3dsdir=$(includedir)/lib3ds
 
 INCLUDES = -I$(top_srcdir)
 
-lib_LIBRARIES = lib3ds.a
+lib_LTLIBRARIES = lib3ds.la
 
-lib3ds_a_SOURCES = \
+lib3ds_la_LDFLAGS = \
+  -version-info $(LIB3DS_MINOR_VERSION):$(LIB3DS_MICRO_VERSION):0 \
+  -release $(LIB3DS_MAJOR_VERSION)
+
+lib3ds_la_LIBADD = -lm
+
+lib3ds_la_SOURCES = \
   io.c \
-  float.c \
   vector.c \
   matrix.c \
   quat.c \
@@ -51,7 +56,6 @@ lib3ds_a_SOURCES = \
 lib3ds_HEADERS = \
   types.h \
   io.h \
-  float.h \
   vector.h \
   matrix.h \
   quat.h \
@@ -68,7 +72,7 @@ lib3ds_HEADERS = \
   camera.h \
   light.h \
   tracks.h \
-  node.h
+  node.h 
 
 EXTRA_DIST = \
   types.txt \

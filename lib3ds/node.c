@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,9 +17,8 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: node.c,v 1.12 2001/07/07 19:05:30 jeh Exp $
+ * $Id: node.c,v 1.20 2007/06/20 17:04:08 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/node.h>
 #include <lib3ds/file.h>
 #include <lib3ds/io.h>
@@ -28,20 +27,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <config.h>
-#ifdef WITH_DMALLOC
-#include <dmalloc.h>
-#endif
 
 
 /*!
  * \defgroup node Animation Nodes
- *
- * \author J.E. Hoffmann <je-h@gmx.net>
  */
 
 
 /*!
+ * Create and return a new ambient node.
+ *
+ * The node is returned with an identity matrix.  All other fields
+ * are zero.
+ *
+ * \return Lib3dsNode
+ *
  * \ingroup node
  */
 Lib3dsNode*
@@ -55,6 +55,13 @@ lib3ds_node_new_ambient()
 
 
 /*!
+ * Create and return a new object node.
+ *
+ * The node is returned with an identity matrix.  All other fields
+ * are zero.
+ *
+ * \return Lib3dsNode
+ *
  * \ingroup node
  */
 Lib3dsNode*
@@ -68,6 +75,13 @@ lib3ds_node_new_object()
 
 
 /*!
+ * Create and return a new camera node.
+ *
+ * The node is returned with an identity matrix.  All other fields
+ * are zero.
+ *
+ * \return Lib3dsNode
+ *
  * \ingroup node
  */
 Lib3dsNode*
@@ -81,6 +95,13 @@ lib3ds_node_new_camera()
 
 
 /*!
+ * Create and return a new target node.
+ *
+ * The node is returned with an identity matrix.  All other fields
+ * are zero.
+ *
+ * \return Lib3dsNode
+ *
  * \ingroup node
  */
 Lib3dsNode*
@@ -94,6 +115,13 @@ lib3ds_node_new_target()
 
 
 /*!
+ * Create and return a new light node.
+ *
+ * The node is returned with an identity matrix.  All other fields
+ * are zero.
+ *
+ * \return Lib3dsNode
+ *
  * \ingroup node
  */
 Lib3dsNode*
@@ -107,6 +135,13 @@ lib3ds_node_new_light()
 
 
 /*!
+ * Create and return a new spot node.
+ *
+ * The node is returned with an identity matrix.  All other fields
+ * are zero.
+ *
+ * \return Lib3dsNode
+ *
  * \ingroup node
  */
 Lib3dsNode*
@@ -187,6 +222,10 @@ free_node_and_childs(Lib3dsNode *node)
 
 
 /*!
+ * Free a node and all of its resources.
+ *
+ * \param node Lib3dsNode object to be freed.
+ *
  * \ingroup node
  */
 void
@@ -198,6 +237,14 @@ lib3ds_node_free(Lib3dsNode *node)
 
 
 /*!
+ * Evaluate an animation node.
+ *
+ * Recursively sets node and its children to their appropriate values
+ * for this point in the animation.
+ *
+ * \param node Node to be evaluated.
+ * \param t time value, between 0. and file->frames
+ *
  * \ingroup node
  */
 void
@@ -229,7 +276,12 @@ lib3ds_node_eval(Lib3dsNode *node, Lib3dsFloat t)
 
         lib3ds_lin3_track_eval(&n->pos_track, n->pos, t);
         lib3ds_quat_track_eval(&n->rot_track, n->rot, t);
-        lib3ds_lin3_track_eval(&n->scl_track, n->scl, t);
+        if (n->scl_track.keyL) {
+          lib3ds_lin3_track_eval(&n->scl_track, n->scl, t);
+        }
+        else {
+          n->scl[0] = n->scl[1] = n->scl[2] = 1.0f;
+        }
         lib3ds_bool_track_eval(&n->hide_track, &n->hide, t);
         lib3ds_morph_track_eval(&n->morph_track, n->morph, t);
 
@@ -239,7 +291,8 @@ lib3ds_node_eval(Lib3dsNode *node, Lib3dsFloat t)
         lib3ds_matrix_scale(M, n->scl);
         
         if (node->parent) {
-          lib3ds_matrix_mul(node->matrix, node->parent->matrix, M);
+          lib3ds_matrix_copy(node->matrix, node->parent->matrix);
+          lib3ds_matrix_mult(node->matrix, M);
         }
         else {
           lib3ds_matrix_copy(node->matrix, M);
@@ -316,6 +369,17 @@ lib3ds_node_eval(Lib3dsNode *node, Lib3dsFloat t)
 
 
 /*!
+ * Return a node object by name and type.
+ *
+ * This function performs a recursive search for the specified node.
+ * Both name and type must match.
+ *
+ * \param node The parent node for the search
+ * \param name The target node name.
+ * \param type The target node type
+ *
+ * \return A pointer to the first matching node, or NULL if not found.
+ *
  * \ingroup node
  */
 Lib3dsNode*
@@ -337,6 +401,15 @@ lib3ds_node_by_name(Lib3dsNode *node, const char* name, Lib3dsNodeTypes type)
 
 
 /*!
+ * Return a node object by id.
+ *
+ * This function performs a recursive search for the specified node.
+ *
+ * \param node The parent node for the search
+ * \param node_id The target node id.
+ *
+ * \return A pointer to the first matching node, or NULL if not found.
+ *
  * \ingroup node
  */
 Lib3dsNode*
@@ -369,6 +442,11 @@ static const char* node_names_table[]= {
 
 
 /*!
+ * Dump node and all descendants recursively.
+ *
+ * \param node The top-level node to be dumped.
+ * \param level current recursion depth
+ *
  * \ingroup node
  */
 void
@@ -710,7 +788,7 @@ lib3ds_node_write(Lib3dsNode *node, Lib3dsFile *file, Lib3dsIo *io)
   { /*---- LIB3DS_NODE_HDR ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_NODE_HDR;
-    c.size=6+ 1+strlen(node->name) +2+2+2;
+    c.size=6+ 1+(Lib3dsDword)strlen(node->name) +2+2+2;
     lib3ds_chunk_write(&c,io);
     lib3ds_io_write_string(io, node->name);
     lib3ds_io_write_word(io, node->flags1);
@@ -749,7 +827,7 @@ lib3ds_node_write(Lib3dsNode *node, Lib3dsFile *file, Lib3dsIo *io)
           name=node->data.object.instance;
 
           c.chunk=LIB3DS_INSTANCE_NAME;
-          c.size=6+1+strlen(name);
+          c.size=6+1+(Lib3dsDword)strlen(name);
           lib3ds_chunk_write(&c,io);
           lib3ds_io_write_string(io, name);
         }
@@ -1007,89 +1085,4 @@ lib3ds_node_write(Lib3dsNode *node, Lib3dsFile *file, Lib3dsIo *io)
   }
   return(LIB3DS_TRUE);
 }
-
-
-/*!
-
-\typedef Lib3dsNodeTypes
-  \ingroup node
-
-*/
-/*!
-
-\enum _Lib3dsNodeTypes
-  \ingroup node
-
-*/
-/*!
-
-\typedef Lib3dsBoolKey
-  \ingroup node
-  \sa _Lib3dsBoolKey
-
-*/
-/*!
-
-\typedef Lib3dsBoolTrack
-  \ingroup node
-  \sa _Lib3dsBoolTrack
-
-*/
-/*!
-
-\typedef Lib3dsLin1Key
-  \ingroup node
-  \sa _Lib3dsLin1Key
-
-*/
-/*!
-
-\typedef Lib3dsLin1Track
-  \ingroup node
-  \sa _Lib3dsLin1Track
-
-*/
-/*!
-
-\typedef Lib3dsLin3Key
-  \ingroup node
-  \sa _Lib3dsLin3Key
-
-*/
-/*!
-
-\typedef Lib3dsLin3Track
-  \ingroup node
-  \sa _Lib3dsLin3Track
-
-*/
-/*!
-
-\typedef Lib3dsQuatKey
-  \ingroup node
-  \sa _Lib3dsQuatKey
-
-*/
-/*!
-
-\typedef Lib3dsQuatTrack
-  \ingroup node
-  \sa _Lib3dsLin3Key
-
-*/
-/*!
-
-\typedef Lib3dsMorphKey
-  \ingroup node
-  \sa _Lib3dsMorphKey
-
-*/
-/*!
-
-\typedef Lib3dsMorphTrack
-  \ingroup node
-  \sa _Lib3dsMorphTrack
-
-*/
-
 

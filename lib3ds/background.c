@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,9 +17,8 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: background.c,v 1.8 2001/07/07 19:05:30 jeh Exp $
+ * $Id: background.c,v 1.12 2007/06/20 17:04:08 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/background.h>
 #include <lib3ds/chunk.h>
 #include <lib3ds/io.h>
@@ -29,8 +28,6 @@
 
 /*!
  * \defgroup background Background Settings
- *
- * \author J.E. Hoffmann <je-h@gmx.net>
  */
 
 
@@ -206,7 +203,7 @@ lib3ds_background_write(Lib3dsBackground *background, Lib3dsIo *io)
   if (strlen(background->bitmap.name)) { /*---- LIB3DS_BIT_MAP ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_BIT_MAP;
-    c.size=6+1+strlen(background->bitmap.name);
+    c.size=6+1+(Lib3dsDword)strlen(background->bitmap.name);
     lib3ds_chunk_write(&c,io);
     lib3ds_io_write_string(io, background->bitmap.name);
   }
@@ -256,11 +253,3 @@ lib3ds_background_write(Lib3dsBackground *background, Lib3dsIo *io)
   return(LIB3DS_TRUE);
 }
 
-
-/*!
-
-\typedef Lib3dsBackground
-  \ingroup background
-  \sa _Lib3dsBackground
-
-*/

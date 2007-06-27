@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_SHADOW_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: shadow.h,v 1.8 2001/07/07 19:05:30 jeh Exp $
+ * $Id: shadow.h,v 1.11 2007/06/20 17:04:09 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -31,11 +31,11 @@
 extern "C" {
 #endif
 
-/*!
+/**
  * Shadow map settings
  * \ingroup shadow
  */
-struct _Lib3dsShadow {
+struct Lib3dsShadow {
     Lib3dsIntw map_size;
     Lib3dsFloat lo_bias;
     Lib3dsFloat hi_bias;
@@ -49,7 +49,7 @@ extern LIB3DSAPI Lib3dsBool lib3ds_shadow_read(Lib3dsShadow *shadow, Lib3dsIo *i
 extern LIB3DSAPI Lib3dsBool lib3ds_shadow_write(Lib3dsShadow *shadow, Lib3dsIo *io);
 
 #ifdef __cplusplus
-};
+}
 #endif
 #endif
 

@@ -1,26 +1,39 @@
-.TH 3ds2m 1 "12 Jan 2001" Version 1.0
+.TH 3dsdump 1 "16 Jun 2001" Version @LIB3DS_VERSION@
 .SH NAME
-3ds2m - Converts meshes of a 3DS file into a m-file.
+3dsdump - Displays information about the internal structure of a 3DS file.
 .SH SYNOPSIS
-.B 3ds2m
+.B 3dsdump
 [options] filename [options]
 .SH DESCRIPTION
 .PP
-\fI3ds2m\fP is a tool to convert meshes of a 3DS file into a m-file. 
+\fI3dsdump\fP is a tool that is used to display information about
+the internal structure of a 3DS file.
+.
 .SH OPTIONS
 .l
-\fI3ds2m\fP accepts the following options:
+\fI3dsdump\fP accepts the following options:
 .TP 8
-.B -h/--help
+.B \-h/\-\-help
 This help
 .TP 8
-.B -o/--output <filename>
-Write output to <filename> instead of stdout
+.B \-m/\-\-materials
+Dump materials
 .TP 8
-.B -m/--mesh name
-Write only specific mesh.B -c/--camera <name>
+.B \-t/\-\-trimeshes
+Dump meshes
+.TP 8
+.B \-i/\-\-instance
+Dump mesh instances
+.TP 8
+.B \-c/\-\-cameras
+Dump cameras
+.TP 8
+.B \-l/\-\-lights
+Dump lights
+.TP 8
+.B \-n/\-\-nodes
+Dump node hierarchy
 .SH COPYRIGHT
-3ds2m Copyright \(co 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

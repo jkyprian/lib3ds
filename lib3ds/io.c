@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,9 +17,8 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: io.c,v 1.3 2001/07/11 13:47:35 jeh Exp $
+ * $Id: io.c,v 1.9 2007/06/20 17:04:08 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/io.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,12 +26,15 @@
 
 /*!
  * \defgroup io Binary Input/Ouput Abstraction Layer
- *
- * \author J.E. Hoffmann <je-h@gmx.net>
  */
 
+typedef union { 
+  Lib3dsDword dword_value; 
+  Lib3dsFloat float_value;
+} Lib3dsDwordFloat;
 
-struct _Lib3dsIo {
+
+struct Lib3dsIo {
   void *self;
   Lib3dsIoErrorFunc error_func;
   Lib3dsIoSeekFunc seek_func;
@@ -85,7 +87,7 @@ lib3ds_io_error(Lib3dsIo *io)
 }
 
 
-long 
+long
 lib3ds_io_seek(Lib3dsIo *io, long offset, Lib3dsIoSeek origin)
 {
   ASSERT(io);
@@ -96,7 +98,7 @@ lib3ds_io_seek(Lib3dsIo *io, long offset, Lib3dsIoSeek origin)
 }
 
 
-long 
+long
 lib3ds_io_tell(Lib3dsIo *io)
 {
   ASSERT(io);
@@ -107,8 +109,8 @@ lib3ds_io_tell(Lib3dsIo *io)
 }
 
 
-int 
-lib3ds_io_read(Lib3dsIo *io, Lib3dsByte *buffer, int size)
+size_t
+lib3ds_io_read(Lib3dsIo *io, void *buffer, size_t size)
 {
   ASSERT(io);
   if (!io || !io->read_func) {
@@ -118,8 +120,8 @@ lib3ds_io_read(Lib3dsIo *io, Lib3dsByte *buffer, int size)
 }
 
 
-int 
-lib3ds_io_write(Lib3dsIo *io, const Lib3dsByte *buffer, int size)
+size_t
+lib3ds_io_write(Lib3dsIo *io, const void *buffer, size_t size)
 {
   ASSERT(io);
   if (!io || !io->write_func) {
@@ -248,21 +250,20 @@ Lib3dsFloat
 lib3ds_io_read_float(Lib3dsIo *io)
 {
   Lib3dsByte b[4];
-  Lib3dsDword d;
+  Lib3dsDwordFloat d;
 
   ASSERT(io);
   lib3ds_io_read(io, b, 4);
-  d=((Lib3dsDword)b[3] << 24) |
+  d.dword_value=((Lib3dsDword)b[3] << 24) |
     ((Lib3dsDword)b[2] << 16) |
     ((Lib3dsDword)b[1] << 8) |
     ((Lib3dsDword)b[0]);
-  return(*((Lib3dsFloat*)&d));
+  return d.float_value;
 }
 
 
 /*!
  * \ingroup io
- * \ingroup vector
  *
  * Read a vector from a file stream in little endian format.   
  *
@@ -459,14 +460,14 @@ Lib3dsBool
 lib3ds_io_write_float(Lib3dsIo *io, Lib3dsFloat l)
 {
   Lib3dsByte b[4];
-  Lib3dsDword d;
+  Lib3dsDwordFloat d;
 
   ASSERT(io);
-  d=*((Lib3dsDword*)&l);
-  b[3]=(Lib3dsByte)(((Lib3dsDword)d & 0xFF000000) >> 24);
-  b[2]=(Lib3dsByte)(((Lib3dsDword)d & 0x00FF0000) >> 16);
-  b[1]=(Lib3dsByte)(((Lib3dsDword)d & 0x0000FF00) >> 8);
-  b[0]=(Lib3dsByte)(((Lib3dsDword)d & 0x000000FF));
+  d.float_value=l;
+  b[3]=(Lib3dsByte)(((Lib3dsDword)d.dword_value & 0xFF000000) >> 24);
+  b[2]=(Lib3dsByte)(((Lib3dsDword)d.dword_value & 0x00FF0000) >> 16);
+  b[1]=(Lib3dsByte)(((Lib3dsDword)d.dword_value & 0x0000FF00) >> 8);
+  b[0]=(Lib3dsByte)(((Lib3dsDword)d.dword_value & 0x000000FF));
   if (lib3ds_io_write(io, b, 4)!=4) {
     return(LIB3DS_FALSE);
   }
@@ -476,7 +477,6 @@ lib3ds_io_write_float(Lib3dsIo *io, Lib3dsFloat l)
 
 /*!
  * \ingroup io
- * \ingroup vector
  *
  * Writes a vector into a file stream in little endian format.   
  */

@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,34 +17,20 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: light.c,v 1.10 2001/07/11 13:47:35 jeh Exp $
+ * $Id: light.c,v 1.15 2007/06/20 17:04:08 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/light.h>
 #include <lib3ds/chunk.h>
 #include <lib3ds/io.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include <config.h>
-#ifdef WITH_DMALLOC
-#include <dmalloc.h>
-#endif
 
 
 /*!
  * \defgroup light Lights
- *
- * \author J.E. Hoffmann <je-h@gmx.net>
  */
 /*!
-
-\typedef Lib3dsLight
-  \ingroup light
-  \sa _Lib3dsLight
-
-*/
-
 
 
 /*!

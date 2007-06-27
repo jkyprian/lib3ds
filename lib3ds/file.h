@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_FILE_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: file.h,v 1.13 2001/07/07 19:05:30 jeh Exp $
+ * $Id: file.h,v 1.24 2007/06/20 17:04:08 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_BACKGROUND_H
@@ -40,11 +40,11 @@
 extern "C" {
 #endif
 
-/*!
- * 3ds file structure
+/**
+ * 3DS file structure
  * \ingroup file
  */
-struct _Lib3dsFile {
+struct Lib3dsFile {
     Lib3dsDword mesh_version;
     Lib3dsWord keyf_revision;
     char name[12+1];
@@ -91,15 +91,16 @@ extern LIB3DSAPI void lib3ds_file_insert_light(Lib3dsFile *file, Lib3dsLight *li
 extern LIB3DSAPI void lib3ds_file_remove_light(Lib3dsFile *file, Lib3dsLight *light);
 extern LIB3DSAPI Lib3dsLight* lib3ds_file_light_by_name(Lib3dsFile *file, const char *name);
 extern LIB3DSAPI void lib3ds_file_dump_lights(Lib3dsFile *file);
-extern LIB3DSAPI Lib3dsNode* lib3ds_file_node_by_name(Lib3dsFile *file, const char* name,
-  Lib3dsNodeTypes type);
+extern LIB3DSAPI Lib3dsNode* lib3ds_file_node_by_name(Lib3dsFile *file, const char* name, Lib3dsNodeTypes type);
 extern LIB3DSAPI Lib3dsNode* lib3ds_file_node_by_id(Lib3dsFile *file, Lib3dsWord node_id);
 extern LIB3DSAPI void lib3ds_file_insert_node(Lib3dsFile *file, Lib3dsNode *node);
 extern LIB3DSAPI Lib3dsBool lib3ds_file_remove_node(Lib3dsFile *file, Lib3dsNode *node);
+extern LIB3DSAPI void lib3ds_file_bounding_box_of_objects(Lib3dsFile *file, Lib3dsBool include_meshes, Lib3dsBool include_cameras, Lib3dsBool include_lights, Lib3dsVector bmin, Lib3dsVector bmax);
+extern LIB3DSAPI void lib3ds_file_bounding_box_of_nodes(Lib3dsFile *file, Lib3dsBool include_meshes, Lib3dsBool include_cameras, Lib3dsBool include_lights, Lib3dsVector bmin, Lib3dsVector bmax);
 extern LIB3DSAPI void lib3ds_file_dump_nodes(Lib3dsFile *file);
 
 #ifdef __cplusplus
-};
+}
 #endif
 #endif
 

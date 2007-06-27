@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,29 +17,31 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: camera.c,v 1.10 2001/07/07 19:05:30 jeh Exp $
+ * $Id: camera.c,v 1.17 2007/06/20 17:04:08 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/camera.h>
 #include <lib3ds/chunk.h>
 #include <lib3ds/io.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include <config.h>
-#ifdef WITH_DMALLOC
-#include <dmalloc.h>
-#endif
 
 
 /*!
  * \defgroup camera Cameras
- *
- * \author J.E. Hoffmann <je-h@gmx.net>
  */
 
 
 /*!
+ * Return a new Lib3dsCamera object.
+ *
+ * Object is initialized with the given name and fov=45.  All other
+ * values are 0.
+ *
+ * \param name Name of this camera.  Must not be NULL.  Must be < 64 characters.
+ *
+ * \return Lib3dsCamera object or NULL on failure.
+ *
  * \ingroup camera
  */
 Lib3dsCamera*
@@ -61,6 +63,10 @@ lib3ds_camera_new(const char *name)
 
 
 /*!
+ * Free a Lib3dsCamera object and all of its resources.
+ *
+ * \param camera Lib3dsCamera object to be freed.
+ *
  * \ingroup camera 
  */
 void
@@ -72,6 +78,12 @@ lib3ds_camera_free(Lib3dsCamera *camera)
 
 
 /*!
+ * Dump information about a Lib3dsCamera object to stdout.
+ *
+ * \param camera Object to be dumped.
+ *
+ * \see lib3ds_file_dump_cameras
+ *
  * \ingroup camera
  */
 void
@@ -87,12 +99,24 @@ lib3ds_camera_dump(Lib3dsCamera *camera)
   printf("  fov:        %f\n", camera->fov);
   printf("  see_cone:   %s\n", camera->see_cone ? "yes" : "no");
   printf("  near_range: %f\n", camera->near_range);
-  printf("  far_range:  %f\n", camera->near_range);
+  printf("  far_range:  %f\n", camera->far_range);
   printf("\n");
 }
 
 
 /*!
+ * Read a camera definition from a file.
+ *
+ * This function is called by lib3ds_file_read(), and you probably
+ * don't want to call it directly.
+ *
+ * \param camera A Lib3dsCamera to be filled in.
+ * \param io A Lib3dsIo object previously set up by the caller.
+ *
+ * \return LIB3DS_TRUE on success, LIB3DS_FALSE on failure.
+ *
+ * \see lib3ds_file_read
+ *
  * \ingroup camera
  */
 Lib3dsBool
@@ -150,6 +174,18 @@ lib3ds_camera_read(Lib3dsCamera *camera, Lib3dsIo *io)
 
 
 /*!
+ * Write a camera definition to a file.
+ *
+ * This function is called by lib3ds_file_write(), and you probably
+ * don't want to call it directly.
+ *
+ * \param camera A Lib3dsCamera to be written.
+ * \param io A Lib3dsIo object previously set up by the caller.
+ *
+ * \return LIB3DS_TRUE on success, LIB3DS_FALSE on failure.
+ *
+ * \see lib3ds_file_write
+ *
  * \ingroup camera
  */
 Lib3dsBool
@@ -193,11 +229,3 @@ lib3ds_camera_write(Lib3dsCamera *camera, Lib3dsIo *io)
   return(LIB3DS_TRUE);
 }
 
-
-/*!
-
-\typedef Lib3dsCamera
-  \ingroup camera
-  \sa _Lib3dsCamera
-
-*/

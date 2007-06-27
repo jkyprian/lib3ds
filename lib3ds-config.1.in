@@ -1,4 +1,4 @@
-.TH lib3ds 1 "16 Jun 2001" 1.3.0
+.TH lib3ds 1 "16 Jun 2001" @LIB3DS_VERSION@
 .SH NAME
 lib3ds-config - script to get information about the installed version of lib3ds
 .SH SYNOPSIS

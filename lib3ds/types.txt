@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,13 +17,11 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: types.txt,v 1.1 2001/03/20 10:34:26 jeh Exp $
+ * $Id: types.txt,v 1.3 2007/06/20 17:04:09 jeh Exp $
  */
 /*!
 
 \defgroup types General Types
-
-\author J.E Hoffmann <je-h@gmx.net>
 
 */
 /*!
@@ -94,19 +92,5 @@
 \typedef Lib3dsTexel
   \ingroup types
   UV texture coordinates
-
-*/
-/*!
-
-\typedef Lib3dsUserData
-  \ingroup types
-  User defined Data
-
-*/
-/*!
-
-\union _Lib3dsUserData
-  \ingroup types
-  User defined Data
 
 */

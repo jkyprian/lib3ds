@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,9 +17,8 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: chunk.c,v 1.14 2001/07/07 19:05:30 jeh Exp $
+ * $Id: chunk.c,v 1.18 2007/06/20 17:04:08 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/chunk.h>
 #include <lib3ds/io.h>
 #include <lib3ds/chunktable.h>
@@ -33,8 +32,6 @@
 
 /*!
  * \defgroup chunk Chunk Handling
- *
- * \author J.E. Hoffmann <je-h@gmx.net>
  */
 
 
@@ -88,7 +85,7 @@ lib3ds_chunk_enable_dump(Lib3dsBool enable, Lib3dsBool unknown)
  * Reads a 3d-Studio chunk header from a little endian file stream.
  *
  * \param c  The chunk to store the data.
- * \param f  The file stream.
+ * \param io The file stream.
  *
  * \return   True on success, False otherwise.
  */
@@ -185,7 +182,7 @@ lib3ds_chunk_read_end(Lib3dsChunk *c, Lib3dsIo *io)
  * Writes a 3d-Studio chunk header into a little endian file stream.
  *
  * \param c  The chunk to be written.
- * \param f  The file stream.
+ * \param io The file stream.
  *
  * \return   True on success, False otherwise.
  */
@@ -245,6 +242,19 @@ lib3ds_chunk_write_end(Lib3dsChunk *c, Lib3dsIo *io)
     return(LIB3DS_FALSE);
   }
   return(LIB3DS_TRUE);
+}
+
+
+/*!
+* \ingroup chunk
+*/
+Lib3dsBool
+lib3ds_chunk_write_switch(Lib3dsWord chunk, Lib3dsIo *io)
+{
+  Lib3dsChunk c;
+  c.chunk=chunk;
+  c.size=6;
+  return lib3ds_chunk_write(&c,io);
 }
 
 

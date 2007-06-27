@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_TYPES_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,14 +20,14 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: types.h,v 1.14 2001/07/07 19:05:30 jeh Exp $
+ * $Id: types.h,v 1.25 2007/06/21 08:36:41 jeh Exp $
  */
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if defined (_LIB3DS_DLL) && defined(_WIN32) && (!defined(__GNUC__))
-#ifdef LIB3DS_EXPORT
+#ifdef _MSC_VER
+#ifdef LIB3DS_EXPORTS
 #define LIB3DSAPI __declspec(dllexport)
 #else               
 #define LIB3DSAPI __declspec(dllimport)
@@ -39,13 +39,25 @@ extern "C" {
 #define LIB3DS_TRUE 1
 #define LIB3DS_FALSE 0
 
-typedef int Lib3dsBool;
-typedef unsigned char Lib3dsByte;
-typedef unsigned short int Lib3dsWord;
-typedef unsigned long Lib3dsDword;
-typedef signed char Lib3dsIntb;
-typedef signed short int Lib3dsIntw;
-typedef signed long Lib3dsIntd;
+#ifdef _MSC_VER
+typedef __int32 Lib3dsBool;
+typedef unsigned __int8 Lib3dsByte;
+typedef unsigned __int16 Lib3dsWord;
+typedef unsigned __int32 Lib3dsDword;
+typedef signed __int8 Lib3dsIntb;
+typedef signed __int16 Lib3dsIntw;
+typedef signed __int16 Lib3dsIntd;
+#else
+#include <stdint.h>
+typedef int32_t Lib3dsBool;
+typedef uint8_t Lib3dsByte;
+typedef uint16_t Lib3dsWord;
+typedef uint32_t Lib3dsDword;
+typedef int8_t Lib3dsIntb;
+typedef int16_t Lib3dsIntw;
+typedef int32_t Lib3dsIntd;
+#endif
+
 typedef float Lib3dsFloat;
 typedef double Lib3dsDouble;
 
@@ -60,13 +72,10 @@ typedef float Lib3dsRgba[4];
 #define LIB3DS_PI 3.14159265358979323846
 #define LIB3DS_TWOPI (2.0*LIB3DS_PI)
 #define LIB3DS_HALFPI (LIB3DS_PI/2.0)
-#define LIB3DS_DEG(x) ((180.0/LIB3DS_PI)*(x))
-#define LIB3DS_RAD(x) ((LIB3DS_PI/180.0)*(x))
+#define LIB3DS_RAD_TO_DEG(x) ((180.0/LIB3DS_PI)*(x))
+#define LIB3DS_DEG_TO_RAD(x) ((LIB3DS_PI/180.0)*(x))
   
-#ifndef INCLUDED_STDIO_H
-#define INCLUDED_STDIO_H
 #include <stdio.h>
-#endif
 
 #ifdef _DEBUG
   #ifndef ASSERT
@@ -82,31 +91,31 @@ typedef float Lib3dsRgba[4];
   #define LIB3DS_ERROR_LOG
 #endif
 
-typedef struct _Lib3dsIo Lib3dsIo;
-typedef struct _Lib3dsFile Lib3dsFile;
-typedef struct _Lib3dsBackground Lib3dsBackground;
-typedef struct _Lib3dsAtmosphere Lib3dsAtmosphere;
-typedef struct _Lib3dsShadow Lib3dsShadow;
-typedef struct _Lib3dsViewport Lib3dsViewport;
-typedef struct _Lib3dsMaterial Lib3dsMaterial;
-typedef struct _Lib3dsFace Lib3dsFace; 
-typedef struct _Lib3dsBoxMap Lib3dsBoxMap; 
-typedef struct _Lib3dsMapData Lib3dsMapData; 
-typedef struct _Lib3dsMesh Lib3dsMesh;
-typedef struct _Lib3dsCamera Lib3dsCamera;
-typedef struct _Lib3dsLight Lib3dsLight;
-typedef struct _Lib3dsBoolKey Lib3dsBoolKey;
-typedef struct _Lib3dsBoolTrack Lib3dsBoolTrack;
-typedef struct _Lib3dsLin1Key Lib3dsLin1Key;
-typedef struct _Lib3dsLin1Track Lib3dsLin1Track;
-typedef struct _Lib3dsLin3Key Lib3dsLin3Key;
-typedef struct _Lib3dsLin3Track Lib3dsLin3Track;
-typedef struct _Lib3dsQuatKey Lib3dsQuatKey;
-typedef struct _Lib3dsQuatTrack Lib3dsQuatTrack;
-typedef struct _Lib3dsMorphKey Lib3dsMorphKey;
-typedef struct _Lib3dsMorphTrack Lib3dsMorphTrack;
-
-typedef enum _Lib3dsNodeTypes {
+typedef struct Lib3dsIo Lib3dsIo;
+typedef struct Lib3dsFile Lib3dsFile;
+typedef struct Lib3dsBackground Lib3dsBackground;
+typedef struct Lib3dsAtmosphere Lib3dsAtmosphere;
+typedef struct Lib3dsShadow Lib3dsShadow;
+typedef struct Lib3dsViewport Lib3dsViewport;
+typedef struct Lib3dsMaterial Lib3dsMaterial;
+typedef struct Lib3dsFace Lib3dsFace; 
+typedef struct Lib3dsBoxMap Lib3dsBoxMap; 
+typedef struct Lib3dsMapData Lib3dsMapData; 
+typedef struct Lib3dsMesh Lib3dsMesh;
+typedef struct Lib3dsCamera Lib3dsCamera;
+typedef struct Lib3dsLight Lib3dsLight;
+typedef struct Lib3dsBoolKey Lib3dsBoolKey;
+typedef struct Lib3dsBoolTrack Lib3dsBoolTrack;
+typedef struct Lib3dsLin1Key Lib3dsLin1Key;
+typedef struct Lib3dsLin1Track Lib3dsLin1Track;
+typedef struct Lib3dsLin3Key Lib3dsLin3Key;
+typedef struct Lib3dsLin3Track Lib3dsLin3Track;
+typedef struct Lib3dsQuatKey Lib3dsQuatKey;
+typedef struct Lib3dsQuatTrack Lib3dsQuatTrack;
+typedef struct Lib3dsMorphKey Lib3dsMorphKey;
+typedef struct Lib3dsMorphTrack Lib3dsMorphTrack;
+               
+typedef enum Lib3dsNodeTypes {
   LIB3DS_UNKNOWN_NODE =0,
   LIB3DS_AMBIENT_NODE =1,
   LIB3DS_OBJECT_NODE  =2,
@@ -116,9 +125,19 @@ typedef enum _Lib3dsNodeTypes {
   LIB3DS_SPOT_NODE    =6
 } Lib3dsNodeTypes;
 
-typedef struct _Lib3dsNode Lib3dsNode;
+typedef struct Lib3dsNode Lib3dsNode;
 
-typedef union _Lib3dsUserData {
+typedef enum Lib3dsObjectFlags {
+  LIB3DS_OBJECT_HIDDEN          =0x01, 
+  LIB3DS_OBJECT_VIS_LOFTER      =0x02, 
+  LIB3DS_OBJECT_DOESNT_CAST     =0x04, 
+  LIB3DS_OBJECT_MATTE           =0x08, 
+  LIB3DS_OBJECT_DONT_RCVSHADOW  =0x10, 
+  LIB3DS_OBJECT_FAST            =0x20, 
+  LIB3DS_OBJECT_FROZEN          =0x40 
+} Lib3dsObjectFlags;
+
+typedef union Lib3dsUserData {
     void *p;
     Lib3dsIntd i;
     Lib3dsDword d;
@@ -131,15 +150,6 @@ typedef union _Lib3dsUserData {
 } Lib3dsUserData;
 
 #ifdef __cplusplus
-};
+}
 #endif
 #endif
-
-
-
-
-
-
-
-
-

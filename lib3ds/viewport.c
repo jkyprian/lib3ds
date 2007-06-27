@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,9 +17,8 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: viewport.c,v 1.6 2001/11/14 22:44:52 jeh Exp $
+ * $Id: viewport.c,v 1.11 2007/06/20 17:04:09 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/viewport.h>
 #include <lib3ds/chunk.h>
 #include <lib3ds/io.h>
@@ -29,8 +28,6 @@
 
 /*!
  * \defgroup viewport Viewport and default view settings
- *
- * \author J.E. Hoffmann <je-h@gmx.net>
  */
 
 
@@ -361,9 +358,56 @@ lib3ds_viewport_write(Lib3dsViewport *viewport, Lib3dsIo *io)
 
 
 /*!
+ * Dump viewport.
+ *
+ * \param vp The viewport to be dumped.
+ *
+ * \ingroup node
+ */
+void
+lib3ds_viewport_dump(Lib3dsViewport *vp)
+{
+  Lib3dsView *view;
+  unsigned i;
+  ASSERT(vp);
 
-\typedef Lib3dsViewport
-  \ingroup viewport
-  \sa _Lib3dsViewport
+  printf("  viewport:\n");
+  printf("    layout:\n");
+  printf("      style:       %d\n", vp->layout.style);
+  printf("      active:      %d\n", vp->layout.active);
+  printf("      swap:        %d\n", vp->layout.swap);
+  printf("      swap_prior:  %d\n", vp->layout.swap_prior);
+  printf("      position:    %d,%d\n",
+  	vp->layout.position[0], vp->layout.position[1]);
+  printf("      size:        %d,%d\n", vp->layout.size[0], vp->layout.size[1]);
+  printf("      views:       %ld\n", vp->layout.views);
+  if (vp->layout.views > 0 && vp->layout.viewL != NULL) {
+    for(i=0, view=vp->layout.viewL; i < vp->layout.views; ++i, ++view) {
+      printf("        view %d:\n", i);
+      printf("          type:         %d\n", view->type);
+      printf("          axis_lock:    %d\n", view->axis_lock);
+      printf("          position:     (%d,%d)\n",
+        view->position[0], view->position[1]);
+      printf("          size:         (%d,%d)\n", view->size[0], view->size[1]);
+      printf("          zoom:         %g\n", view->zoom);
+      printf("          center:       (%g,%g,%g)\n",
+        view->center[0], view->center[1], view->center[2]);
+      printf("          horiz_angle:  %g\n", view->horiz_angle);
+      printf("          vert_angle:   %g\n", view->vert_angle);
+      printf("          camera:       %s\n", view->camera);
+    }
+  }
 
-*/
+  printf("    default_view:\n");
+  printf("	type:         %d\n", vp->default_view.type);
+  printf("	position:     (%g,%g,%g)\n",
+    vp->default_view.position[0],
+    vp->default_view.position[1],
+    vp->default_view.position[2]);
+  printf("	width:        %g\n", vp->default_view.width);
+  printf("	horiz_angle:  %g\n", vp->default_view.horiz_angle);
+  printf("	vert_angle:   %g\n", vp->default_view.vert_angle);
+  printf("	roll_angle:   %g\n", vp->default_view.roll_angle);
+  printf("	camera:       %s\n", vp->default_view.camera);
+}
+

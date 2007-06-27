@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_LIGHT_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: light.h,v 1.9 2001/07/07 19:05:30 jeh Exp $
+ * $Id: light.h,v 1.13 2007/06/20 17:04:08 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -31,13 +31,14 @@
 extern "C" {
 #endif
 
-/*!
+/**
  * Light
  * \ingroup light
  */
-struct _Lib3dsLight {
+struct Lib3dsLight {
     Lib3dsLight *next;
     char name[64];
+    Lib3dsDword object_flags; /*< @see Lib3dsObjectFlags */ 
     Lib3dsBool spot_light;
     Lib3dsBool see_cone;
     Lib3dsRgb color;
@@ -72,7 +73,7 @@ extern LIB3DSAPI Lib3dsBool lib3ds_light_read(Lib3dsLight *light, Lib3dsIo *io);
 extern LIB3DSAPI Lib3dsBool lib3ds_light_write(Lib3dsLight *light, Lib3dsIo *io);
 
 #ifdef __cplusplus
-};
+}
 #endif
 #endif
 

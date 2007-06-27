@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_QUAT_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: quat.h,v 1.5 2001/01/12 10:29:17 jeh Exp $
+ * $Id: quat.h,v 1.7 2007/06/14 09:59:10 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -55,7 +55,7 @@ extern LIB3DSAPI void lib3ds_quat_tangent(Lib3dsQuat c, Lib3dsQuat p, Lib3dsQuat
 extern LIB3DSAPI void lib3ds_quat_dump(Lib3dsQuat q);
 
 #ifdef __cplusplus
-};
+}
 #endif
 #endif
 

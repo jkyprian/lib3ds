@@ -1,6 +1,6 @@
  #
  # The 3D Studio File Format Library
- # Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ # Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  # All rights reserved.
  #
  # This program is  free  software;  you can redistribute it and/or modify it
@@ -17,10 +17,13 @@
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.18 2001/07/18 12:17:49 jeh Exp $
+ # $Id: Makefile.am,v 1.27 2007/06/20 09:05:29 jeh Exp $
  #
 
-SUBDIRS = msvc lib3ds tools examples
+
+VERSION = @LIB3DS_VERSION@
+
+SUBDIRS = lib3ds tools 
 
 bin_SCRIPTS = lib3ds-config
 
@@ -30,7 +33,6 @@ man_MANS = \
   lib3ds-config.1
 
 EXTRA_DIST = \
-  lib3ds.spec \
   lib3ds.m4 \
   lib3ds-config.1 \
   AUTHORS \
@@ -39,7 +41,12 @@ EXTRA_DIST = \
   INSTALL \
   README \
   TODO \
-  config.h 
+  examples/3dsplay.c \
+  msvc8/lib3ds.sln \
+  msvc8/lib3ds.vcproj \
+  msvc8/lib3ds.rc \
+  msvc8/3dsdump.vcproj \
+  msvc8/3dsplay.vcproj
 
 m4datadir = $(datadir)/aclocal
 m4data_DATA = lib3ds.m4
@@ -51,10 +58,31 @@ release:
 	$(MAKE) distcheck
 
 snapshot:
-	$(MAKE) dist distdir=$(PACKAGE)`date +"%y%m%d"`
+	$(MAKE) dist-zip distdir=$(PACKAGE)-`date +"%Y%m%d"`
 
 
+DIST_NAME = lib3ds-$(VERSION)
+DIST_DIR = /tmp/$(DIST_NAME)
 
+RPM_SOURCE_DIR = /tmp/rpmsource-$(DIST_NAME)
+RPM_BUILD_DIR = /tmp/rpmbuild-$(DIST_NAME)
+RPM_DEST_DIR = .
+
+
+rpm: $(DIST_NAME).tar.gz
+	rm -rf $(RPM_SOURCE_DIR)
+	rm -rf $(RPM_BUILD_DIR)
+	mkdir -p $(RPM_SOURCE_DIR)
+	mkdir -p $(RPM_BUILD_DIR)
+	cp $(DIST_NAME).tar.gz $(RPM_SOURCE_DIR)
+
+	rpmbuild -bb lib3ds.spec \
+	  --define "_sourcedir ${RPM_SOURCE_DIR}" \
+	  --define "_builddir ${RPM_BUILD_DIR}" \
+	  --define "_rpmdir ${RPM_SOURCE_DIR}"
+
+	mv ${RPM_SOURCE_DIR}/i386/lib3ds-*.rpm ${RPM_DEST_DIR}
+	rm -rf ${RPM_SOURCE_DIR} ${RPM_BUILD_DIR}
 
 
 

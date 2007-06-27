@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,28 +17,21 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: tracks.c,v 1.11 2001/07/07 19:05:30 jeh Exp $
+ * $Id: tracks.c,v 1.20 2007/06/15 09:33:19 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/tracks.h>
 #include <lib3ds/io.h>
 #include <lib3ds/chunk.h>
-#include <lib3ds/float.h>
 #include <lib3ds/vector.h>
 #include <lib3ds/quat.h>
+#include <lib3ds/node.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <config.h>
-#ifdef WITH_DMALLOC
-#include <dmalloc.h>
-#endif
 
 
 /*!
  * \defgroup tracks Keyframing Tracks
- *
- * \author J.E. Hoffmann <je-h@gmx.net>
  */
 
 
@@ -440,6 +433,19 @@ lib3ds_lin1_track_remove(Lib3dsLin1Track *track, Lib3dsIntd frame)
 }
 
 
+static Lib3dsFloat
+lib3ds_float_cubic(Lib3dsFloat a, Lib3dsFloat p, Lib3dsFloat q, Lib3dsFloat b, Lib3dsFloat t)
+{
+  Lib3dsDouble x,y,z,w;   
+
+  x=2*t*t*t - 3*t*t + 1;
+  y=-2*t*t*t + 3*t*t;
+  z=t*t*t - 2*t*t + t;
+  w=t*t*t - t*t;
+  return((Lib3dsFloat)(x*a + y*b + z*p + w*q));
+}
+
+
 /*!
  * \ingroup tracks 
  */
@@ -455,7 +461,7 @@ lib3ds_lin1_track_eval(Lib3dsLin1Track *track, Lib3dsFloat *p, Lib3dsFloat t)
     *p=0;
     return;
   }
-  if (!track->keyL->next) {
+  if (!track->keyL->next || ((t<track->keyL->tcb.frame) && ((track->flags&LIB3DS_REPEAT) != 0))) {
     *p = track->keyL->value;
     return;
   }
@@ -467,7 +473,7 @@ lib3ds_lin1_track_eval(Lib3dsLin1Track *track, Lib3dsFloat *p, Lib3dsFloat t)
   }
   if (!k->next) {
     if (track->flags&LIB3DS_REPEAT) {
-      nt=(Lib3dsFloat)fmod(t, k->tcb.frame);
+      nt=(Lib3dsFloat)fmod(t - track->keyL->tcb.frame, k->tcb.frame - track->keyL->tcb.frame) + track->keyL->tcb.frame;
       for (k=track->keyL; k->next!=0; k=k->next) {
         if ((nt>=(Lib3dsFloat)k->tcb.frame) && (nt<(Lib3dsFloat)k->next->tcb.frame)) {
           break;
@@ -551,6 +557,9 @@ lib3ds_lin1_track_write(Lib3dsLin1Track *track, Lib3dsIo *io)
 
 
 /*!
+ * Create and return one keyframe in a Lin3 track.  All values are
+ * initialized to zero.
+ *
  * \ingroup tracks 
  */
 Lib3dsLin3Key*
@@ -563,6 +572,8 @@ lib3ds_lin3_key_new()
 
 
 /*!
+ * Free a Lin3 keyframe.
+ *
  * \ingroup tracks 
  */
 void
@@ -574,6 +585,8 @@ lib3ds_lin3_key_free(Lib3dsLin3Key *key)
 
 
 /*!
+ * Free all keyframes in a Lin3 track.
+ *
  * \ingroup tracks 
  */
 void
@@ -763,8 +776,8 @@ lib3ds_lin3_track_eval(Lib3dsLin3Track *track, Lib3dsVector p, Lib3dsFloat t)
     lib3ds_vector_zero(p);
     return;
   }
-  if (!track->keyL->next) {
-      lib3ds_vector_copy(p, track->keyL->value);
+  if (!track->keyL->next || ((t<track->keyL->tcb.frame) && ((track->flags&LIB3DS_REPEAT) != 0))) {
+    lib3ds_vector_copy(p, track->keyL->value);
     return;
   }
 
@@ -775,7 +788,7 @@ lib3ds_lin3_track_eval(Lib3dsLin3Track *track, Lib3dsVector p, Lib3dsFloat t)
   }
   if (!k->next) {
     if (track->flags&LIB3DS_REPEAT) {
-      nt=(Lib3dsFloat)fmod(t, k->tcb.frame);
+      nt=(Lib3dsFloat)fmod(t - track->keyL->tcb.frame, k->tcb.frame - track->keyL->tcb.frame) + track->keyL->tcb.frame;
       for (k=track->keyL; k->next!=0; k=k->next) {
         if ((nt>=(Lib3dsFloat)k->tcb.frame) && (nt<(Lib3dsFloat)k->next->tcb.frame)) {
           break;
@@ -932,7 +945,8 @@ lib3ds_quat_key_setup(Lib3dsQuatKey *p, Lib3dsQuatKey *cp, Lib3dsQuatKey *c,
     else {
       lib3ds_quat_copy(q, p->q);
       if (lib3ds_quat_dot(q,c->q)<0) lib3ds_quat_neg(q);
-      lib3ds_quat_ln_dif(qp, c->q, q);
+      
+      lib3ds_quat_ln_dif(qp, q, c->q);
     }
   }
   if (n) {
@@ -950,14 +964,14 @@ lib3ds_quat_key_setup(Lib3dsQuatKey *p, Lib3dsQuatKey *cp, Lib3dsQuatKey *c,
   if (n && p) {
     lib3ds_tcb(&p->tcb, &cp->tcb, &c->tcb, &cn->tcb, &n->tcb, &ksm, &ksp, &kdm, &kdp);
     for(i=0; i<4; i++) {
-      qa[i]=-0.5f*(kdm*qn[i]+kdp*qp[i]);
-      qb[i]=-0.5f*(ksm*qn[i]+ksp*qp[i]);
+      qa[i]=0.5f*(kdm*qp[i]+(kdp-1.f)*qn[i]);
+      qb[i]=0.5f*((1.f-ksm)*qp[i]-ksp*qn[i]);
     }
     lib3ds_quat_exp(qa);
     lib3ds_quat_exp(qb);
     
-    lib3ds_quat_mul(c->ds, c->q, qa);
-    lib3ds_quat_mul(c->dd, c->q, qb);
+    lib3ds_quat_mul(c->ds, c->q, qb);
+    lib3ds_quat_mul(c->dd, c->q, qa);
   }
   else {
     if (p) {
@@ -1110,7 +1124,7 @@ lib3ds_quat_track_eval(Lib3dsQuatTrack *track, Lib3dsQuat q, Lib3dsFloat t)
     lib3ds_quat_identity(q);
     return;
   }
-  if (!track->keyL->next) {
+  if (!track->keyL->next || ((t<track->keyL->tcb.frame) && ((track->flags&LIB3DS_REPEAT) != 0))) {
     lib3ds_quat_copy(q, track->keyL->q);
     return;
   }
@@ -1122,7 +1136,7 @@ lib3ds_quat_track_eval(Lib3dsQuatTrack *track, Lib3dsQuat q, Lib3dsFloat t)
   }
   if (!k->next) {
     if (track->flags&LIB3DS_REPEAT) {
-      nt=(Lib3dsFloat)fmod(t, k->tcb.frame);
+      nt=(Lib3dsFloat)fmod(t - track->keyL->tcb.frame, k->tcb.frame - track->keyL->tcb.frame) + track->keyL->tcb.frame;
       for (k=track->keyL; k->next!=0; k=k->next) {
         if ((nt>=k->tcb.frame) && (nt<k->next->tcb.frame)) {
           break;
@@ -1334,23 +1348,19 @@ lib3ds_morph_track_eval(Lib3dsMorphTrack *track, char *p, Lib3dsFloat t)
     return;
   }
 
+
+  /* TODO: this function finds the mesh frame that corresponds to this
+   * timeframe.  It would be better to actually interpolate the mesh.
+   */
+
   result=0;
-  k=track->keyL;
-  while ((t<k->tcb.frame) && (t>=k->next->tcb.frame)) {
-    result=k->name;
-    if (!k->next) {
-      if (track->flags&LIB3DS_REPEAT) {
-        t-=k->tcb.frame;
-        k=track->keyL;
-      }
-      else {
-        break;
-      }
-    }
-    else {
-      k=k->next;
-    }
-  }
+
+  for(k = track->keyL;
+      k->next != NULL && t >= k->next->tcb.frame;
+      k = k->next);
+
+  result=k->name;
+
   if (result) {
     strcpy(p,result);
   }
@@ -1366,7 +1376,29 @@ lib3ds_morph_track_eval(Lib3dsMorphTrack *track, char *p, Lib3dsFloat t)
 Lib3dsBool
 lib3ds_morph_track_read(Lib3dsMorphTrack *track, Lib3dsIo *io)
 {
-  /* FIXME: */
+  /* This function was written by Stephane Denis on 5-18-04 */
+    int i;
+    Lib3dsMorphKey *k, *pk;
+    int keys;
+    track->flags=lib3ds_io_read_word(io);
+    lib3ds_io_read_dword(io);
+    lib3ds_io_read_dword(io);
+    keys=lib3ds_io_read_intd(io);
+
+    for (i=0; i<keys; ++i) {
+        k=lib3ds_morph_key_new();
+        if (!lib3ds_tcb_read(&k->tcb, io)) {
+            return(LIB3DS_FALSE);
+        }
+        if (!lib3ds_io_read_string(io, k->name, 11)) {
+            return(LIB3DS_FALSE);
+        }
+        if (!track->keyL)
+            track->keyL = k;
+        else
+            pk->next = k;
+        pk = k;
+    }
   return(LIB3DS_TRUE);
 }
 
@@ -1383,3 +1415,138 @@ lib3ds_morph_track_write(Lib3dsMorphTrack *track, Lib3dsIo *io)
 }
 
 
+
+void
+tcb_dump(Lib3dsTcb *tcb)
+{
+  printf("  tcb: frame=%d, flags=%04x, tens=%g, cont=%g, ",
+    tcb->frame, tcb->flags, tcb->tens, tcb->cont);
+  printf("bias=%g, ease_to=%g, ease_from=%g\n",
+    tcb->bias, tcb->ease_to, tcb->ease_from);
+}
+
+
+void
+lib3ds_boolTrack_dump(Lib3dsBoolTrack *track)
+{
+  Lib3dsBoolKey *key;
+  printf("flags: %08x, keys:\n", track->flags);
+  for( key = track->keyL; key != NULL; key = key->next)
+  {
+    tcb_dump(&key->tcb);
+  }
+}
+
+
+void
+lib3ds_lin1Track_dump(Lib3dsLin1Track *track)
+{
+  Lib3dsLin1Key *key;
+  printf("flags: %08x, keys:\n", track->flags);
+  for( key = track->keyL; key != NULL; key = key->next)
+  {
+    tcb_dump(&key->tcb);
+    printf("    value = %g, dd=%g, ds=%g\n",
+      key->value, key->dd, key->ds);
+  }
+}
+
+
+void
+lib3ds_lin3Track_dump(Lib3dsLin3Track *track)
+{
+  Lib3dsLin3Key *key;
+  printf("flags: %08x, keys:\n", track->flags);
+  for( key = track->keyL; key != NULL; key = key->next)
+  {
+    tcb_dump(&key->tcb);
+    printf("    value = %g,%g,%g, dd=%g,%g,%g, ds=%g,%g,%g\n",
+      key->value[0], key->value[1], key->value[2],
+      key->dd[0], key->dd[1], key->dd[2],
+      key->ds[0], key->ds[1], key->ds[2]);
+  }
+}
+
+
+void
+lib3ds_quatTrack_dump(Lib3dsQuatTrack *track)
+{
+  Lib3dsQuatKey *key;
+  printf("flags: %08x, keys:\n", track->flags);
+  for( key = track->keyL; key != NULL; key = key->next)
+  {
+    tcb_dump(&key->tcb);
+    printf("    axis = %g,%g,%g, angle=%g, q=%g,%g,%g,%g\n",
+      key->axis[0], key->axis[1], key->axis[2], key->angle,
+      key->q[0], key->q[1], key->q[2], key->q[3]);
+    printf("    dd = %g,%g,%g,%g, ds=%g,%g,%g,%g\n",
+      key->dd[0], key->dd[1], key->dd[2], key->dd[3],
+      key->ds[0], key->ds[1], key->ds[2], key->ds[3]);
+  }
+}
+
+
+void
+lib3ds_morphTrack_dump(Lib3dsMorphTrack *track)
+{
+  Lib3dsMorphKey *key;
+  printf("flags: %08x, keys:\n", track->flags);
+  for( key = track->keyL; key != NULL; key = key->next)
+  {
+    tcb_dump(&key->tcb);
+    printf("    name = %s\n", key->name);
+  }
+}
+
+
+
+void
+lib3ds_dump_tracks(Lib3dsNode *node)
+{
+  switch( node->type ) {
+    case LIB3DS_AMBIENT_NODE:
+      printf("ambient: ");
+      lib3ds_lin3Track_dump(&node->data.ambient.col_track);
+      break;
+    case LIB3DS_OBJECT_NODE:
+      printf("pos: ");
+      lib3ds_lin3Track_dump(&node->data.object.pos_track);
+      printf("rot: ");
+      lib3ds_quatTrack_dump(&node->data.object.rot_track);
+      printf("scl: ");
+      lib3ds_lin3Track_dump(&node->data.object.scl_track);
+      printf("morph: ");
+      lib3ds_morphTrack_dump(&node->data.object.morph_track);
+      printf("hide: ");
+      lib3ds_boolTrack_dump(&node->data.object.hide_track);
+      break;
+    case LIB3DS_CAMERA_NODE:
+      printf("pos: ");
+      lib3ds_lin3Track_dump(&node->data.camera.pos_track);
+      printf("fov: ");
+      lib3ds_lin1Track_dump(&node->data.camera.fov_track);
+      printf("roll: ");
+      lib3ds_lin1Track_dump(&node->data.camera.roll_track);
+      break;
+    case LIB3DS_TARGET_NODE:
+      printf("pos: ");
+      lib3ds_lin3Track_dump(&node->data.target.pos_track);
+      break;
+    case LIB3DS_LIGHT_NODE:
+      printf("pos: ");
+      lib3ds_lin3Track_dump(&node->data.light.pos_track);
+      printf("col: ");
+      lib3ds_lin3Track_dump(&node->data.light.col_track);
+      printf("hotspot: ");
+      lib3ds_lin1Track_dump(&node->data.light.hotspot_track);
+      printf("falloff: ");
+      lib3ds_lin1Track_dump(&node->data.light.falloff_track);
+      printf("roll: ");
+      lib3ds_lin1Track_dump(&node->data.light.roll_track);
+      break;
+    case LIB3DS_SPOT_NODE:
+      printf("pos: ");
+      lib3ds_lin3Track_dump(&node->data.spot.pos_track);
+      break;
+  }
+}

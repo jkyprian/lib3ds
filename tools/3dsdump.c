@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,16 +17,12 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: 3dsdump.c,v 1.1 2001/07/18 12:17:49 jeh Exp $
+ * $Id: 3dsdump.c,v 1.4 2007/06/14 11:29:39 jeh Exp $
  */
 #include <lib3ds/file.h>
 #include <lib3ds/chunk.h>
 #include <stdlib.h>
 #include <string.h>
-#include <config.h>
-#ifdef WITH_DMALLOC
-#include <dmalloc.h>
-#endif
 
 
 /*!
@@ -49,8 +45,6 @@ Options:
   -n/--nodes          Dump node hierarchy
   -w/--write filename Write new 3ds file to disk
 \endcode
-
-\author J.E. Hoffmann <je-h@gmx.net>
 */
 
 
@@ -58,8 +52,8 @@ static void
 help()
 {
   fprintf(stderr,
-"The 3D Studio File Format Library - 3dsdump Version " VERSION "\n"
-"Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>\n"
+"The 3D Studio File Format Library - 3dsdump\n"
+"Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>\n"
 "All rights reserved.\n"
 "\n"
 "Syntax: 3dsdump [options] filename [options]\n"

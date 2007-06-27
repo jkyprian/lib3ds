@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_VIEWPORT_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: viewport.h,v 1.4 2001/07/07 19:05:30 jeh Exp $
+ * $Id: viewport.h,v 1.8 2007/06/20 17:04:09 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -31,11 +31,11 @@
 extern "C" {
 #endif
 
-/*!
+/**
  * Layout view types
  * \ingroup viewport
  */
-typedef enum _Lib3dsViewType {
+typedef enum Lib3dsViewType {
   LIB3DS_VIEW_TYPE_NOT_USED  =0,
   LIB3DS_VIEW_TYPE_TOP       =1,
   LIB3DS_VIEW_TYPE_BOTTOM    =2,
@@ -48,11 +48,11 @@ typedef enum _Lib3dsViewType {
   LIB3DS_VIEW_TYPE_CAMERA    =65535
 } Lib3dsViewType;
 
-/*!
+/**
  * Layout view settings
  * \ingroup viewport
  */
-typedef struct _Lib3dsView {
+typedef struct Lib3dsView {
     Lib3dsWord type;
     Lib3dsWord axis_lock;
     Lib3dsIntw position[2];
@@ -64,11 +64,11 @@ typedef struct _Lib3dsView {
     char camera[11];
 } Lib3dsView;
 
-/*!
+/**
  * Layout styles
  * \ingroup viewport
  */
-typedef enum _Lib3dsLayoutStyle {
+typedef enum Lib3dsLayoutStyle {
   LIB3DS_LAYOUT_SINGLE                  =0,
   LIB3DS_LAYOUT_TWO_PANE_VERT_SPLIT     =1,
   LIB3DS_LAYOUT_TWO_PANE_HORIZ_SPLIT    =2,
@@ -83,11 +83,11 @@ typedef enum _Lib3dsLayoutStyle {
   LIB3DS_LAYOUT_FOUR_PANE_RIGHT_SPLIT   =11
 } Lib3dsLayoutStyle;
 
-/*!
+/**
  * Viewport layout settings
  * \ingroup viewport
  */
-typedef struct _Lib3dsLayout {
+typedef struct Lib3dsLayout {
     Lib3dsWord style;
     Lib3dsIntw active;
     Lib3dsIntw swap;
@@ -99,11 +99,11 @@ typedef struct _Lib3dsLayout {
     Lib3dsView *viewL;
 } Lib3dsLayout;
 
-/*!
+/**
  * Default view settings
  * \ingroup viewport
  */
-typedef struct _Lib3dsDefaultView {
+typedef struct Lib3dsDefaultView {
     Lib3dsWord type;
     Lib3dsVector position;
     Lib3dsFloat width;
@@ -113,11 +113,11 @@ typedef struct _Lib3dsDefaultView {
     char camera[64];
 } Lib3dsDefaultView;
 
-/*!
+/**
  * Viewport and default view settings
  * \ingroup viewport
  */
-struct _Lib3dsViewport {
+struct Lib3dsViewport {
     Lib3dsLayout layout;
     Lib3dsDefaultView default_view;
 };
@@ -125,9 +125,10 @@ struct _Lib3dsViewport {
 extern LIB3DSAPI Lib3dsBool lib3ds_viewport_read(Lib3dsViewport *viewport, Lib3dsIo *io);
 extern LIB3DSAPI void lib3ds_viewport_set_views(Lib3dsViewport *viewport, Lib3dsDword views);
 extern LIB3DSAPI Lib3dsBool lib3ds_viewport_write(Lib3dsViewport *viewport, Lib3dsIo *io);
+extern LIB3DSAPI void lib3ds_viewport_dump(Lib3dsViewport *viewport);
 
 #ifdef __cplusplus
-};
+}
 #endif
 #endif
 

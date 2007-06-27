@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,25 +17,28 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: vector.c,v 1.7 2001/06/16 14:00:50 jeh Exp $
+ * $Id: vector.c,v 1.12 2007/06/20 17:04:09 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/vector.h>
 #include <math.h>
 
 
 /*!
  * \defgroup vector Vector Mathematics
- *
- * \author J.E. Hoffmann <je-h@gmx.net>
  */
+
+
 /*!
  * \typedef Lib3dsVector
- *   \ingroup vector
+ * \ingroup vector
  */
 
 
 /*!
+ * Clear a vector to zero.
+ *
+ * \param c Vector to clear.
+ *
  * \ingroup vector
  */
 void
@@ -49,6 +52,11 @@ lib3ds_vector_zero(Lib3dsVector c)
 
 
 /*!
+ * Copy a vector.
+ *
+ * \param dest Destination vector.
+ * \param src Source vector.
+ *
  * \ingroup vector
  */
 void
@@ -62,6 +70,10 @@ lib3ds_vector_copy(Lib3dsVector dest, Lib3dsVector src)
 
 
 /*!
+ * Negate a vector.
+ *
+ * \param c Vector to negate.
+ *
  * \ingroup vector
  */
 void
@@ -75,6 +87,12 @@ lib3ds_vector_neg(Lib3dsVector c)
 
 
 /*!
+ * Add two vectors.
+ *
+ * \param c Result.
+ * \param a First addend.
+ * \param b Second addend.
+ *
  * \ingroup vector
  */
 void
@@ -88,6 +106,12 @@ lib3ds_vector_add(Lib3dsVector c, Lib3dsVector a, Lib3dsVector b)
 
 
 /*!
+ * Subtract two vectors.
+ *
+ * \param c Result.
+ * \param a Addend.
+ * \param b Minuend.
+ *
  * \ingroup vector
  */
 void
@@ -101,6 +125,11 @@ lib3ds_vector_sub(Lib3dsVector c, Lib3dsVector a, Lib3dsVector b)
 
 
 /*!
+ * Multiply a vector by a scalar.
+ *
+ * \param c Vector to be multiplied.
+ * \param k Scalar.
+ *
  * \ingroup vector
  */
 void
@@ -114,6 +143,12 @@ lib3ds_vector_scalar(Lib3dsVector c, Lib3dsFloat k)
 
 
 /*!
+ * Compute cross product.
+ *
+ * \param c Result.
+ * \param a First vector.
+ * \param b Second vector.
+ *
  * \ingroup vector
  */
 void
@@ -126,6 +161,13 @@ lib3ds_vector_cross(Lib3dsVector c, Lib3dsVector a, Lib3dsVector b)
 
 
 /*!
+ * Compute dot product.
+ *
+ * \param a First vector.
+ * \param b Second vector.
+ *
+ * \return Dot product.
+ *
  * \ingroup vector
  */
 Lib3dsFloat
@@ -136,6 +178,14 @@ lib3ds_vector_dot(Lib3dsVector a, Lib3dsVector b)
 
 
 /*!
+ * Compute square of vector.
+ *
+ * Computes x*x + y*y + z*z.
+ *
+ * \param c Vector to square.
+ *
+ * \return Square of vector.
+ *
  * \ingroup vector
  */
 Lib3dsFloat
@@ -146,6 +196,14 @@ lib3ds_vector_squared(Lib3dsVector c)
 
 
 /*!
+ * Compute length of vector.
+ *
+ * Computes |c| = sqrt(x*x + y*y + z*z)
+ *
+ * \param c Vector to compute.
+ *
+ * \return Length of vector.
+ *
  * \ingroup vector
  */
 Lib3dsFloat
@@ -156,6 +214,12 @@ lib3ds_vector_length(Lib3dsVector c)
 
 
 /*!
+ * Normalize a vector.
+ *
+ * Scales a vector so that its length is 1.0.
+ *
+ * \param c Vector to normalize.
+ *
  * \ingroup vector
  */
 void
@@ -165,16 +229,18 @@ lib3ds_vector_normalize(Lib3dsVector c)
 
   l=(Lib3dsFloat)sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
   if (fabs(l)<LIB3DS_EPSILON) {
-    c[0]=c[1]=c[2]=0.0f;
     if ((c[0]>=c[1]) && (c[0]>=c[2])) {
       c[0]=1.0f;
+      c[1]=c[2]=0.0f;
     }
     else
     if (c[1]>=c[2]) {
       c[1]=1.0f;
+      c[0]=c[2]=0.0f;
     }
     else {
       c[2]=1.0f;
+      c[0]=c[1]=0.0f;
     }
   }
   else {
@@ -187,6 +253,15 @@ lib3ds_vector_normalize(Lib3dsVector c)
 
 
 /*!
+ * Compute a vector normal to two line segments.
+ *
+ * Computes the normal vector to the lines b-a and b-c.
+ *
+ * \param n Returned normal vector.
+ * \param a Endpoint of first line.
+ * \param b Base point of both lines.
+ * \param c Endpoint of second line.
+ *
  * \ingroup vector
  */
 void
@@ -202,6 +277,15 @@ lib3ds_vector_normal(Lib3dsVector n, Lib3dsVector a, Lib3dsVector b, Lib3dsVecto
 
 
 /*!
+ * Multiply a point by a transformation matrix.
+ *
+ * Applies the given transformation matrix to the given point.  With some
+ * transformation matrices, a vector may also be transformed.
+ *
+ * \param c Result.
+ * \param m Transformation matrix.
+ * \param a Input point.
+ *
  * \ingroup vector
  */
 void
@@ -214,6 +298,17 @@ lib3ds_vector_transform(Lib3dsVector c, Lib3dsMatrix m, Lib3dsVector a)
 
 
 /*!
+ * Compute a point on a cubic spline.
+ *
+ * Computes a point on a parametric Bezier spline.
+ *
+ * \param c Result.
+ * \param a First endpoint of the spline.
+ * \param p First tangent vector of the spline.
+ * \param q Second tangent vector of the spline.
+ * \param b Second endpoint of the spline.
+ * \param t Spline parameter [0. 1.]
+ *
  * \ingroup vector
  */
 void
@@ -234,6 +329,9 @@ lib3ds_vector_cubic(Lib3dsVector c, Lib3dsVector a, Lib3dsVector p, Lib3dsVector
 
 /*!
  * c[i] = min(c[i], a[i]);
+ *
+ * Computes minimum values of x,y,z independently.
+ *
  * \ingroup vector
  */
 void 
@@ -250,6 +348,9 @@ lib3ds_vector_min(Lib3dsVector c, Lib3dsVector a)
 
 /*!
  * c[i] = max(c[i], a[i]);
+ *
+ * Computes maximum values of x,y,z independently.
+ *
  * \ingroup vector
  */
 void 

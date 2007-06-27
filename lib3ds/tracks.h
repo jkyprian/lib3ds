@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_TRACKS_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: tracks.h,v 1.8 2001/07/07 19:05:30 jeh Exp $
+ * $Id: tracks.h,v 1.11 2007/06/20 17:04:09 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TCB_H
@@ -31,7 +31,7 @@
 extern "C" {
 #endif
 
-/*!
+/**
  * Track flags
  * \ingroup tracks
  */
@@ -46,29 +46,29 @@ typedef enum {
   LIB3DS_UNLINK_Z  =0x0400
 } Lib3dsTrackFlags;
 
-/*!
+/**
  * Boolean track key
  * \ingroup tracks
  */
-struct _Lib3dsBoolKey {
+struct Lib3dsBoolKey {
     Lib3dsTcb tcb;
     Lib3dsBoolKey *next;
 };
 
-/*!
+/**
  * Boolean track
  * \ingroup tracks
  */
-struct _Lib3dsBoolTrack {
+struct Lib3dsBoolTrack {
     Lib3dsDword flags;
     Lib3dsBoolKey *keyL;
 };
 
-/*!
+/**
  * Floating-point track key
  * \ingroup tracks
  */
-struct _Lib3dsLin1Key {
+struct Lib3dsLin1Key {
     Lib3dsTcb tcb;
     Lib3dsLin1Key *next;
     Lib3dsFloat value;
@@ -76,20 +76,20 @@ struct _Lib3dsLin1Key {
     Lib3dsFloat ds;
 };
   
-/*!
+/**
  * Floating-point track
  * \ingroup tracks
  */
-struct _Lib3dsLin1Track {
+struct Lib3dsLin1Track {
     Lib3dsDword flags;
     Lib3dsLin1Key *keyL;
 };
 
-/*!
+/**
  * Vector track key
  * \ingroup tracks
  */
-struct _Lib3dsLin3Key {
+struct Lib3dsLin3Key {
     Lib3dsTcb tcb;
     Lib3dsLin3Key *next;  
     Lib3dsVector value;
@@ -97,20 +97,20 @@ struct _Lib3dsLin3Key {
     Lib3dsVector ds;
 };
   
-/*!
+/**
  * Vector track
  * \ingroup tracks
  */
-struct _Lib3dsLin3Track {
+struct Lib3dsLin3Track {
     Lib3dsDword flags;
     Lib3dsLin3Key *keyL;
 };
 
-/*!
+/**
  * Rotation track key
  * \ingroup tracks
  */
-struct _Lib3dsQuatKey {
+struct Lib3dsQuatKey {
     Lib3dsTcb tcb;
     Lib3dsQuatKey *next;  
     Lib3dsVector axis;
@@ -120,30 +120,30 @@ struct _Lib3dsQuatKey {
     Lib3dsQuat ds;
 };
   
-/*!
+/**
  * Rotation track 
  * \ingroup tracks
  */
-struct _Lib3dsQuatTrack {
+struct Lib3dsQuatTrack {
     Lib3dsDword flags;
     Lib3dsQuatKey *keyL;
 };
 
-/*!
+/**
  * Morph track key
  * \ingroup tracks
  */
-struct _Lib3dsMorphKey {
+struct Lib3dsMorphKey {
     Lib3dsTcb tcb;
     Lib3dsMorphKey *next;  
     char name[64];
 };
   
-/*!
+/**
  * Morph track
  * \ingroup tracks
  */
-struct _Lib3dsMorphTrack {
+struct Lib3dsMorphTrack {
     Lib3dsDword flags;
     Lib3dsMorphKey *keyL;
 };
@@ -203,7 +203,7 @@ extern LIB3DSAPI Lib3dsBool lib3ds_morph_track_read(Lib3dsMorphTrack *track, Lib
 extern LIB3DSAPI Lib3dsBool lib3ds_morph_track_write(Lib3dsMorphTrack *track, Lib3dsIo *io);
 
 #ifdef __cplusplus
-};
+}
 #endif
 #endif
 

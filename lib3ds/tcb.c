@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,9 +17,8 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: tcb.c,v 1.9 2001/07/07 19:05:30 jeh Exp $
+ * $Id: tcb.c,v 1.11 2007/06/15 09:33:19 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/tcb.h>
 #include <lib3ds/io.h>
 #include <math.h>
@@ -27,8 +26,6 @@
 
 /*!
  * \defgroup tcb Tension/Continuity/Bias Splines
- *
- * \author J.E. Hoffmann <je-h@gmx.net>
  */
 
 

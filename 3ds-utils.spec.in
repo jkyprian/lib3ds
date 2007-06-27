@@ -1,14 +1,14 @@
 # Note that this is NOT a relocatable package
-%define ver      1.1.0
+%define ver      @LIB3DS_VERSION@
 %define prefix   /usr
 BuildRoot: /tmp/lib3ds-%{PACKAGE_VERSION}-root
 
-Summary: The 3D Studio File Format Library
-Name: lib3ds
+Summary: 3DS Viewing and Conversion Utilities
+Name: lib3ds-utils
 Version: %ver
 Release: 1
 Copyright: LGPL
-Group: Development/Libraries
+Group: Aplpications/Multimedia
 Source: http://download.sourceforge.net/lib3ds/lib3ds-%{ver}.tar.gz
 URL: http://lib3ds.sourceforge.net
 Docdir: %{prefix}/share/doc
@@ -17,7 +17,9 @@ Docdir: %{prefix}/share/doc
 
 Lib3ds is a free alternative to Autodesk's 3DS File Toolkit for handling
 3DS files It's main goal is to simplify the creation of 3DS import and
-export filters.
+export filters. 
+
+This package contains some conversion and viewing utilities.
 
 This project is not related in any form to Autodesk. The library is
 based on unofficial information about the 3DS format found on the web.
@@ -51,8 +53,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-, root, root)
 %doc AUTHORS ChangeLog NEWS README COPYING TODO
 %{prefix}/bin/*
-%{prefix}/lib/*
-%{prefix}/include/lib3ds/*
-%{prefix}/share/aclocal/*
-%{prefix}/man/man1/*
+%{prefix}/man/man1/3dsplayer.1
+%{prefix}/man/man1/3ds2m.1
+%{prefix}/man/man1/3dsdump.1
 

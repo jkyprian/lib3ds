@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,25 +17,25 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: quat.c,v 1.5 2001/01/12 10:29:17 jeh Exp $
+ * $Id: quat.c,v 1.9 2007/06/20 17:04:09 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/quat.h>
 #include <math.h>
 
 
 /*!
  * \defgroup quat Quaternion Mathematics
- *
- * \author J.E. Hoffmann <je-h@gmx.net>
- */
-/*!
- * \typedef Lib3dsQuat
- *   \ingroup quat
  */
 
 
 /*!
+* \typedef Lib3dsQuat
+* \ingroup quat
+*/
+
+
+/*!
+ * Clear a quaternion.
  * \ingroup quat
  */
 void
@@ -46,6 +46,7 @@ lib3ds_quat_zero(Lib3dsQuat c)
 
 
 /*!
+ * Set a quaternion to Identity
  * \ingroup quat
  */
 void
@@ -57,6 +58,7 @@ lib3ds_quat_identity(Lib3dsQuat c)
 
 
 /*!
+ * Copy a quaternion.
  * \ingroup quat
  */
 void 
@@ -70,6 +72,12 @@ lib3ds_quat_copy(Lib3dsQuat dest, Lib3dsQuat src)
 
 
 /*!
+ * Compute a quaternion from axis and angle.
+ *
+ * \param c Computed quaternion
+ * \param axis Rotation axis
+ * \param angle Angle of rotation, radians.
+ *
  * \ingroup quat
  */
 void
@@ -95,6 +103,8 @@ lib3ds_quat_axis_angle(Lib3dsQuat c, Lib3dsVector axis, Lib3dsFloat angle)
 
 
 /*!
+ * Negate a quaternion
+ *
  * \ingroup quat
  */
 void
@@ -108,6 +118,8 @@ lib3ds_quat_neg(Lib3dsQuat c)
 
 
 /*!
+ * Compute the absolute value of a quaternion
+ *
  * \ingroup quat
  */
 void
@@ -121,6 +133,8 @@ lib3ds_quat_abs(Lib3dsQuat c)
 
 
 /*!
+ * Compute the conjugate of a quaternion
+ *
  * \ingroup quat
  */
 void
@@ -134,6 +148,10 @@ lib3ds_quat_cnj(Lib3dsQuat c)
 
 
 /*!
+ * Multiply two quaternions.
+ *
+ * \param c Result
+ * \param a,b Inputs
  * \ingroup quat
  */
 void
@@ -147,6 +165,8 @@ lib3ds_quat_mul(Lib3dsQuat c, Lib3dsQuat a, Lib3dsQuat b)
 
 
 /*!
+ * Multiply a quaternion by a scalar.
+ *
  * \ingroup quat
  */
 void
@@ -160,6 +180,8 @@ lib3ds_quat_scalar(Lib3dsQuat c, Lib3dsFloat k)
 
 
 /*!
+ * Normalize a quaternion.
+ *
  * \ingroup quat
  */
 void
@@ -183,6 +205,8 @@ lib3ds_quat_normalize(Lib3dsQuat c)
 
 
 /*!
+ * Compute the inverse of a quaternion.
+ *
  * \ingroup quat
  */
 void
@@ -206,6 +230,8 @@ lib3ds_quat_inv(Lib3dsQuat c)
 
 
 /*!
+ * Compute the dot-product of a quaternion.
+ *
  * \ingroup quat
  */
 Lib3dsFloat

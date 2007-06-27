@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_CHUNK_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: chunk.h,v 1.11 2001/07/07 19:05:30 jeh Exp $
+ * $Id: chunk.h,v 1.16 2007/06/20 17:04:08 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -93,6 +93,7 @@ typedef enum _Lib3dsChunks {
   LIB3DS_MAT_TWO_SIDE           =0xA081,
   LIB3DS_MAT_DECAL              =0xA082,
   LIB3DS_MAT_ADDITIVE           =0xA083,
+  LIB3DS_MAT_SELF_ILPCT         =0xA084,
   LIB3DS_MAT_WIRE               =0xA085,
   LIB3DS_MAT_FACEMAP            =0xA088,
   LIB3DS_MAT_PHONGSOFT          =0xA08C,
@@ -169,7 +170,7 @@ typedef enum _Lib3dsChunks {
   LIB3DS_OBJ_HIDDEN             =0x4010,
   LIB3DS_OBJ_VIS_LOFTER         =0x4011,
   LIB3DS_OBJ_DOESNT_CAST        =0x4012,
-  LIB3DS_OBJ_DONT_RECVSHADOW    =0x4017,
+  LIB3DS_OBJ_DONT_RCVSHADOW     =0x4017,
   LIB3DS_OBJ_MATTE              =0x4013,
   LIB3DS_OBJ_FAST               =0x4014,
   LIB3DS_OBJ_PROCEDURAL         =0x4015,
@@ -259,7 +260,7 @@ typedef enum _Lib3dsChunks {
   LIB3DS_NETWORK_VIEW           = 0x7030
 } Lib3dsChunks;
 
-typedef struct _Lib3dsChunk {
+typedef struct Lib3dsChunk {
     Lib3dsWord chunk;
     Lib3dsDword size;
     Lib3dsDword end;
@@ -276,12 +277,13 @@ extern LIB3DSAPI void lib3ds_chunk_read_end(Lib3dsChunk *c, Lib3dsIo *io);
 extern LIB3DSAPI Lib3dsBool lib3ds_chunk_write(Lib3dsChunk *c, Lib3dsIo *io);
 extern LIB3DSAPI Lib3dsBool lib3ds_chunk_write_start(Lib3dsChunk *c, Lib3dsIo *io);
 extern LIB3DSAPI Lib3dsBool lib3ds_chunk_write_end(Lib3dsChunk *c, Lib3dsIo *io);
+extern LIB3DSAPI Lib3dsBool lib3ds_chunk_write_switch(Lib3dsWord chunk, Lib3dsIo *io);
 extern LIB3DSAPI const char* lib3ds_chunk_name(Lib3dsWord chunk);
 extern LIB3DSAPI void lib3ds_chunk_unknown(Lib3dsWord chunk);
 extern LIB3DSAPI void lib3ds_chunk_dump_info(const char *format, ...);
 
 #ifdef __cplusplus
-};
+}
 #endif
 #endif
 

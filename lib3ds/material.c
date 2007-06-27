@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,25 +17,18 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: material.c,v 1.16 2002/01/14 00:53:10 jeh Exp $
+ * $Id: material.c,v 1.24 2007/06/20 17:04:08 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/material.h>
 #include <lib3ds/chunk.h>
 #include <lib3ds/io.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include <config.h>
-#ifdef WITH_DMALLOC
-#include <dmalloc.h>
-#endif
 
 
 /*!
  * \defgroup material Materials
- *
- * \author J.E. Hoffmann <je-h@gmx.net>
  */
 
 
@@ -50,6 +43,13 @@ initialize_texture_map(Lib3dsTextureMap *map)
 
 
 /*!
+ * Creates and returns a new, empty Lib3dsMaterial object.
+ *
+ * Initial value of the material is a shiny grey.
+ *
+ * \return	A pointer to the Lib3dsMaterial structure.
+ *		If the structure cannot be allocated, NULL is returned.
+ *
  * \ingroup material
  */
 Lib3dsMaterial*
@@ -131,6 +131,25 @@ color_read(Lib3dsRgba rgb, Lib3dsIo *io)
           int i;
           for (i=0; i<3; ++i) {
             rgb[i]=1.0f*lib3ds_io_read_byte(io)/255.0f;
+          }
+          rgb[3]=1.0f;
+        }
+        break;
+      case LIB3DS_LIN_COLOR_F:
+        {
+          int i;
+          for (i=0; i<3; ++i) {
+            rgb[i]=lib3ds_io_read_float(io);
+          }
+          rgb[3]=1.0f;
+        }
+        have_lin=LIB3DS_TRUE;
+        break;
+      case LIB3DS_COLOR_F:
+        if (!have_lin) {
+          int i;
+          for (i=0; i<3; ++i) {
+            rgb[i]=lib3ds_io_read_float(io);
           }
           rgb[3]=1.0f;
         }
@@ -331,6 +350,7 @@ lib3ds_material_dump(Lib3dsMaterial *material)
   printf("  additive:      %s\n", material->additive ? "yes" : "no");
   printf("  use_falloff:   %s\n", material->use_falloff ? "yes" : "no");
   printf("  self_illum:    %s\n", material->self_illum ? "yes" : "no");
+  printf("  self_ilpct:    %f\n", material->self_ilpct);
   printf("  shading:       %d\n", material->shading);
   printf("  soften:        %s\n", material->soften ? "yes" : "no");
   printf("  face_map:      %s\n", material->face_map ? "yes" : "no");
@@ -440,6 +460,14 @@ lib3ds_material_read(Lib3dsMaterial *material, Lib3dsIo *io)
         {
           lib3ds_chunk_read_reset(&c, io);
           if (!int_percentage_read(&material->falloff, io)) {
+            return(LIB3DS_FALSE);
+          }
+        }
+        break;
+      case LIB3DS_MAT_SELF_ILPCT:
+        {
+          lib3ds_chunk_read_reset(&c, io);
+          if (!int_percentage_read(&material->self_ilpct, io)) {
             return(LIB3DS_FALSE);
           }
         }
@@ -714,7 +742,7 @@ texture_map_write(Lib3dsWord chunk, Lib3dsTextureMap *map, Lib3dsIo *io)
   { /*---- LIB3DS_MAT_MAPNAME ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_MAT_MAPNAME;
-    c.size=6+strlen(map->name)+1;
+    c.size=6+(Lib3dsDword)strlen(map->name)+1;
     lib3ds_chunk_write(&c,io);
     lib3ds_io_write_string(io, map->name);
   }
@@ -848,7 +876,7 @@ lib3ds_material_write(Lib3dsMaterial *material, Lib3dsIo *io)
   { /*---- LIB3DS_MAT_NAME ----*/
     Lib3dsChunk c;
     c.chunk=LIB3DS_MAT_NAME;
-    c.size=6+strlen(material->name)+1;
+    c.size=6+(Lib3dsDword)strlen(material->name)+1;
     lib3ds_chunk_write(&c,io);
     lib3ds_io_write_string(io, material->name);
   }
@@ -1058,12 +1086,4 @@ lib3ds_material_write(Lib3dsMaterial *material, Lib3dsIo *io)
   return(LIB3DS_TRUE);
 }
 
-
-/*!
-
-\typedef Lib3dsMaterial
-  \ingroup material
-  \sa _Lib3dsMaterial
-
-*/
 

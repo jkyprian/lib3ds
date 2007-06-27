@@ -3,7 +3,7 @@
 #define INCLUDED_LIB3DS_IO_H
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: io.h,v 1.2 2001/07/11 13:47:35 jeh Exp $
+ * $Id: io.h,v 1.6 2007/06/20 17:04:08 jeh Exp $
  */
 
 #ifndef INCLUDED_LIB3DS_TYPES_H
@@ -31,7 +31,7 @@
 extern "C" {
 #endif
 
-typedef enum _Lib3dsIoSeek {
+typedef enum Lib3dsIoSeek {
   LIB3DS_SEEK_SET  =0,
   LIB3DS_SEEK_CUR  =1,
   LIB3DS_SEEK_END  =2
@@ -40,8 +40,8 @@ typedef enum _Lib3dsIoSeek {
 typedef Lib3dsBool (*Lib3dsIoErrorFunc)(void *self);
 typedef long (*Lib3dsIoSeekFunc)(void *self, long offset, Lib3dsIoSeek origin);
 typedef long (*Lib3dsIoTellFunc)(void *self);
-typedef int (*Lib3dsIoReadFunc)(void *self, Lib3dsByte *buffer, int size);
-typedef int (*Lib3dsIoWriteFunc)(void *self, const Lib3dsByte *buffer, int size);
+typedef size_t (*Lib3dsIoReadFunc)(void *self, void *buffer, size_t size);
+typedef size_t (*Lib3dsIoWriteFunc)(void *self, const void *buffer, size_t size);
 
 extern LIB3DSAPI Lib3dsIo* lib3ds_io_new(void *self, Lib3dsIoErrorFunc error_func,
   Lib3dsIoSeekFunc seek_func, Lib3dsIoTellFunc tell_func,
@@ -50,8 +50,8 @@ extern LIB3DSAPI void lib3ds_io_free(Lib3dsIo *io);
 extern LIB3DSAPI Lib3dsBool lib3ds_io_error(Lib3dsIo *io);
 extern LIB3DSAPI long lib3ds_io_seek(Lib3dsIo *io, long offset, Lib3dsIoSeek origin);
 extern LIB3DSAPI long lib3ds_io_tell(Lib3dsIo *io);
-extern LIB3DSAPI int lib3ds_io_read(Lib3dsIo *io, Lib3dsByte *buffer, int size);
-extern LIB3DSAPI int lib3ds_io_write(Lib3dsIo *io, const Lib3dsByte *buffer, int size);
+extern LIB3DSAPI size_t lib3ds_io_read(Lib3dsIo *io, void *buffer, size_t size);
+extern LIB3DSAPI size_t lib3ds_io_write(Lib3dsIo *io, const void *buffer, size_t size);
 
 extern LIB3DSAPI Lib3dsByte lib3ds_io_read_byte(Lib3dsIo *io);
 extern LIB3DSAPI Lib3dsWord lib3ds_io_read_word(Lib3dsIo *io);
@@ -76,7 +76,7 @@ extern LIB3DSAPI Lib3dsBool lib3ds_io_write_rgb(Lib3dsIo *io, Lib3dsRgb rgb);
 extern LIB3DSAPI Lib3dsBool lib3ds_io_write_string(Lib3dsIo *io, const char *s);
 
 #ifdef __cplusplus
-};
+}
 #endif
 #endif
 

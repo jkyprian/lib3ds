@@ -1,6 +1,6 @@
  #
  # The 3D Studio File Format Library
- # Copyright (C) 1996-2000 by J.E. Hoffmann <je-h@gmx.net>
+ # Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  # All rights reserved.
  #
  # This program is  free  software;  you can redistribute it and/or modify it
@@ -17,24 +17,20 @@
  # along with  this program;  if not, write to the  Free Software Foundation,
  # Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  #
- # $Id: Makefile.am,v 1.2 2002/01/14 12:27:45 jeh Exp $
+ # $Id: Makefile.am,v 1.5 2007/06/14 09:59:10 jeh Exp $
  #
 
 INCLUDES = \
-  -I$(top_srcdir) \
-  @DMALLOC_CFLAGS@
+  -I$(top_srcdir) 
 
 bin_PROGRAMS = \
-  3dsdump \
-  3ds2m 
+  3dsdump 
 
 LDADD = \
-  $(top_builddir)/lib3ds/lib3ds.a \
-  @DMALLOC_LIBS@ -lm
+  $(top_builddir)/lib3ds/lib3ds.la 
 
 MANPAGES = \
-  3dsdump.1 \
-  3ds2m.1
+  3dsdump.1 
 
 man_MANS = $(MANPAGES)
 EXTRA_DIST = $(MANPAGES) 

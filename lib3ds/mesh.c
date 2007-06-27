@@ -1,6 +1,6 @@
 /*
  * The 3D Studio File Format Library
- * Copyright (C) 1996-2001 by J.E. Hoffmann <je-h@gmx.net>
+ * Copyright (C) 1996-2007 by Jan Eric Kyprianidis <www.kyprianidis.com>
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
@@ -17,9 +17,8 @@
  * along with  this program;  if not, write to the  Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * $Id: mesh.c,v 1.20 2001/11/14 22:44:52 jeh Exp $
+ * $Id: mesh.c,v 1.29 2007/06/20 17:04:08 jeh Exp $
  */
-#define LIB3DS_EXPORT
 #include <lib3ds/mesh.h>
 #include <lib3ds/io.h>
 #include <lib3ds/chunk.h>
@@ -28,16 +27,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <config.h>
-#ifdef WITH_DMALLOC
-#include <dmalloc.h>
-#endif
+#include <float.h>
 
 
 /*!
  * \defgroup mesh Meshes
- *
- * \author J.E. Hoffmann <je-h@gmx.net>
  */
 
 
@@ -140,6 +134,17 @@ face_array_read(Lib3dsMesh *mesh, Lib3dsIo *io)
 
 
 /*!
+ * Create and return a new empty mesh object.
+ *
+ * Mesh is initialized with the name and an identity matrix; all
+ * other fields are zero.
+ *
+ * See Lib3dsFaceFlag for definitions of per-face flags.
+ *
+ * \param name Mesh name.  Must not be NULL.  Must be < 64 characters.
+ *
+ * \return mesh object or NULL on error.
+ *
  * \ingroup mesh
  */
 Lib3dsMesh*
@@ -162,6 +167,10 @@ lib3ds_mesh_new(const char *name)
 
 
 /*!
+ * Free a mesh object and all of its resources.
+ *
+ * \param mesh Mesh object to be freed.
+ *
  * \ingroup mesh
  */
 void
@@ -177,6 +186,16 @@ lib3ds_mesh_free(Lib3dsMesh *mesh)
 
 
 /*!
+ * Allocate point list in mesh object.
+ *
+ * This function frees the current point list, if any, and allocates
+ * a new one large enough to hold the specified number of points.
+ *
+ * \param mesh Mesh object for which points are to be allocated.
+ * \param points Number of points in the new point list.
+ *
+ * \return LIB3DS_TRUE on success, LIB3DS_FALSE on failure.
+ *
  * \ingroup mesh
  */
 Lib3dsBool
@@ -200,6 +219,13 @@ lib3ds_mesh_new_point_list(Lib3dsMesh *mesh, Lib3dsDword points)
 
 
 /*!
+ * Free point list in mesh object.
+ *
+ * The current point list is freed and set to NULL.  mesh->points is
+ * set to zero.
+ *
+ * \param mesh Mesh object to be modified.
+ *
  * \ingroup mesh
  */
 void
@@ -219,6 +245,17 @@ lib3ds_mesh_free_point_list(Lib3dsMesh *mesh)
 
 
 /*!
+ * Allocate flag list in mesh object.
+ *
+ * This function frees the current flag list, if any, and allocates
+ * a new one large enough to hold the specified number of flags.
+ * All flags are initialized to 0
+ *
+ * \param mesh Mesh object for which points are to be allocated.
+ * \param flags Number of flags in the new flag list.
+ *
+ * \return LIB3DS_TRUE on success, LIB3DS_FALSE on failure.
+ *
  * \ingroup mesh
  */
 Lib3dsBool
@@ -242,6 +279,13 @@ lib3ds_mesh_new_flag_list(Lib3dsMesh *mesh, Lib3dsDword flags)
 
 
 /*!
+ * Free flag list in mesh object.
+ *
+ * The current flag list is freed and set to NULL.  mesh->flags is
+ * set to zero.
+ *
+ * \param mesh Mesh object to be modified.
+ *
  * \ingroup mesh
  */
 void
@@ -261,6 +305,16 @@ lib3ds_mesh_free_flag_list(Lib3dsMesh *mesh)
 
 
 /*!
+ * Allocate texel list in mesh object.
+ *
+ * This function frees the current texel list, if any, and allocates
+ * a new one large enough to hold the specified number of texels.
+ *
+ * \param mesh Mesh object for which points are to be allocated.
+ * \param texels Number of texels in the new texel list.
+ *
+ * \return LIB3DS_TRUE on success, LIB3DS_FALSE on failure.
+ *
  * \ingroup mesh
  */
 Lib3dsBool
@@ -284,6 +338,13 @@ lib3ds_mesh_new_texel_list(Lib3dsMesh *mesh, Lib3dsDword texels)
 
 
 /*!
+ * Free texel list in mesh object.
+ *
+ * The current texel list is freed and set to NULL.  mesh->texels is
+ * set to zero.
+ *
+ * \param mesh Mesh object to be modified.
+ *
  * \ingroup mesh
  */
 void
@@ -303,6 +364,16 @@ lib3ds_mesh_free_texel_list(Lib3dsMesh *mesh)
 
 
 /*!
+ * Allocate face list in mesh object.
+ *
+ * This function frees the current face list, if any, and allocates
+ * a new one large enough to hold the specified number of faces.
+ *
+ * \param mesh Mesh object for which points are to be allocated.
+ * \param faces Number of faces in the new face list.
+ *
+ * \return LIB3DS_TRUE on success, LIB3DS_FALSE on failure.
+ *
  * \ingroup mesh
  */
 Lib3dsBool
@@ -326,6 +397,13 @@ lib3ds_mesh_new_face_list(Lib3dsMesh *mesh, Lib3dsDword faces)
 
 
 /*!
+ * Free face list in mesh object.
+ *
+ * The current face list is freed and set to NULL.  mesh->faces is
+ * set to zero.
+ *
+ * \param mesh Mesh object to be modified.
+ *
  * \ingroup mesh
  */
 void
@@ -344,45 +422,35 @@ lib3ds_mesh_free_face_list(Lib3dsMesh *mesh)
 }
 
 
+/*!
+ * Find the bounding box of a mesh object.
+ *
+ * \param mesh The mesh object
+ * \param bmin Returned bounding box
+ * \param bmax Returned bounding box
+ *
+ * \ingroup mesh
+ */
+void
+lib3ds_mesh_bounding_box(Lib3dsMesh *mesh, Lib3dsVector bmin, Lib3dsVector bmax)
+{
+  unsigned i;
+  bmin[0] = bmin[1] = bmin[2] = FLT_MAX; 
+  bmax[0] = bmax[1] = bmax[2] = FLT_MIN; 
+
+  for (i=0; i<mesh->points; ++i) {
+    lib3ds_vector_min(bmin, mesh->pointL[i].pos);
+    lib3ds_vector_max(bmax, mesh->pointL[i].pos);
+  }
+}
+
+
 typedef struct _Lib3dsFaces Lib3dsFaces; 
 
 struct _Lib3dsFaces {
   Lib3dsFaces *next;
   Lib3dsFace *face;
 };
-
-
-
-
-/*!
- * \ingroup mesh
- */
-void
-lib3ds_mesh_bounding_box(Lib3dsMesh *mesh, Lib3dsVector min, Lib3dsVector max)
-{
-  unsigned i,j;
-  Lib3dsFloat v;
-
-  if (!mesh->points) {
-    lib3ds_vector_zero(min);
-    lib3ds_vector_zero(max);
-    return;
-  }
- 
-  lib3ds_vector_copy(min, mesh->pointL[0].pos);
-  lib3ds_vector_copy(max, mesh->pointL[0].pos);
-  for (i=1; i<mesh->points; ++i) {
-    for (j=0; j<3; ++j) {
-      v=mesh->pointL[i].pos[j];
-      if (v<min[j]) {
-        min[j]=v;
-      }
-      if (v>max[j]) {
-        max[j]=v;
-      }
-    }
-  };
-}
 
 
 /*!
@@ -404,6 +472,8 @@ lib3ds_mesh_bounding_box(Lib3dsMesh *mesh, Lib3dsVector min, Lib3dsVector max)
  * \code
  *   normalL[3*j+i]
  * \endcode
+ *
+ * \ingroup mesh
  */
 void
 lib3ds_mesh_calculate_normals(Lib3dsMesh *mesh, Lib3dsVector *normalL)
@@ -436,7 +506,7 @@ lib3ds_mesh_calculate_normals(Lib3dsMesh *mesh, Lib3dsVector *normalL)
     Lib3dsFace *f=&mesh->faceL[i];
     for (j=0; j<3; ++j) {
       // FIXME: static array needs at least check!!
-      Lib3dsVector n,N[64];
+      Lib3dsVector n,N[128];
       Lib3dsFaces *p;
       int k,l;
       int found;
@@ -449,6 +519,8 @@ lib3ds_mesh_calculate_normals(Lib3dsMesh *mesh, Lib3dsVector *normalL)
         for (p=fl[f->points[j]]; p; p=p->next) {
           found=0;
           for (l=0; l<k; ++l) {
+	    if( l >= 128 )
+	      printf("array N overflow: i=%d, j=%d, k=%d\n", i,j,k);
             if (fabs(lib3ds_vector_dot(N[l], p->face->normal)-1.0)<1e-5) {
               found=1;
               break;
@@ -510,11 +582,13 @@ lib3ds_mesh_dump(Lib3dsMesh *mesh)
   }
   printf("  facelist:\n");
   for (i=0; i<mesh->faces; ++i) {
-    printf ("    %4d %4d %4d  smoothing:%X\n",
+    printf ("    %4d %4d %4d  smoothing:%X  flags:%X  material:\"%s\"\n",
       mesh->faceL[i].points[0],
       mesh->faceL[i].points[1],
       mesh->faceL[i].points[2],
-      (unsigned)mesh->faceL[i].smoothing
+      (unsigned)mesh->faceL[i].smoothing,
+      mesh->faceL[i].flags,
+      mesh->faceL[i].material
     );
   }
 }
@@ -666,8 +740,30 @@ lib3ds_mesh_read(Lib3dsMesh *mesh, Lib3dsIo *io)
       );
     }
   }
-  
+
+  if (lib3ds_matrix_det(mesh->matrix) < 0.0)
+  {
+    /* Flip X coordinate of vertices if mesh matrix 
+       has negative determinant */
+    Lib3dsMatrix inv_matrix, M;
+    Lib3dsVector tmp;
+    unsigned i;
+
+    lib3ds_matrix_copy(inv_matrix, mesh->matrix);
+    lib3ds_matrix_inv(inv_matrix);
+
+    lib3ds_matrix_copy(M, mesh->matrix);
+    lib3ds_matrix_scale_xyz(M, -1.0f, 1.0f, 1.0f);
+    lib3ds_matrix_mult(M, inv_matrix);
+
+    for (i=0; i<mesh->points; ++i) {
+      lib3ds_vector_transform(tmp, M, mesh->pointL[i].pos);
+      lib3ds_vector_copy(mesh->pointL[i].pos, tmp);
+    }
+  }
+
   lib3ds_chunk_read_end(&c, io);
+
   return(LIB3DS_TRUE);
 }
 
@@ -687,9 +783,30 @@ point_array_write(Lib3dsMesh *mesh, Lib3dsIo *io)
   lib3ds_chunk_write(&c, io);
   
   lib3ds_io_write_word(io, (Lib3dsWord)mesh->points);
-  for (i=0; i<mesh->points; ++i) {
-    lib3ds_io_write_vector(io, mesh->pointL[i].pos);
+
+  if (lib3ds_matrix_det(mesh->matrix) >= 0.0f) {
+    for (i=0; i<mesh->points; ++i) {
+      lib3ds_io_write_vector(io, mesh->pointL[i].pos);
+    }
   }
+  else {
+    /* Flip X coordinate of vertices if mesh matrix 
+       has negative determinant */
+    Lib3dsMatrix inv_matrix, M;
+    Lib3dsVector tmp;
+
+    lib3ds_matrix_copy(inv_matrix, mesh->matrix);
+    lib3ds_matrix_inv(inv_matrix);
+    lib3ds_matrix_copy(M, mesh->matrix);
+    lib3ds_matrix_scale_xyz(M, -1.0f, 1.0f, 1.0f);
+    lib3ds_matrix_mult(M, inv_matrix);
+
+    for (i=0; i<mesh->points; ++i) {
+      lib3ds_vector_transform(tmp, M, mesh->pointL[i].pos);
+      lib3ds_io_write_vector(io, tmp);
+    }
+  }
+
   return(LIB3DS_TRUE);
 }
 
@@ -760,7 +877,7 @@ face_array_write(Lib3dsMesh *mesh, Lib3dsIo *io)
         }
         
         c.chunk=LIB3DS_MSH_MAT_GROUP;
-        c.size=6+ strlen(mesh->faceL[i].material)+1 +2+2*num;
+        c.size=6+ (Lib3dsDword)strlen(mesh->faceL[i].material)+1 +2+2*num;
         lib3ds_chunk_write(&c, io);
         lib3ds_io_write_string(io, mesh->faceL[i].material);
         lib3ds_io_write_word(io, num);
@@ -937,32 +1054,3 @@ lib3ds_mesh_write(Lib3dsMesh *mesh, Lib3dsIo *io)
   return(LIB3DS_TRUE);
 }
 
-
-/*!
-
-\typedef Lib3dsFace
-  \ingroup mesh
-  \sa _Lib3dsFace
-
-*/
-/*!
-
-\typedef Lib3dsBoxMap
-  \ingroup mesh
-  \sa _Lib3dsBoxMap
-
-*/
-/*!
-
-\typedef Lib3dsMapData
-  \ingroup mesh
-  \sa _Lib3dsMapData
-
-*/
-/*!
-
-\typedef Lib3dsMesh
-  \ingroup mesh
-  \sa _Lib3dsMesh
-
-*/
