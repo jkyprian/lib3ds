@@ -1,1 +1,1 @@
-debian/tmp/usr/lib/lib3ds*.so.* usr/lib
+usr/lib/*/lib3ds*.so.*
