@@ -3,9 +3,8 @@ Section: libs
 Priority: optional
 Maintainer: Debian QA Group <packages@qa.debian.org>
 Build-Depends:
- autoconf (>= 2.50),
- automake,
  debhelper (>= 9),
+ dh-autoreconf,
  freeglut3-dev,
  libtool
 Standards-Version: 3.8.3
