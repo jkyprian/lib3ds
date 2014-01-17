@@ -7,7 +7,7 @@ Build-Depends:
  dh-autoreconf,
  freeglut3-dev,
  libtool
-Standards-Version: 3.8.3
+Standards-Version: 3.9.5
 Homepage: http://www.lib3ds.org/
 
 Package: lib3ds-1-3
