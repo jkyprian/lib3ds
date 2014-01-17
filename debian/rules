@@ -2,4 +2,8 @@
 
 %:
 	dh $@ --parallel --with autoreconf
+export DEB_HOST_MULTIARCH := $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+override_dh_link:
+	dh_link usr/lib/$(DEB_HOST_MULTIARCH)/lib3ds-1.so.3.0.0 usr/lib/$(DEB_HOST_MULTIARCH)/lib3ds-1.so
 
