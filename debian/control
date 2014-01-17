@@ -1,0 +1,32 @@
+Source: lib3ds
+Section: libs
+Priority: optional
+Maintainer: Debian QA Group <packages@qa.debian.org>
+Build-Depends: debhelper (>= 5), freeglut3-dev, automake, autoconf (>= 2.50), libtool
+Standards-Version: 3.8.3
+Homepage: http://www.lib3ds.org/
+
+Package: lib3ds-1-3
+Replaces: lib3ds-dev (<< 1.3.0-3)
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Autodesk 3D Studio file reader C library
+ This library implements the functionality required to manage
+ Autodesk's 3D Studio Release 3 and 4 format (.3DS) files.
+ .
+ It is a free alternative to Autodesk's 3DS File Toolkit for 
+ managing 3DS files.
+
+Package: lib3ds-dev
+Section: libdevel
+Conflicts: lib3ds-1.0-0
+Architecture: any
+Depends: lib3ds-1-3 (=${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: Autodesk 3D Studio file reader development files
+ This library implements the functionality required to manage
+ Autodesk's 3D Studio Release 3 and 4 format (.3DS) files.
+ .
+ It is a free alternative to Autodesk's 3DS File Toolkit for 
+ managing 3DS files.
+ .
+ This package contains the development files (headers and libs).

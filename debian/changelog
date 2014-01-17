@@ -1,0 +1,219 @@
+lib3ds (1.3.0-6) unstable; urgency=low
+
+  * QA upload
+  * Do not install *.la files in lib3ds-dev package (closes: #621526)
+
+ -- Ralf Treinen <treinen@debian.org>  Tue, 24 May 2011 21:47:50 +0200
+
+lib3ds (1.3.0-5) unstable; urgency=medium
+
+  * QA upload.
+  * Fix CVE-2010-0280, patch by Ralf Corsepius. (Closes: #575741)
+
+ -- Moritz Muehlenhoff <jmm@debian.org>  Sun, 10 Oct 2010 18:56:37 +0200
+
+lib3ds (1.3.0-4) unstable; urgency=low
+
+  * QA upload.
+  * Fix typo in 1.3.0-2 changelog.
+  * Replace glutg3-dev with freeglut3-dev. (Closes: #543697).
+  * Bump Standards Version to 3.8.3. (No changes needed).
+
+ -- Barry deFreese <bdefreese@debian.org>  Wed, 26 Aug 2009 11:19:58 -0400
+
+lib3ds (1.3.0-3) unstable; urgency=low
+
+  * QA upload.
+  * Build real library package. (Closes: #148955).
+    + Add lib3ds-1-3 binary package.
+    + Additional debian/rules clean-up.
+
+ -- Barry deFreese <bdefreese@debian.org>  Tue, 05 May 2009 10:43:39 -0400
+
+lib3ds (1.3.0-2) unstable; urgency=low
+
+  * QA upload.
+  * Use autoreconf -fvi so libtoolize gets run as well.
+    + Change automake1.9 build-dep to automake.
+  * Add Homepage.
+  * Add watch file.
+  * Replace pwd with $(CURDIR) in rules.
+  * Improve package long description.
+  * Remove duplicated priority section from binary package.
+  * Bump Standards Version to 3.8.1.
+
+ -- Barry deFreese <bdefreese@debian.org>  Mon, 04 May 2009 16:44:02 -0400
+
+lib3ds (1.3.0-1) unstable; urgency=low
+
+  * QA upload.
+    + change maintainer to QA group
+    + acknowledge NMUs (Closes: #376451)
+  * Do not conflict with itself
+  * Do not create /usr/doc symlink anymore
+  * Do not ignore errors from make distclean
+  * Fix section of binary package to be in sync with
+    the archive overrides
+  * Bump debhelper compat level to 5
+  * Handle noopt build option
+  * Remove unused m4/glut.m4
+  * Improve copyright file
+
+ -- Frank Lichtenheld <djpig@debian.org>  Sun, 13 Jul 2008 02:27:49 +0200
+
+lib3ds (1.3.0-0.1) unstable; urgency=medium
+
+  * New upstream version 1.3.0.  Closes: #463108.
+    Upstream example now builds due to upstream changes, Closes: 309417.
+  * Build with -fPIC on amd64.  Closes: #317242.
+
+ -- Ian Jackson <ian@davenant.greenend.org.uk>  Sat, 09 Feb 2008 16:50:15 +0000
+
+lib3ds (1.2.0-4.2) unstable; urgency=high
+
+  * Non-maintainer upload.
+  * High-urgency upload for RC bugfix.
+  * Use an explicit union instead of an arbitrary cast between pointer types,
+    to fix a bug when built with gcc-4.1 that causes all floats to be read
+    and written wrong in 3ds files due to strict aliasing rules.
+    Closes: #399761.
+
+ -- Steve Langasek <vorlon@debian.org>  Fri, 06 Apr 2007 02:12:13 -0700
+
+lib3ds (1.2.0-4.1) unstable; urgency=low
+
+  * NMU.
+  * debian/control: Build-Depend on only automake1.9. (Closes: #376451)
+
+ -- Eric Dorland <eric@debian.org>  Sat, 19 Aug 2006 13:40:13 -0400
+
+lib3ds (1.2.0-4) unstable; urgency=low
+
+  * Ack NMUs, thanks Christian.
+  * lib3ds/file.h: add declaration for lib3ds_file_bounding_box per
+    http://artis.imag.fr/Members/Gilles.Debunne/QGLViewer/examples/contribs.html#3dsViewer,
+    thanks to Bruno Jobard for pointing this out.
+  * lib3ds hasn't been a C++ library for a long long time.  Thanks
+    Bruno.
+
+ -- Marcelo E. Magallon <mmagallo@debian.org>  Wed, 02 Feb 2005 20:17:14 -0600
+
+lib3ds (1.2.0-3.2) unstable; urgency=low
+
+  * NMU again to remove the not satisfying way of doing lib with -fPIC
+  Should create 2 libs one -fPIC, the other not.
+  * Removed 2 lintian warning 
+
+ -- Christian Bayle <bayle@debian.org>  Fri, 11 Jul 2003 11:06:16 +0200
+
+lib3ds (1.2.0-3.1) unstable; urgency=low
+
+  * NMU approved by maintainer, add -fPIC flag for hppa and alpha
+  * That should allow me to close fail to build from source on
+  * alpha and hppa for crystalspace package
+  * Added dependency on alternate automake 1.5 or 1.7
+
+ -- Christian Bayle <bayle@debian.org>  Wed,  9 Jul 2003 01:34:40 +0200
+
+lib3ds (1.2.0-3) unstable; urgency=low
+
+  * lib3ds/camera.c: s/near_range/far_range/ in dump function
+  * m4/glut.m4: add required macro definition (closes: bug#150224)
+  * Stupid thing has been siting on the HD for a year...
+
+ -- Marcelo E. Magallon <mmagallo@debian.org>  Tue, 15 Apr 2003 20:42:01 +0200
+
+lib3ds (1.2.0-2) unstable; urgency=low
+
+  * Oops, forgot to remove depends: lib3ds-1.0.0
+
+ -- Marcelo E. Magallon <mmagallo@debian.org>  Sun, 10 Mar 2002 12:37:18 +0100
+
+lib3ds (1.2.0-1) unstable; urgency=low
+
+  * New upstream version (thanks Chrisse)
+  * Upstream removed support for shared libraries
+
+ -- Marcelo E. Magallon <mmagallo@debian.org>  Wed,  6 Mar 2002 20:17:13 +0100
+
+lib3ds (1.1.0-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Marcelo E. Magallon <mmagallo@debian.org>  Wed,  4 Jul 2001 11:16:42 +0200
+
+lib3ds (1.0.0-3) unstable; urgency=low
+
+  * debian/control: Give up, Build-Depends: automake, autoconf, libtool.
+  * Removed from CVS control: aclocal.m4 ltmain.sh ltconfig install-sh
+    missing mkinstalldirs Makefile.in examples/Makefile.in
+    lib3ds/Makefile.in msvc/Makefile.in config.guess config.sub
+    configure Makefile examples/Makefile lib3ds/Makefile msvc/Makefile
+  * debian/rules: use automake and friends to autogenerate stuff, nuke
+    it on clean.
+  * Closes: bug#108996
+  * configure.in: this needs autoconf 2.50 for some reason...  either
+    I'm doing something wrong or the wrapper script is doing something
+    wrong.
+  * debian/rules: needs to run autoheader now? hmm...
+  * configure.in: use AC_C_BIGENDIAN
+
+ -- Marcelo E. Magallon <mmagallo@debian.org>  Fri, 17 Aug 2001 15:32:47 +0200
+
+lib3ds (1.0.0-2) unstable; urgency=low
+
+  * debian/control: add glutg3-dev.
+  * config.{guess,sub}: update (closes: bug#94810)
+  * gargh! Updated a bunch of configure and Makefile.in and whatnot.
+    libtool didn't like the idea of updating only config.guess and config.sub
+
+ -- Marcelo E. Magallon <mmagallo@debian.org>  Wed,  4 Jul 2001 19:30:57 +0200
+
+lib3ds (1.0.0-1) unstable; urgency=low
+
+  * We have this wonderful thing called email, you know...
+  * debian/control: fixed section
+  * Sorry about the version blooper.
+
+ -- Marcelo E. Magallon <mmagallo@debian.org>  Sat, 10 Mar 2001 21:20:21 +0100
+
+lib3ds (1.0-1) unstable; urgency=low
+
+  * New upstream version
+  * debian/rules: use ugly DEB_BUILD_OPTIONS thingie
+  * debian/control: soname is lib3ds-1.0.so.0, change package name 
+    accordingly.
+  * debian/control: bumped standards version to 3.5.1
+  * debian/rules: leave postinst to debhelper
+  * debian/rules: no more binaries with this package
+
+ -- Marcelo E. Magallon <mmagallo@debian.org>  Sun, 18 Feb 2001 20:23:16 +0100
+
+lib3ds (0.9.1-1) unstable; urgency=low
+
+  * New upstream version
+  * debian/control: upstream removed examples.
+  * debian/control: upstream is using libtool's release feature
+  * debian/rules: accomodates release in library's soname
+  * debian/rules: don't install: INSTALL NEWS README TODO
+  * debian/rules: place the manpages in the right directory and package.
+
+ -- Marcelo E. Magallon <mmagallo@debian.org>  Sat, 28 Oct 2000 22:23:44 +0200
+ 
+lib3ds (0.0.20000526-1) unstable; urgency=low
+
+  * New version pulled from CVS
+  * Upstream incorporated patch for lib3ds-config.in
+  * Upstream now includes lib3ds-config.1, rm debian/lib3ds-config.1
+  * Upstream now includes 3ds-viewer.1, rm debian/3ds-viewer.1
+
+ -- Marcelo E. Magallon <mmagallo@debian.org>  Sat, 27 May 2000 00:02:39 +0200
+
+lib3ds (0.0.20000519-1) unstable; urgency=low
+
+  * Initial Release.
+  * lib3ds-config.in: does print linker flags when asked for them.
+
+ -- Marcelo E. Magallon <mmagallo@debian.org>  Sat, 20 May 2000 20:11:37 +0200
+
+vim:tw=72
