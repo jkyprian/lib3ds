@@ -1,3 +1,19 @@
+lib3ds (1.3.0-7) unstable; urgency=medium
+
+  * [cbd2325] Ignore quilt dir
+  * [f16f9a3] Switch to dpkg-source 3.0 (quilt) format
+  * [6ed5623] Set compat level 9.
+  * [8f1491c] Use DEP-5 for copyright file.
+  * [b589b3d] Use wrap-and-sort.
+  * [ece33eb] Simplify debian/rules.
+  * [7d4837f] Use autoreconf.
+  * [512e003] Use multi-arch.
+  * [1b1c0d6] Set Standards-Versions: 3.9.5
+  * [e9865d3] Set Debian-Science team as a maintainer of the lib.
+              (Closes: #471988)
+
+ -- Anton Gladky <gladk@debian.org>  Fri, 17 Jan 2014 20:05:25 +0100
+
 lib3ds (1.3.0-6) unstable; urgency=low
 
   * QA upload
