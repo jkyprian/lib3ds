@@ -13,6 +13,7 @@ Standards-Version: 3.9.5
 Homepage: http://www.lib3ds.org/
 Vcs-Git: git://anonscm.debian.org/debian-science/packages/lib3ds.git
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=debian-science/packages/lib3ds.git
+XS-Testsuite: autopkgtest
 
 Package: lib3ds-1-3
 Replaces:
