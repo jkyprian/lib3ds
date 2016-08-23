@@ -1,3 +1,11 @@
+lib3ds (1.3.0-9) unstable; urgency=medium
+
+  * [bfa552e] Apply cme fix dpkg.
+  * [61084f7] Do not install obselete config-file.
+  * [c215280] Fix manpage errors.
+
+ -- Anton Gladky <gladk@debian.org>  Tue, 23 Aug 2016 22:04:25 +0200
+
 lib3ds (1.3.0-8) unstable; urgency=medium
 
   * [d40d059] Add autopkgtest.
