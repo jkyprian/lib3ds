@@ -2,7 +2,6 @@ Source: lib3ds
 Maintainer: Debian Science Maintainers <debian-science-maintainers@lists.alioth.debian.org>
 Uploaders: Anton Gladky <gladk@debian.org>
 Section: libs
-Testsuite: autopkgtest
 Priority: optional
 Build-Depends: debhelper (>= 9),
                dh-autoreconf,
