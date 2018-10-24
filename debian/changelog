@@ -132,7 +132,7 @@ lib3ds (1.2.0-3.2) unstable; urgency=low
 
   * NMU again to remove the not satisfying way of doing lib with -fPIC
   Should create 2 libs one -fPIC, the other not.
-  * Removed 2 lintian warning 
+  * Removed 2 lintian warning
 
  -- Christian Bayle <bayle@debian.org>  Fri, 11 Jul 2003 11:06:16 +0200
 
@@ -211,7 +211,7 @@ lib3ds (1.0-1) unstable; urgency=low
 
   * New upstream version
   * debian/rules: use ugly DEB_BUILD_OPTIONS thingie
-  * debian/control: soname is lib3ds-1.0.so.0, change package name 
+  * debian/control: soname is lib3ds-1.0.so.0, change package name
     accordingly.
   * debian/control: bumped standards version to 3.5.1
   * debian/rules: leave postinst to debhelper
@@ -229,7 +229,7 @@ lib3ds (0.9.1-1) unstable; urgency=low
   * debian/rules: place the manpages in the right directory and package.
 
  -- Marcelo E. Magallon <mmagallo@debian.org>  Sat, 28 Oct 2000 22:23:44 +0200
- 
+
 lib3ds (0.0.20000526-1) unstable; urgency=low
 
   * New version pulled from CVS
