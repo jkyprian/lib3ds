@@ -4,7 +4,6 @@ Uploaders: Anton Gladky <gladk@debian.org>
 Section: libs
 Priority: optional
 Build-Depends: debhelper-compat (= 12),
-               dh-autoreconf,
                freeglut3-dev,
                libtool
 Standards-Version: 3.9.8
