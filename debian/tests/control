@@ -1,0 +1,2 @@
+Tests: build1
+Depends: freeglut3-dev, lib3ds-dev, build-essential

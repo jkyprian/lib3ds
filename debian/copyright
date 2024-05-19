@@ -1,0 +1,14 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Contact: Reed Hedges <reed@zerohour.net>
+Source: https://code.google.com/p/lib3ds/
+
+Files: *
+Copyright: 1996-2007 Jan Eric Kyprianidis <www.kyprianidis.com>
+License: LGPL-2.1+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Lesser General Public License for more details.
+ .
+ On Debian GNU/Linux systems, the complete text of the GNU Lesser General
+ Public License can be found in '/usr/share/common-licenses/LGPL-2.1'.

@@ -1,0 +1,3 @@
+usr/lib/*/*.la
+usr/lib/*/*.a
+usr/bin/lib3ds-config
